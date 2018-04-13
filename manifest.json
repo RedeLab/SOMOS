@@ -4,6 +4,11 @@
   "description": "#TamoJunto é uma plataforma para engajar eleitores e candidatos a desempenharem suas melhores versões pela renovação da política.",
   "icons": [
     {
+      "src": "images/manifest/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
       "src": "images/manifest/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
