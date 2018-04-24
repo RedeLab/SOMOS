@@ -1,0 +1,79 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-dialog-behavior/paper-dialog-shared-styles.html">
+
+<dom-module id="app-dialog-styles">
+  <template>
+  <style include="paper-dialog-shared-styles"></style>
+  <style>
+      :host([modal]) {
+        min-width: 60%;
+      }
+      :host([modal]) > * {
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 2;
+        text-transform: capitalize;
+        max-width: calc(100vw - 132px);
+      }
+      .list-item {
+        color: var(--paper-grey-600);
+        padding: 5px 0;
+        font-size: .8rem;
+        word-wrap: break-word;
+      }
+      .list-item:last-child {
+        padding-bottom: 20px;
+      }
+      .list-item span {
+        font-weight: 600;
+        color: var(--primary-text-color);
+      }
+      .error {
+        color: var(--error-color) !important;
+      }
+      .error.title {
+        margin: 0 0 20px;
+        text-transform: none;
+        line-height: 1;
+      }
+      .actions {
+        text-align: right;
+        padding: 10px 6px;
+      }
+      .confirm {
+        padding: 24px;
+      }
+      @media screen and (min-width: 719px) {
+        .content[with-columns] {
+          column-count: 2;
+          column-gap: 2rem;
+        }
+        .content section {
+          -webkit-column-break-inside: avoid;
+          break-inside: avoid-column;
+          page-break-inside: avoid;
+          padding-top: 1px;
+        }
+      }
+      @media screen and (max-width: 640px) {
+        :host([modal]) {
+          min-width: 100%;
+          min-height: 100%;
+          margin: 0;
+        }
+        app-toolbar {
+          padding: 0 5px;
+        }
+        .title {
+          margin-left: 15px;
+          max-width: calc(100vw - 110px);
+        }
+      }
+    </style>
+  </template>
+</dom-module>

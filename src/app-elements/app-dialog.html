@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-dialog-behavior/paper-dialog-behavior.html">
+
+<link rel="import" href="./app-icons.html">
+<link rel="import" href="./styles/app-dialog-styles.html">
+
+<dom-module id="app-dialog">
+  <template>
+    <style include="app-dialog-styles"></style>
+    <div class="confirm">
+      <h2 class="error title">
+        <iron-icon icon="app:warning"></iron-icon>
+        {{confirmTitle}}
+      </h2>
+      {{description}}
+    </div>
+    <div class="actions">
+      <paper-button autofocus dialog-dismiss>cancelar</paper-button>
+      <paper-button class="error" on-tap="confirm">{{confirmButton}}</paper-button>
+    </div>
+  </template>
+  <script>
+    class AppDialog extends Polymer.mixinBehaviors([Polymer.PaperDialogBehavior], Polymer.Element) {
+      static get is() { return 'app-dialog'; }
+      static get properties() {
+        return {
+          confirmTitle: String,
+          description: String,
+          confirmButton: String,
+          withBackdrop: {
+            value: true
+          }
+        };
+      }
+
+      present() {
+        this.__parent = this.parentNode;
+        document.body.appendChild(this);
+        this.open();
+      }
+
+      confirm(e) {
+        this.dispatchEvent(new CustomEvent('confirm'));
+        this.__parent.appendChild(this);
+        this.close();
+      }
+
+    }
+    customElements.define(AppDialog.is, AppDialog);
+  </script>
+</dom-module>

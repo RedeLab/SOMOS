@@ -1,0 +1,224 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+
+<dom-module id="app-actions">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+      .record-form-actions {
+        position: absolute;
+        top: 12px;
+        right: 10px;
+      }
+      .record-form-actions.fixed {
+        opacity: 1;
+        position: fixed;
+        bottom: 0;
+        top: unset;
+        width: 40px;
+        right: 30px;
+        overflow: hidden;
+        padding: 0 4px 0 120px;
+        height: 0;
+        opacity: 0;
+      }
+      .backdrop {
+        position: fixed;
+        left: 0; right: 0;
+        top: 0; bottom: 0;
+        background: black;
+        transition: opacity ease .35s;
+        opacity: 0;
+      }
+      .record-form-actions.fixed ::slotted(paper-fab) {
+        box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+        background-color: var(--primary-background-color);
+        margin-top: 10px;
+      }
+      .record-form-actions.fixed.visible {
+        height: 300px;
+        opacity: 1;
+      }
+      .animatable {
+        transition: all ease .35s;
+      }
+      .record-form-actions ::slotted(paper-fab) {
+        display: inline-block;
+        background: transparent;
+        border-radius: 50%;
+        color: var(--secondary-text-color);
+        box-shadow: none;
+      }
+      .record-form-actions ::slotted(paper-fab.iron-selected) {
+        background: white;
+        color: var(--default-primary-color);
+      }
+      .toggle-actions {
+        position: fixed;
+        height: 60px;
+        top: unset;
+        bottom: 25px;
+        right: 25px;
+        transition: all ease .35s;
+        transform: scale(0);
+      }
+      .toggle-actions.visible {
+        transform: scale(1);
+      }
+      .toggle-actions paper-fab {
+        background: var(--default-primary-color);
+        box-shadow: var(--shadow-elevation-6dp_-_box-shadow);
+        position: absolute;
+        top: 0;
+      }
+      .toggle-actions #toggle {
+        box-shadow: none;
+        transition: transform ease .5s;
+        position: relative;
+      }
+      @media screen and (max-width: 640px) {
+        .backdrop.visible {
+          opacity: 0.3;
+        }
+      }
+      @media screen and (max-width: 420px) {
+        .toggle-actions {
+          transform: scale(1) !important;
+          bottom: 15px;
+          right: 15px;
+        }
+        .record-form-actions,
+        .record-form-actions.fixed {
+          opacity: 0;
+          height: 0;
+          position: fixed;
+          bottom: 60px;
+          top: unset;
+          width: 40px;
+          right: 19px;
+          overflow: hidden;
+          padding: 10px 4px 35px 120px;
+          transition: all ease .35s;
+        }
+        .record-form-actions.visible {
+          height: 200px;
+          opacity: 1;
+        }
+        .record-form-actions ::slotted(paper-fab) {
+          box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+          background-color: var(--primary-background-color);
+          margin-top: 10px;
+        }
+      }
+    </style>
+    <div class="backdrop" on-tap="_hideActions"></div>
+    <div class="record-form-actions" id="actions">
+      <iron-selector attr-for-selected="name" selected="{{selected}}" role="navigator">
+        <slot id="slot" name="actions"></slot>
+      </iron-selector>
+    </div>
+    <div class="toggle-actions">
+      <paper-fab icon="app:more-vert"></paper-fab>
+      <paper-fab icon="app:more-vert" id="toggle" on-tap="_toggleActions"></paper-fab>
+    </div>
+  </template>
+  <script>
+    class AppActions extends Polymer.mixinBehaviors([Polymer.NeonAnimatableBehavior], Polymer.Element) {
+      static get is() { return 'app-actions'; }
+      static get properties() {
+        return {
+          // collapsed reflects the header state
+          collapsed: {
+            type: Boolean,
+            observer: '_setcollapsedStyle'
+          },
+          selected: {
+            type: String,
+            notify: true,
+            observer: '_hideActions'
+          }
+        };
+      }
+
+      _toggleActions(e) {
+        const actions = this.shadowRoot.querySelector('#actions');
+        const backdrp = this.shadowRoot.querySelector('.backdrop');
+        const toggler = this.shadowRoot.querySelector('#toggle');
+        if(!actions) return;
+        backdrp.style.display = 'block';
+        actions.classList.toggle('visible');
+        toggler.style.transform = 'rotate(360deg)';
+        let visible;
+        setTimeout(() => {
+          visible = backdrp.classList.toggle('visible');
+          this._showTips();
+        }, 100);
+        setTimeout(() => {
+          if(toggler.icon === 'app:close') toggler.icon = 'app:more-vert';
+          else toggler.icon = 'app:close';
+          toggler.style.transform = 'none';
+          if(!visible) backdrp.style.display = 'none';
+        }, 300);
+      }
+
+      _hideActions() {
+        const actions = this.shadowRoot.querySelector('#actions');
+        const backdrp = this.shadowRoot.querySelector('.backdrop');
+        const toggler = this.shadowRoot.querySelector('#toggle');
+        if(!actions) return;
+        actions.classList.remove('visible');
+        backdrp.classList.remove('visible');
+        toggler.style.transform = 'rotate(360deg)';
+        setTimeout(() => {
+          if(toggler.icon === 'app:close') toggler.icon = 'app:more-vert';
+          toggler.style.transform = 'none';
+          backdrp.style.display = 'none';
+        }, 200);
+        this._hideTips();
+      }
+
+      _setcollapsedStyle(collapsed) {
+        const actions = this.shadowRoot.querySelector('#actions');
+        const toggler = this.shadowRoot.querySelector('.toggle-actions');
+        if(!actions) return;
+        if(collapsed) {
+          toggler.classList.add('visible');
+          actions.classList.add('fixed');
+          setTimeout(() => {
+            actions.classList.add('animatable');
+          }, 350);
+        } else {
+          actions.classList.remove('fixed');
+          actions.classList.remove('animatable');
+          this._hideActions();
+          toggler.classList.remove('visible');
+        }
+      }
+
+      _showTips() {
+        const tips = this.$.slot.assignedNodes().filter(n => n.nodeName === 'PAPER-TOOLTIP');
+        tips.forEach((tip) => {
+          tip.position = "left";
+          tip.show();
+          tip.updatePosition();
+        });
+      }
+
+      _hideTips() {
+        const tips = this.$.slot.assignedNodes().filter(n => n.nodeName === 'PAPER-TOOLTIP');
+        tips.forEach((tip) => {
+          tip.position = "bottom";
+          tip.hide();
+          tip.updatePosition();
+        });
+      }
+
+    }
+    customElements.define(AppActions.is, AppActions);
+  </script>
+</dom-module>
