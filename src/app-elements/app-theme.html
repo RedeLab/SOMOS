@@ -12,6 +12,12 @@
      * Based on Polymer: http://www.polymer-project.org/
      * Compatible with Polymer 1.0
      */
+     @font-face {
+        font-family: "Calibre";
+        src: url("/fonts/Calibre-Light.ttf") format("truetype"),
+             url("/fonts/Calibre-Medium.ttf") format("truetype"),
+             url("/fonts/Calibre-Regular.otf") format("opentype");
+      }
 
     :root { 
       --default-primary-color: #FFFFFF;
@@ -85,7 +91,6 @@
       --info-color: #FFCC00;
       --success-color:  #74BF30;
 
-
       --accent-gradient: {
         color: white;
         background: linear-gradient(to left, var(--light-accent-color), var(--accent-color));
@@ -98,6 +103,10 @@
         color: var(--secondary-text-color);
         height: 35px;
         line-height: 1;
+      };
+
+      --default-font: {
+        font-family: 'Calibre';
       };
 
     }
