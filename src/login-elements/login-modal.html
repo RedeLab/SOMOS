@@ -1,4 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
 <link rel="import" href="../app-elements/shared-styles.html">
 
 <dom-module id="login-modal">
@@ -13,14 +16,41 @@
       }
       .fill {
         flex: 1;
+        padding: 40px;
+      }
+      p {
+        min-height: 18vh;
+      }
+      .credits {
+        position: absolute;
+        bottom: 25px;
+        left: 0;
+        right: 0;
+      }
+      paper-button {
+        display: block;
+        text-align: center;
+        margin: 20px;
+      }
+      .image {
+        min-height: 24vh;
+        margin: 6vh 10px 0;
+      }
+      .image iron-image {
+        width: 100%;
       }
     </style>
 
-    <div class="fill">
-      <div class="circle">2</div>
-      <h1>View Two</h1>
-      <p>Ea duis bonorum nec, falli paulo aliquid ei eum.</p>
-      <p>Id nam odio natum malorum, tibique copiosae expetenda mel ea.Detracto suavitate repudiandae no eum. Id adhuc minim soluta nam.Id nam odio natum malorum, tibique copiosae expetenda mel ea.</p>
+    <div class="fill center">
+      <div class="image">
+        <iron-image src="/images/splash.svg"></iron-image>
+      </div>
+      <p>#tamojunto é uma plataforma para engajar eleitores e candidatos 
+        a desempenharem suas melhores versões pela renovação da política.
+      </p>
+      <paper-button class="accent">Começar</paper-button>
+      <paper-button>Já tenho uma conta</paper-button>
+      <a class="credits" href="#">créditos</a>
     </div>
   </template>
 

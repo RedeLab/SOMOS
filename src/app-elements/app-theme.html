@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/lib/elements/custom-style.html">
+<link rel="import" href="../../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
 
 <custom-style>
   <style>
@@ -15,6 +17,7 @@
       --default-primary-color: #FFFFFF;
       --dark-primary-color: #1A2C3C;
       --accent-color: #E15E36;
+      --light-accent-color: #FF9100;
       --primary-background-color: #ffffff;
       --secondary-background-color: #eeeeee;
       --primary-text-color: #2d2d2d;
@@ -81,7 +84,23 @@
       --warning-color: #FFCC00;
       --info-color: #FFCC00;
       --success-color:  #74BF30;
-      }
+
+
+      --accent-gradient: {
+        color: white;
+        background: linear-gradient(to left, var(--light-accent-color), var(--accent-color));
+        @apply --shadow-elevation-3dp;
+        border: none;
+      };
+
+      --simple-button: {
+        border: 1px solid var(--secondary-text-color);
+        color: var(--secondary-text-color);
+        height: 35px;
+        line-height: 1;
+      };
+
+    }
 
   </style>
 </custom-style>
