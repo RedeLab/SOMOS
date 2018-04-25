@@ -1,0 +1,43 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="new-campaign-modal">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: flex;
+        background: var(--primary-background-color);
+        padding: 10px;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .fill {
+        flex: 1;
+      }
+    </style>
+      <app-header>
+        <app-toolbar>
+          <paper-icon-button icon="app:back" on-tap="dismiss"></paper-icon-button>
+          <h3 class="title" main-title>Alterar Campos</h3>
+        </app-toolbar>
+      </app-header>
+      <paper-dialog-scrollable>
+        <div class="fill">
+          <h1>Campanha</h1>
+          <p>Ea duis bonorum nec, falli paulo aliquid ei eum.</p>
+          <p>Id nam odio natum malorum, tibique copiosae expetenda mel ea.Detracto suavitate repudiandae no eum. Id adhuc minim soluta
+            nam.Id nam odio natum malorum, tibique copiosae expetenda mel ea.</p>
+        </div>
+      </paper-dialog-scrollable>
+  </template>
+  <script>
+    class NewCampaignModal extends Polymer.Element {
+      static get is() { return 'new-campaign-modal'; }
+    }
+
+    window.customElements.define(NewCampaignModal.is, NewCampaignModal);
+  </script>
+</dom-module>
