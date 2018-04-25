@@ -23,10 +23,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 
-<link rel="lazy-import" href="../pages/my-view1.html">
-<link rel="lazy-import" href="../pages/my-view2.html">
-<link rel="lazy-import" href="../pages/my-view3.html">
-<link rel="lazy-import" href="../pages/my-view404.html">
+<link rel="lazy-import" href="../pages/login-page.html">
+<link rel="lazy-import" href="../pages/inbox-page.html">
+<link rel="lazy-import" href="../pages/campaign-page.html">
+<link rel="lazy-import" href="../pages/not-found-page.html">
 
 <link rel="import" href="app-icons.html">
 <link rel="import" href="app-theme.html">
@@ -50,10 +50,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       app-toolbar[sticky] {
         height: 50px;
       }
+      app-toolbar {
+        padding: 0 7px;
+      }
 
       paper-tabs {
-        width: calc(100% + 32px);
-        margin: 0 -16px;
+        width: calc(100% + 14px);
+        margin: 0 -7px;
+      }
+      paper-tab {
+        width: calc(50% - 32px);
       }
 
       app-header paper-icon-button {
@@ -95,9 +101,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-          <a name="view1" href="[[rootPath]]view1">View One</a>
-          <a name="view2" href="[[rootPath]]view2">View Two</a>
-          <a name="view3" href="[[rootPath]]view3">View Three</a>
+          <a name="inbox" href="[[rootPath]]inbox">Caixa de Entrada</a>
+          <a name="login" href="[[rootPath]]login">Login</a>
+          <a name="campaign" href="[[rootPath]]campaign">Campanhas</a>
         </iron-selector>
       </app-drawer>
 
@@ -107,10 +113,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-header slot="header" condenses fixed effects="waterfall">
           <app-toolbar>
             <paper-icon-button icon="app:menu" drawer-toggle></paper-icon-button>
-            <div main-title>My App</div>
+            <div main-title>Tamo Junto</div>
+            <paper-icon-button icon="app:search"></paper-icon-button>
+            <paper-icon-button icon="app:more-vert"></paper-icon-button>
           </app-toolbar>
           <app-toolbar sticky>
-            <paper-tabs>
+            <paper-tabs selected="{{inboxtab}}" fallback-selection="0">
               <paper-tab>CAIXA DE ENTRADA</paper-tab>
               <paper-tab>MINHAS MISSÕES</paper-tab>
             </paper-tabs>
@@ -118,14 +126,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-header>
 
         <iron-pages
+            id="pages"
             selected="[[page]]"
             attr-for-selected="name"
-            fallback-selection="view404"
+            fallback-selection="not-found"
+            on-selected-item-changed="_selectedPageChanged"
             role="main">
-          <my-view1 name="view1"></my-view1>
-          <my-view2 name="view2"></my-view2>
-          <my-view3 name="view3"></my-view3>
-          <my-view404 name="view404"></my-view404>
+          <inbox-page name="inbox" inboxtab="[[inboxtab]]"></inbox-page>
+          <login-page name="login"></login-page>
+          <campaign-page name="campaign"></campaign-page>
+          <not-found-page name="not-found"></not-found-page>
         </iron-pages>
       </app-header-layout>
     </app-drawer-layout>
@@ -162,8 +172,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _routePageChanged(page) {
         // If no page was found in the route data, page will be an empty string.
-        // Default to 'view1' in that case.
-        this.page = page || 'view1';
+        // Default to 'inbox' in that case.
+        this.page = page || 'inbox';
 
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
@@ -173,7 +183,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _pageChanged(page) {
         // Load page import on demand. Show 404 page if fails
-        const resolvedPageUrl = this.resolveUrl(`../pages/my-${page}.html`);
+        const resolvedPageUrl = this.resolveUrl(`../pages/${page}-page.html`);
         Polymer.importHref(
             resolvedPageUrl,
             null,
@@ -181,8 +191,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             true);
       }
 
+      _selectedPageChanged(e) {
+        const pages = this.$.pages.items;
+        pages.forEach((p) => { p.selected = p === e.detail.value; });
+      }
+
       _showPage404() {
-        this.page = 'view404';
+        this.page = 'not-found';
       }
     }
 

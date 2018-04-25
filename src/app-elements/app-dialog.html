@@ -9,42 +9,51 @@
 <dom-module id="app-dialog">
   <template>
     <style include="app-dialog-styles"></style>
-    <div class="confirm">
-      <h2 class="error title">
-        <iron-icon icon="app:warning"></iron-icon>
-        {{confirmTitle}}
-      </h2>
-      {{description}}
-    </div>
-    <div class="actions">
-      <paper-button autofocus dialog-dismiss>cancelar</paper-button>
-      <paper-button class="error" on-tap="confirm">{{confirmButton}}</paper-button>
-    </div>
+    <slot id="slot"></slot>
   </template>
   <script>
     class AppDialog extends Polymer.mixinBehaviors([Polymer.PaperDialogBehavior], Polymer.Element) {
       static get is() { return 'app-dialog'; }
       static get properties() {
         return {
-          confirmTitle: String,
-          description: String,
-          confirmButton: String,
           withBackdrop: {
             value: true
+          },
+          opened: {
+            observer: '_resetParent'
           }
         };
       }
 
       present() {
+        if(this.opened) return;
         this.__parent = this.parentNode;
         document.body.appendChild(this);
         this.open();
+        setTimeout(this._animateSlotted.bind(this), 100);
       }
 
       confirm(e) {
+        if(!this.opened) return;
         this.dispatchEvent(new CustomEvent('confirm'));
-        this.__parent.appendChild(this);
-        this.close();
+        this._animateSlotted();
+        setTimeout(this.close.bind(this), 100);
+      }
+
+      dismiss(e) {
+        if(!this.opened) return;
+        this.dispatchEvent(new CustomEvent('dismiss'));
+        this._animateSlotted();
+        setTimeout(this.close.bind(this), 100);
+      }
+
+      _resetParent(opened) {
+        if(!opened) this.__parent.appendChild(this);
+      }
+
+      _animateSlotted() {
+        const nodes = Array.from(this.$.slot.assignedNodes()).filter(e => e.nodeName !== '#text');
+        if (nodes.length) nodes[0].classList.toggle('animated');
       }
 
     }

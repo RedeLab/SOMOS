@@ -7,11 +7,25 @@
   <style>
       :host([modal]) {
         min-width: 60%;
+        background: transparent;
       }
+      :host([modal]) ::slotted(*),
       :host([modal]) > * {
         margin: 0 !important;
         padding: 0 !important;
       }
+
+      :host([animated]) ::slotted(*) {
+        transition: ease .25s;
+        opacity: 0;
+        transform: translateY(70px);
+      }
+
+      :host([animated]) ::slotted(.animated) {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
       .title {
         overflow: hidden;
         text-overflow: ellipsis;
