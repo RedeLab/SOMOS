@@ -1,0 +1,56 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="login-view">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: flex;
+        background: var(--primary-background-color);
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .fill {
+        flex: 1;
+        padding: 40px;
+      }
+      .space {
+        height: 8.5vh;
+      }
+      paper-button {
+        display: block;
+        text-align: center;
+        margin: 20px 0;
+      }
+      .facebook {
+        background: #1A467B;
+        border: none;
+        color: white;
+      }
+    </style>
+
+    <div class="fill">
+      <h1>Login</h1>
+      <div class="space"></div>
+      <div class="fields">
+        <paper-input label="email" type="email" value=""></paper-input>
+        <paper-input label="senha" type="password" value=""></paper-input>
+      </div>
+      <paper-button class="accent">Entrar</paper-button>
+      <paper-button class="facebook">Entrar com Facebook</paper-button>
+      <span class="bottom center">Esqueceu sua senha? <a href="#">Recuperar</a></span>
+    </div>
+  </template>
+
+  <script>
+    class LoginView extends Polymer.Element {
+      static get is() { return 'login-view'; }
+    }
+
+    window.customElements.define(LoginView.is, LoginView);
+  </script>
+</dom-module>

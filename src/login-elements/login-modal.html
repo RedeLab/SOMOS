@@ -3,14 +3,19 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="./register-view.html">
+<link rel="import" href="./login-view.html">
 
 <dom-module id="login-modal">
   <template>
     <style include="shared-styles">
       :host {
-        display: flex;
+        display: block;
         background: var(--primary-background-color);
-        padding: 10px;
+      }
+      #content {
+        display: flex;
+        position: relative;
         flex-direction: column;
         min-height: 100vh;
       }
@@ -20,12 +25,6 @@
       }
       p {
         min-height: 18vh;
-      }
-      .credits {
-        position: absolute;
-        bottom: 25px;
-        left: 0;
-        right: 0;
       }
       paper-button {
         display: block;
@@ -40,23 +39,45 @@
         width: 100%;
       }
     </style>
-
-    <div class="fill center">
-      <div class="image">
-        <iron-image src="/images/splash.svg"></iron-image>
+    <div id="content">
+      <div class="fill center">
+        <div class="image">
+          <iron-image src="/images/splash.svg"></iron-image>
+        </div>
+        <p>#tamojunto é uma plataforma para engajar eleitores e candidatos 
+          a desempenharem suas melhores versões pela renovação da política.
+        </p>
+        <paper-button class="accent" on-tap="openRegister">Começar</paper-button>
+        <paper-button on-tap="openLogin">Já tenho uma conta</paper-button>
+        <a class="bottom" href="#">créditos</a>
       </div>
-      <p>#tamojunto é uma plataforma para engajar eleitores e candidatos 
-        a desempenharem suas melhores versões pela renovação da política.
-      </p>
-      <paper-button class="accent">Começar</paper-button>
-      <paper-button>Já tenho uma conta</paper-button>
-      <a class="credits" href="#">créditos</a>
     </div>
+    <register-view id="register"></register-view>
+    <login-view id="login"></login-view>
   </template>
 
   <script>
     class LoginModal extends Polymer.Element {
       static get is() { return 'login-modal'; }
+
+      openRegister() {
+        this.$.content.style.display = 'none';
+        this.$.register.style.display = 'block';
+        this.$.login.style.display = 'none';
+      }
+
+      openLogin() {
+        this.$.content.style.display = 'none';
+        this.$.register.style.display = 'none';
+        this.$.login.style.display = 'block';
+      }
+
+      openSplash() {
+        this.$.content.style.display = 'block';
+        this.$.register.style.display = 'none';
+        this.$.login.style.display = 'none';
+      }
+
     }
 
     window.customElements.define(LoginModal.is, LoginModal);
