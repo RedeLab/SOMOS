@@ -62,7 +62,10 @@
       .confirm {
         padding: 24px;
       }
-      @media screen and (min-width: 719px) {
+      @media screen and (min-width: 600px) {
+        :host([modal]) {
+          max-width: 400px;
+        }
         .content[with-columns] {
           column-count: 2;
           column-gap: 2rem;
