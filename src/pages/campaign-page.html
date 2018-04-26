@@ -5,14 +5,26 @@
 
 <dom-module id="campaign-page">
   <template>
-    <style include="shared-styles">
+    <style include="shared-styles"></style>
+    <style>
       :host {
         display: block;
+      }
+      paper-dialog-scrollable {
+        background: white;
       }
     </style>
 
     <app-dialog id="dialog" modal animated>
-      <new-campaign-modal></new-campaign-modal>
+      <app-header>
+        <app-toolbar>
+          <paper-icon-button icon="app:back" on-tap="dismiss"></paper-icon-button>
+          <h1 class="title" main-title>Cadastrar Campanha</h1>
+        </app-toolbar>
+      </app-header>
+      <paper-dialog-scrollable id="scroll">
+        <new-campaign-modal id="campaign"></new-campaign-modal>
+      </paper-dialog-scrollable>
     </app-dialog>
     
   </template>
@@ -28,6 +40,11 @@
         };
       }
 
+      connectedCallback() {
+        super.connectedCallback();
+        this.$.scroll.dialogElement = this.$.dialog;
+      }
+      
       _selectedChanged(selected) {
         if (selected) this.$.dialog.present();
         else this.$.dialog.dismiss();

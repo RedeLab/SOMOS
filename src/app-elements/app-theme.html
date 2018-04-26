@@ -110,6 +110,33 @@
       };
 
     }
+    
+     h1.title {
+        margin-left: 20px;
+        color: var(--secondary-text-color);
+        font-size: 22px;
+        line-height: 26px;
+        @apply --default-font;
+      }
+      
+      .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        line-height: 2;
+        text-transform: capitalize;
+        max-width: calc(100vw - 132px);
+      }
+
+      paper-dialog-scrollable {
+        background: white;
+      }
+
+      app-header {
+        color: var(--secondary-text-color);
+        background-color: var(--default-primary-color);
+      }
+
 
   </style>
 </custom-style>

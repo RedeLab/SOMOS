@@ -53,7 +53,7 @@
 
       _animateSlotted() {
         const nodes = Array.from(this.$.slot.assignedNodes()).filter(e => e.nodeName !== '#text');
-        if (nodes.length) nodes[0].classList.toggle('animated');
+        nodes.forEach(node => node.classList.toggle('animated'));
       }
 
     }
