@@ -24,7 +24,17 @@
         return {
           selected: Boolean,
           user: Object,
-          route: Object
+          route: Object,
+          publicRoutes: {
+            type: Array,
+            value() {
+              return [
+                '/campaign',
+                '/mission',
+                '/not-found'
+              ];
+            }
+          }
         };
       }
       static get observers() {
@@ -32,8 +42,9 @@
       }
 
       _selectedChanged(selected, user) {
+        
         if(this.user) {
-          this.set('route.path', '/');
+          if(this.selected) this.set('route.path', '/');
           this.$.dialog.dismiss();
         } else {
           this.$.dialog.present();
