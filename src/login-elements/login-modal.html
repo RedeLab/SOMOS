@@ -38,6 +38,7 @@
       }
       .image iron-image {
         width: 100%;
+        max-width: 250px;
       }
     </style>
     <div id="content">
@@ -57,8 +58,10 @@
     <firebase-auth id="auth" user="{{user}}" on-error="handleError">
     </firebase-auth>
 
-    <register-view id="register" user="[[user]]" credentials="{{signUpData}}"></register-view>
-    <login-view id="login" user="[[user]]" credentials="{{signInData}}"></login-view>
+    <register-view id="register" user="[[user]]" credentials="{{signUpData}}"
+      on-show-login="showLogin"></register-view>
+    <login-view id="login" user="[[user]]" credentials="{{signInData}}"
+      on-show-register="showRegister"></login-view>
   </template>
 
   <script>
@@ -68,7 +71,8 @@
         return {
           user: {
             type: Object,
-            observer: 'userChanged'
+            observer: 'userChanged',
+            notify: true
           },
           signUpData: {
             observer: 'sendSignUpCredentials'
@@ -107,7 +111,9 @@
 
       sendSignInCredentials(credentials) {
         this.$.auth.signInWithEmailAndPassword(credentials.email, credentials.password)
-          .then((res) => console.log(res))
+          .then(function(res) {
+            // use app-notify to display success message
+          }.bind(this))
           .catch((err) => console.error(err));
       }
 

@@ -12,7 +12,7 @@
     </style>
 
     <app-dialog id="dialog" modal animated>
-      <login-modal></login-modal>
+      <login-modal id="login" user="{{user}}"></login-modal>
     </app-dialog>
 
   </template>
@@ -22,15 +22,30 @@
       static get is() { return 'login-page'; }
       static get properties() {
         return {
-          selected: {
-            observer: '_selectedChanged'
-          }
+          selected: Boolean,
+          user: Object,
+          route: Object
         };
       }
+      static get observers() {
+        return ['_selectedChanged(selected, user)'];
+      }
 
-      _selectedChanged(selected) {
-        if(selected) this.$.dialog.present();
-        else this.$.dialog.dismiss();
+      _selectedChanged(selected, user) {
+        if(this.user) {
+          this.set('route.path', '/');
+          this.$.dialog.dismiss();
+        } else {
+          this.$.dialog.present();
+        }
+      }
+
+      open() {
+        this.$.dialog.open();
+      }
+
+      signOut() {
+        this.$.login.$.auth.signOut();
       }
     }
 

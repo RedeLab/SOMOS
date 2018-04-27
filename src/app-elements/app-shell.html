@@ -14,7 +14,8 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
 
-<link rel="lazy-import" href="../pages/login-page.html">
+<link rel="import" href="../pages/login-page.html">
+
 <link rel="lazy-import" href="../pages/inbox-page.html">
 <link rel="lazy-import" href="../pages/campaign-page.html">
 <link rel="lazy-import" href="../pages/not-found-page.html">
@@ -78,6 +79,7 @@
           <a name="inbox" href="[[rootPath]]inbox">Caixa de Entrada</a>
           <a name="login" href="[[rootPath]]login">Login</a>
           <a name="campaign" href="[[rootPath]]campaign">Campanhas</a>
+          <a name="login" href="[[rootPath]]login" on-tap="signOut">Sair</a>
         </iron-selector>
       </app-drawer>
 
@@ -90,9 +92,11 @@
           on-selected-item-changed="_selectedPageChanged"
           role="main">
         <inbox-page name="inbox" on-open-drawer="_openDrawer"></inbox-page>
-        <login-page name="login"></login-page>
         <campaign-page name="campaign"></campaign-page>
         <not-found-page name="not-found"></not-found-page>
+        <login-page name="login" id="login"
+          user="{{user}}" route="{{route}}">
+        </login-page>
       </iron-pages>
     </app-drawer-layout>
   </template>
@@ -117,6 +121,19 @@
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
           rootPath: String,
+          user: {
+            observer: '_openLoginPage'
+          },
+          publicRoutes: {
+            type: Array,
+            value() {
+              return [
+                'campaign',
+                'mission',
+                'not-found'
+              ];
+            }
+          }
         };
       }
 
@@ -158,6 +175,16 @@
 
       _openDrawer(e) {
         this.$.drawer.open();
+      }
+
+      _openLoginPage(user) {
+        if(user) return;
+        if(this.publicRoutes.include(this.page)) return;
+        this.$.login.open();
+      }
+
+      signOut(e) {
+        this.$.login.signOut();
       }
     }
 
