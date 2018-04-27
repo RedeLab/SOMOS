@@ -9,7 +9,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+
+<link rel="import" href="../app-elements/app-actions.html">
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../feed-elements/mission-form.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../../bower_components/app-route/app-location.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
 
 <dom-module id="inbox-page">
   <template>
@@ -18,8 +26,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         display: block;
         height: 100vh;
       }
+
     </style>
-    
+
     <app-header-layout has-scrolling-region>
 
       <app-header slot="header" condenses fixed effects="waterfall">
@@ -55,7 +64,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div>
         </div>
       </iron-pages>
+        <app-actions id="actions" collapsed$="[[collapsed]]" selected="{{inboxAction}}">
+          <paper-fab slot="actions" mini icon="app:add" id="newMission" name="edit"></paper-fab>
+          <paper-tooltip slot="actions" for="newMission">Sugerir Missão</paper-tooltip>
+          <paper-fab slot="actions" mini icon="app:assessment" id="survey" name="edit"></paper-fab>
+          <paper-tooltip slot="actions" for="survey">Enquete</paper-tooltip>
+          <paper-fab slot="actions" mini icon="app:create" id="post" name="edit"></paper-fab>
+          <paper-tooltip slot="actions" for="post">Postagem</paper-tooltip>
+        </app-actions>
     </app-header-layout>
+
   </template>
 
   <script>
@@ -63,6 +81,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       static get is() { return 'inbox-page'; }
       openDrawer() {
         this.dispatchEvent(new CustomEvent('open-drawer'));
+      }
+
+      static get properties() {
+        return {
+          inboxAction: {
+            type: String,
+            value: ''
+          }
+        }
       }
     }
 
