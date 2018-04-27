@@ -168,12 +168,6 @@
         this.$.drawer.open();
       }
 
-      _openLoginPage(user) {
-        if(user) return;
-        if(this.publicRoutes.include(this.page)) return;
-        this.$.login.open();
-      }
-
       signOut(e) {
         this.$.login.signOut();
       }

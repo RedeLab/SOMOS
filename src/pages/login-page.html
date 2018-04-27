@@ -38,15 +38,16 @@
         };
       }
       static get observers() {
-        return ['_selectedChanged(selected, user)'];
+        return ['_routeChanged(route.path, user)'];
       }
 
-      _selectedChanged(selected, user) {
-        
+      _routeChanged(path, user) {
+        if(!this.route) return;
         if(this.user) {
           if(this.selected) this.set('route.path', '/');
           this.$.dialog.dismiss();
         } else {
+          if(this.publicRoutes.includes(this.route.path)) return;
           this.$.dialog.present();
         }
       }
