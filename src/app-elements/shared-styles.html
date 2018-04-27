@@ -61,10 +61,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         right: 0;
       }
 
+      h1.title {
+        margin: 0 20px;
+        font-size: 22px;
+        line-height: 26px;
+        @apply --default-title-font;
+      }
+
+     .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        text-transform: capitalize;
+        max-width: calc(100vw - 132px);
+      }
+    
+      h1 {
+        font-size: 22px;
+        line-height: 26px;
+        @apply --default-title-font;
+      } 
+
       app-header {
-        color: var(--secondary-text-color);
+        background: var(--default-primary-color);
         background-color: var(--default-primary-color);
       }
+
       paper-tabs,
       app-toolbar[sticky] {
         height: 50px;
