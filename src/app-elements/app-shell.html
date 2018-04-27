@@ -18,6 +18,7 @@
 
 <link rel="lazy-import" href="../pages/inbox-page.html">
 <link rel="lazy-import" href="../pages/campaign-page.html">
+<link rel="lazy-import" href="../pages/mission-page.html">
 <link rel="lazy-import" href="../pages/not-found-page.html">
 
 <link rel="import" href="app-icons.html">
@@ -91,11 +92,12 @@
           fallback-selection="not-found"
           on-selected-item-changed="_selectedPageChanged"
           role="main">
-        <inbox-page name="inbox" on-open-drawer="_openDrawer"></inbox-page>
-        <campaign-page name="campaign"></campaign-page>
-        <new-campaign-page name="new-campaign"></new-campaign-page>
-        <not-found-page name="not-found"></not-found-page>
-        <login-page name="login" id="login"
+          <inbox-page name="inbox" shell-page="{{page}}" on-open-drawer="_openDrawer"></inbox-page>
+          <campaign-page name="campaign"></campaign-page>
+          <new-campaign-page name="new-campaign"></new-campaign-page>
+          <mission-page name="mission"></mission-page>
+          <not-found-page name="not-found"></not-found-page>
+          <login-page name="login" id="login"
           user="{{user}}" route="{{route}}">
         </login-page>
       </iron-pages>

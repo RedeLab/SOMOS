@@ -14,7 +14,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
-<link rel="import" href="../feed-elements/mission-form.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../../bower_components/app-route/app-location.html">
 <link rel="import" href="../../bower_components/app-route/app-route.html">
@@ -88,8 +87,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           inboxAction: {
             type: String,
             value: ''
+          },
+          shellPage: {
+            type: String,
+            notify: true
           }
         }
+      }
+
+      openMissionForm() {
+        this.set('shellPage', 'mission');
       }
     }
 
