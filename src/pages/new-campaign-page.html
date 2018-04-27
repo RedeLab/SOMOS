@@ -1,8 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-icons.html">
 
 <dom-module id="new-campaign-page">
   <template>
@@ -12,6 +15,7 @@
         display: block;
         height: 100vh;
         background: var(--primary-background-color);
+        @apply --default-font-medium;
       }
       app-header {
         color: var(--default-primary-color);
@@ -19,9 +23,27 @@
       }
       .fill {
         flex: 1;
-        padding: 10px;
+        padding: 20px;
       }
-      
+      .fill h1 {
+        color: var(--secondary-text-color);
+      }
+      .input-file {
+        background: var(--divider-color);
+        margin: 30px 0 20px 0;
+        border: 2px dashed var(--secondary-text-color);
+        text-align: center;
+      }
+      .input-file iron-icon {
+        --iron-icon-fill-color: var(--dark-primary-color);
+        --iron-icon-height: 60px;
+        --iron-icon-width: 60px;
+        margin: 5px 0;
+      }
+      .input-file span {
+        display: block;
+      }
+
     </style>
       <app-header-layout has-scrolling-region>
         <app-header slot="header" condenses fixed effects="waterfall">
@@ -32,10 +54,21 @@
           </app-toolbar>
         </app-header>
         <div class="fill">
-          <h3>Campanha</h3>
-          <p>Ea duis bonorum nec, falli paulo aliquid ei eum.</p>
-          <p>Id nam odio natum malorum, tibique copiosae expetenda mel ea.Detracto suavitate repudiandae no eum. Id adhuc minim soluta
-          nam.Id nam odio natum malorum, tibique copiosae expetenda mel ea.</p>
+          <h1>Dados da campanha</h1>
+          <div class="fields">
+            <paper-input label="Titulo"></paper-input>
+            <paper-input label="Imagem de capa" disabled value="Selecione uma imagem">
+              <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
+            </paper-input>
+            <paper-textarea label="Descrição" placeholder="Uma breve descrição da campanha" char-counter maxlength="500"></paper-textarea>
+            <div class="input-file">
+              <iron-icon icon="app:cloud-upload"></iron-icon>
+              <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
+              <span>Selecionar arquivo</span>
+              <a href="#"></a>
+            </div>
+          </div>
+          
         </div>
       </app-header-layout>
     </style>
@@ -47,12 +80,6 @@
         return {};
       }
     
-    connectedCallback() {
-      super.connectedCallback();
-      const scrollable = this.$.scrollable;
-      scrollable.dialogElement = this;
-    }
-     
     }
 
     window.customElements.define(NewCampaignPage.is, NewCampaignPage);
