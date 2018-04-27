@@ -44,6 +44,7 @@
       </div>
       <paper-button class="accent" on-tap="submitCredentials">Entrar</paper-button>
       <paper-button class="facebook">Entrar com Facebook</paper-button>
+      <paper-button on-tap="openRegister">Criar uma conta</paper-button>
       <span class="bottom center">Esqueceu sua senha? <a href="#">Recuperar</a></span>
     </div>
   </template>
@@ -70,6 +71,10 @@
           email: this.email,
           password: this.password,
         };
+      }
+
+      openRegister(e) {
+        this.dispatchEvent(new CustomEvent('open-register'));
       }
     }
 

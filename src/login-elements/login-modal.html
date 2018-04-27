@@ -59,9 +59,9 @@
     </firebase-auth>
 
     <register-view id="register" user="[[user]]" credentials="{{signUpData}}"
-      on-show-login="showLogin"></register-view>
+      on-open-login="openLogin"></register-view>
     <login-view id="login" user="[[user]]" credentials="{{signInData}}"
-      on-show-register="showRegister"></login-view>
+      on-open-register="openRegister"></login-view>
   </template>
 
   <script>
