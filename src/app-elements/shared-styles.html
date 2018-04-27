@@ -61,6 +61,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         right: 0;
       }
 
+      app-header {
+        color: var(--secondary-text-color);
+        background-color: var(--default-primary-color);
+      }
+      paper-tabs,
+      app-toolbar[sticky] {
+        height: 50px;
+      }
+      app-toolbar {
+        padding: 0 7px;
+      }
+
+      paper-tabs {
+        width: calc(100% + 14px);
+        margin: 0 -7px;
+      }
+      paper-tab {
+        width: calc(50% - 32px);
+      }
+
+      app-header paper-icon-button {
+        --paper-icon-button-ink-color: var(--secondary-text-color);
+      }
+
       paper-button.accent,
       paper-fab {
         @apply --accent-gradient;
