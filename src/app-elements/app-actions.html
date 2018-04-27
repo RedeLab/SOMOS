@@ -2,10 +2,12 @@
 
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 
+<link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../app-elements/app-icons.html">
 
 <dom-module id="app-actions">
   <template>
+    <style include="shared-styles"></style>
     <style>
       :host {
         display: block;
@@ -71,11 +73,10 @@
         transform: scale(1);
       }
       .toggle-actions paper-fab {
-        background: var(--default-primary-color);
-        box-shadow: var(--shadow-elevation-6dp_-_box-shadow);
         position: absolute;
         top: 0;
       }
+
       .toggle-actions #toggle {
         box-shadow: none;
         transition: transform ease .5s;
@@ -106,7 +107,7 @@
           transition: all ease .35s;
         }
         .record-form-actions.visible {
-          height: 200px;
+          height: 150px;
           opacity: 1;
         }
         .record-form-actions ::slotted(paper-fab) {
@@ -127,8 +128,8 @@
       </iron-selector>
     </div>
     <div class="toggle-actions">
-      <paper-fab icon="app:more-vert"></paper-fab>
-      <paper-fab icon="app:more-vert" id="toggle" on-tap="_toggleActions"></paper-fab>
+      <paper-fab icon="app:add"></paper-fab>
+      <paper-fab icon="app:add" id="toggle" on-tap="_toggleActions"></paper-fab>
     </div>
   </template>
   <script>
