@@ -1,6 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../app-elements/shared-styles.html">
-<link rel="import" href="../app-elements/app-dialog.html">
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../campaign-elements/new-campaign-modal.html">
 
 <dom-module id="campaign-page">
@@ -10,14 +10,17 @@
       :host {
         display: block;
       }
-      paper-dialog-scrollable {
-        background: white;
-      }
     </style>
 
-    <app-dialog id="dialog" modal animated>
+    <app-scrollable-dialog id="dialog" modal animated>
+      <app-header slot="header">
+        <app-toolbar>
+          <paper-icon-button icon="app:back" on-tap="dismiss"></paper-icon-button>
+          <h1 class="title" main-title>Cadastrar Campanha</h1>
+        </app-toolbar>
+      </app-header>
       <new-campaign-modal id="campaign"></new-campaign-modal>
-    </app-dialog>
+    </app-scrollable-dialog>
     
   </template>
 

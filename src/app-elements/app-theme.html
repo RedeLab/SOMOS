@@ -113,9 +113,33 @@
         font-family: 'Calibre';
         font-weight:  400;
       };
-
     }
 
+    h1.title {
+      margin-left: 20px;
+      font-size: 22px;
+      line-height: 26px;
+      @apply --default-title-font;
+    }
+
+    .title {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-transform: capitalize;
+      max-width: calc(100vw - 132px);
+    }
+    
+    h1 {
+      font-size: 22px;
+      line-height: 26px;
+      @apply --default-title-font;
+    } 
+
+    app-header {
+      background: var(--default-primary-color);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+    }
 
   </style>
 </custom-style>
