@@ -24,7 +24,8 @@
     "polymerfire": "firebase/polymerfire#^2.2.1",
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^2.0.0",
     "paper-fab": "PolymerElements/paper-fab#^2.1.0",
-    "paper-tooltip": "PolymerElements/paper-tooltip#^2.1.1"
+    "paper-tooltip": "PolymerElements/paper-tooltip#^2.1.1",
+    "vaadin-date-picker": "vaadin/vaadin-date-picker#^3.0.0"
   },
   "resolutions": {
     "polymer": "^2.0.0"
