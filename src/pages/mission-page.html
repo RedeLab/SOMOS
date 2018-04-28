@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
+<link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../mission-elements/mission-form.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -10,22 +11,22 @@
   <template>
     <style include="shared-styles"></style>
     <style>
+
+      :host {
+        --app-form-header-background: #fff;
+        --app-form-header-color: #000;
+      }
+
     </style>
 
     <app-header-layout has-scrolling-region>
-      <app-header slot="header" condenses fixed effects="waterfall">
-        <app-toolbar>
-          <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-          <div main-title>Criar missão</div>
-          <paper-icon-button icon="app:more-vert"></paper-icon-button>
-        </app-toolbar>
-    <iron-pages selected="0">
-      <div>
-        <mission-form shell-page="{{shellPage}}" ></mission-form>
-      </div>
-    </iron-pages>
-    </app-header>
+      <app-form-header>
+          <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+          <div slot="main-title" main-title>Criar missão</div>
+          <paper-icon-button slot="more-icon" icon="app:more-vert"></paper-icon-button>
+      </app-form-header>
     </app-header-layout>
+      <mission-form></mission-form>
   </template>
   <script>
     class MissionPage extends Polymer.Element {
@@ -38,7 +39,7 @@
             notify: true
           },
           route: {
-            type: String,
+            type: Object,
             notify: true
           }
         }
