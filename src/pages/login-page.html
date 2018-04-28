@@ -12,7 +12,7 @@
     </style>
 
     <app-dialog id="dialog" modal animated>
-      <login-modal id="login" user="{{user}}"></login-modal>
+      <login-modal id="login" user="{{user}}" status-known="{{statusKnown}}"></login-modal>
     </app-dialog>
 
   </template>
@@ -23,6 +23,7 @@
       static get properties() {
         return {
           selected: Boolean,
+          statusKnown: Boolean,
           user: Object,
           route: Object,
           publicRoutes: {
@@ -38,17 +39,23 @@
         };
       }
       static get observers() {
-        return ['_routeChanged(route.path, user)'];
+        return ['_routeChanged(route.path, user, statusKnown)'];
       }
 
-      _routeChanged(path, user) {
-        if(!this.route) return;
+      _routeChanged(path, user, statusKnown) {
+        if(!this.statusKnown) return;
         if(this.user) {
           if(this.selected) this.set('route.path', '/');
           this.$.dialog.dismiss();
         } else {
           if(this.publicRoutes.includes(this.route.path)) return;
           this.$.dialog.present();
+        }
+      }
+
+      toggleDialog(e) {
+        if (e.detail.value) {
+
         }
       }
 

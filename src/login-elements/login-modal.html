@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <firebase-auth id="auth" user="{{user}}" on-error="handleError">
+    <firebase-auth id="auth" user="{{user}}" on-error="handleError" status-known="{{statusKnown}}">
     </firebase-auth>
 
     <register-view id="register" user="[[user]]" credentials="{{signUpData}}"
@@ -79,6 +79,9 @@
           },
           signInData: {
             observer: 'sendSignInCredentials'
+          },
+          statusKnown: {
+            notify: true
           }
         };
       }
