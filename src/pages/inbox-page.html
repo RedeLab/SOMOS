@@ -64,8 +64,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <div>
         </div>
       </iron-pages>
-        <app-actions id="actions" collapsed$="[[collapsed]]" selected="{{inboxAction}}">
-          <paper-fab slot="actions" mini icon="app:add" id="newMission" name="edit"></paper-fab>
+        <app-actions id="actions" collapsed$="[[collapsed]]" selected="{{inboxAction}}" icon="app:add">
+          <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="openMissionForm" name="edit"></paper-fab>
           <paper-tooltip slot="actions" for="newMission">Sugerir Missão</paper-tooltip>
           <paper-fab slot="actions" mini icon="app:assessment" id="survey" name="edit"></paper-fab>
           <paper-tooltip slot="actions" for="survey">Enquete</paper-tooltip>

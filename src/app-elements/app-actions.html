@@ -81,6 +81,7 @@
         box-shadow: none;
         transition: transform ease .5s;
         position: relative;
+        background: transparent;
       }
       @media screen and (max-width: 640px) {
         .backdrop.visible {
@@ -128,8 +129,8 @@
       </iron-selector>
     </div>
     <div class="toggle-actions">
-      <paper-fab icon="app:add"></paper-fab>
-      <paper-fab icon="app:add" id="toggle" on-tap="_toggleActions"></paper-fab>
+      <paper-fab icon=""></paper-fab>
+      <paper-fab icon="[[icon]]" id="toggle" on-tap="_toggleActions"></paper-fab>
     </div>
   </template>
   <script>
@@ -142,6 +143,7 @@
             type: Boolean,
             observer: '_setcollapsedStyle'
           },
+          icon: String,
           selected: {
             type: String,
             notify: true,
@@ -164,7 +166,7 @@
           this._showTips();
         }, 100);
         setTimeout(() => {
-          if(toggler.icon === 'app:close') toggler.icon = 'app:more-vert';
+          if(toggler.icon === 'app:close') toggler.icon = this.icon;
           else toggler.icon = 'app:close';
           toggler.style.transform = 'none';
           if(!visible) backdrp.style.display = 'none';
