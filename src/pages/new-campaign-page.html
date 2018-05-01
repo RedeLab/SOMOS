@@ -65,8 +65,8 @@
       <app-header-layout has-scrolling-region>
         <app-form-header>
             <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
-            <h1 slot="main-title" class="title" main-title>Criar Campanha</h1>
-            <paper-icon-button slot="more-icon" icon="app:more-vert"></paper-icon-button>
+            <span slot="main-title">Criar Campanha</span>
+            <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
 
         <div class="fill">
@@ -114,12 +114,6 @@
             notify: true
           }
         };
-      }
-
-      connectedCallback() {
-        super.connectedCallback();
-        const scrollable = this.$.scrollable;
-        scrollable.dialogElement = this;
       }
 
       _returnToInbox() {
