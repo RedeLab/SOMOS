@@ -21,8 +21,10 @@
         <app-header slot="header" condenses fixed effects="waterfall">
           <app-toolbar>
             <slot name="arrow-back"></slot>
-            <slot name="main-title"></slot>
-            <slot name="more-icon"></slot>
+            <h1 class="title" main-title>
+              <slot name="main-title"></slot>
+            </h1>
+            <slot name="more-vert"></slot>
           </app-toolbar>
         </app-header>
     </style>
