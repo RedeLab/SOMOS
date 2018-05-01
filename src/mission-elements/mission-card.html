@@ -1,0 +1,78 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="mission-card">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host { 
+        display: block;
+      }
+
+      .mission-card {
+        padding-bottom: 0px;
+        padding-top: 0px;
+      }
+
+      .mission-image { display: inline-block; }
+      .mission-image img {
+        height: 120px;
+        width: auto;
+        float: left;
+
+      }
+      .card-content { 
+        max-width: 125px;
+        float: right; 
+      }
+
+      iron-icon {
+        position: absolute;
+        bottom: 0px;
+        right: 10px;
+    }
+
+    </style>
+        <div class="card mission-card">
+        <div>
+          <div class="mission-image"><img src="../../images/mission-card.jpg"></div>
+            <div class="card-content">
+              <h1> {{mission.title}} </h1>
+              <p> {{mission.description}} </p>
+              <iron-icon icon="app:arrow-forward"></iron-icon>
+            </div>
+          </div>
+        </div>
+  </template>
+  <script>
+    class MissionCard extends Polymer.Element {
+      static get is() { return 'mission-card'; }
+
+      static get properties() {
+        return {
+          mission: {
+            type: Object,
+            value: function() { 
+              return {title: window.localStorage.getItem('title'), description: window.localStorage.getItem('description')}
+            }
+          }
+        }
+      }
+
+      _setMission(e) {
+        this.$.localStorage.setItem(this.mission.title);
+        this.$.localStorage.setItem(this.mission.description);
+      }
+
+      constructor() {
+        super();
+      }
+    }
+customElements.define(MissionCard.is, MissionCard);
+</script>
+</dom-module>
