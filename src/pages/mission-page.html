@@ -17,6 +17,13 @@
         --app-form-header-color: #000;
       }
 
+      .form {
+        max-width: 400px;
+        margin: auto;
+      }
+
+      paper-button {float: right;}
+
     </style>
 
     <app-header-layout has-scrolling-region>
@@ -26,7 +33,15 @@
           <paper-icon-button slot="more-icon" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
     </app-header-layout>
-      <mission-form></mission-form>
+        <div class="form">
+          <paper-input value="{{mission.title}}" label="Título"></paper-input>
+          <vaadin-date-picker value="{{endDate}}" label="Prazo da missão" placeholder="Placeholder">
+          </vaadin-date-picker>
+          <paper-input value="{{mission.description}}" label="Descrição"></paper-input>
+          <paper-input value="{{mission.reward}}" label="Recompensa"></paper-input>
+          <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
+          <paper-button toggles raised class="green" on-tap="_saveMission">salvar</paper-button>
+        </div>
   </template>
   <script>
     class MissionPage extends Polymer.Element {
@@ -41,6 +56,10 @@
           route: {
             type: Object,
             notify: true
+          },
+          mission: {
+            type: Object,
+            value: function() { return {}; }
           }
         }
       }
@@ -53,6 +72,13 @@
         this.set('shellPage', 'inbox');
         this.set('route.path', '/');
       }
+
+      _saveMission(e) {
+        window.localStorage.setItem('title', this.mission.title);
+        window.localStorage.setItem('description', this.mission.description);
+        this._returnToInbox();
+      }
+
     }
 customElements.define(MissionPage.is, MissionPage);
 </script>
