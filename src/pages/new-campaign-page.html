@@ -14,8 +14,8 @@
       :host {
         display: block;
         height: 100vh;
-        background: var(--primary-background-color);
-        @apply --default-font-medium;
+        background: var(--secondary-background-color);
+        @apply --default-font;
       }
       app-header {
         color: var(--default-primary-color);
@@ -31,7 +31,8 @@
       .input-file {
         background: var(--divider-color);
         margin: 30px 0 20px 0;
-        border: 2px dashed var(--secondary-text-color);
+        padding: 10px 10px 20px 10px;
+        border: 1px dashed var(--secondary-text-color);
         text-align: center;
       }
       .input-file iron-icon {
@@ -42,6 +43,18 @@
       }
       .input-file span {
         display: block;
+        color: var(--secondary-text-color);
+        font-size: 600;
+      }
+      .input-file .file {
+        text-transform: uppercase;
+        color: var(--accent-color);
+      }
+      label {
+        color: var(--paper-input-container-color);
+      }
+      .row {
+
       }
 
     </style>
@@ -56,7 +69,7 @@
         <div class="fill">
           <h1>Dados da campanha</h1>
           <div class="fields">
-            <paper-input label="Titulo"></paper-input>
+            <paper-input label="Titulo" placeholder="Nome da campanha"></paper-input>
             <paper-input label="Imagem de capa" disabled value="Selecione uma imagem">
               <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
             </paper-input>
@@ -64,9 +77,20 @@
             <div class="input-file">
               <iron-icon icon="app:cloud-upload"></iron-icon>
               <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
-              <span>Selecionar arquivo</span>
-              <a href="#"></a>
+              <span class="file">Selecionar arquivo</span>
             </div>
+            <paper-input label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
+            <label>Links externos</label>
+            <div class="links">
+              <div class="row">
+                <paper-button class="social" on-tap=""></paper-button>
+                <paper-button class="social" on-tap="">Continuar</paper-button>
+              </div>
+              <div class="row">
+
+              </div>
+            </div>
+            <paper-button class="accent block" on-tap="">Continuar</paper-button>
           </div>
           
         </div>
