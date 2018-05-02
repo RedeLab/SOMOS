@@ -5,8 +5,8 @@
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 
+<link rel="import" href="../campaign-elements/proposal-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -20,16 +20,12 @@
         background: var(--secondary-background-color);
         @apply --default-font;
       }
-      app-header {
+      app-form-header {
         color: var(--default-primary-color);
         background: var(--accent-color);
         --app-form-header-background: var(--accent-color);
         --app-form-header-color: var(--default-primary-color);
         @apply --default-font-medium;
-      }
-      app-header {
-        color: var(--default-primary-color);
-        background: var(--accent-color);
       }
       .step1,
       .step2 {
@@ -96,15 +92,15 @@
         margin: 5px 0;
       }
       .card-title {
-        padding: 5px;
+        padding: 10px;
       }
 
     </style>
       <app-header-layout has-scrolling-region>
         <app-form-header>
-            <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
-            <span slot="main-title">Criar Campanha</span>
-            <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
+          <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
+          <span slot="main-title">Criar Campanha</span>
+          <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
 
         <div class="step1" id="step1">
@@ -136,11 +132,15 @@
           </div>
         </div>
         <div class="step2" id="step2">
-          <h1>Propostas</h1>
+          <h1>Propostas <paper-button on-tap="open">Nova Proposta</paper-button></h1>
           <paper-card><div class="card-title">ioeioueiou</div></paper-card>
           <paper-card><div class="card-title">ioeioueiou</div></paper-card>
           <paper-card><div class="card-title">ioeioueiou</div></paper-card>
           <paper-card><div class="card-title">ioeioueiou</div></paper-card>
+          <paper-button class="accent block" on-tap="">Continuar</paper-button>
+          <app-dialog id="dialog">
+            <proposal-dialog></proposal-dialog>
+          </app-dialog>
         </div>
       </app-header-layout>
     </style>
@@ -164,6 +164,10 @@
       _returnToInbox() {
         this.set('shellPage', 'inbox');
         this.set('route.path', '/');
+      }
+
+      open() {
+        this.$.dialog.present();
       }
 
     }

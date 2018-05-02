@@ -1,0 +1,48 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+
+<dom-module id="proposal-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: flex;
+      }
+      .submit {
+        text-align: right;
+        margin-top: 15px;
+      }
+    </style>
+    <div>
+      <paper-input label="Titulo" placeholder="Nome da proposta"></paper-input>
+      <paper-dropdown-menu label="Categoria">
+        <paper-listbox slot="dropdown-content" class="dropdown-content">
+          <paper-item>Categoria 1</paper-item>
+          <paper-item>Categoria 2</paper-item>
+          <paper-item>Categoria 3</paper-item>
+          <paper-item>Categoria 4</paper-item>
+        </paper-listbox>
+      </paper-dropdown-menu>
+      <paper-textarea label="Descrição" placeholder="Uma descrição da proposta" char-counter maxlength="1000"></paper-textarea>
+      <paper-input label="Imagem de capa" disabled value="Selecione uma imagem">
+        <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
+      </paper-input>
+      <div class="submit">
+        <paper-button class="plain">Criar Proposta</paper-button>
+      </div>
+    </div>
+  </template>
+  <script>
+    class ProposalDialog extends Polymer.Element {
+      static get is() { return 'proposal-dialog'; }
+      static get properties() {
+        return {};
+      }
+      
+    }
+    window.customElements.define(ProposalDialog.is, ProposalDialog);
+  </script>
+</dom-module>

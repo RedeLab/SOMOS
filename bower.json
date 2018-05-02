@@ -25,8 +25,12 @@
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^2.0.0",
     "paper-fab": "PolymerElements/paper-fab#^2.1.0",
     "paper-card": "PolymerElements/paper-card#^2.1.0",
+    "paper-item": "PolymerElements/paper-item#^2.1.0",
+    "paper-listbox": "PolymerElements/paper-listbox#^2.1.0",
+    "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^2.1.0",
     "paper-tooltip": "PolymerElements/paper-tooltip#^2.1.1",
-    "vaadin-date-picker": "vaadin/vaadin-date-picker#^3.0.0"
+    "vaadin-date-picker": "vaadin/vaadin-date-picker#^3.0.0",
+    "web-animations-js": "web-animations/web-animations-js#^2.3.1"
   },
   "resolutions": {
     "polymer": "^2.0.0"
