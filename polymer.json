@@ -2,13 +2,15 @@
   "entrypoint": "index.html",
   "shell": "src/app-elements/app-shell.html",
   "fragments": [
-    "src/my-view1.html",
-    "src/my-view2.html",
-    "src/my-view3.html",
-    "src/my-view404.html"
+    "src/pages/inbox-page.html",
+    "src/pages/mission-page.html",
+    "src/pages/login-page.html",
+    "src/pages/new-campaign-page.html",
+    "src/pages/not-found-page.html"
   ],
   "sources": [
     "images/**/*",
+    "fonts/**/*",
     "src/**/*"
   ],
   "extraDependencies": [

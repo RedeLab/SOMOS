@@ -59,9 +59,9 @@
     </firebase-auth>
 
     <register-view id="register" user="[[user]]" credentials="{{signUpData}}"
-      on-open-login="openLogin"></register-view>
+      on-open-login="openLogin" on-provider-auth="authWithProvider"></register-view>
     <login-view id="login" user="[[user]]" credentials="{{signInData}}"
-      on-open-register="openRegister"></login-view>
+      on-open-register="openRegister" on-provider-auth="authWithProvider"></login-view>
   </template>
 
   <script>
@@ -118,6 +118,10 @@
             // use app-notify to display success message
           }.bind(this))
           .catch((err) => console.error(err));
+      }
+
+      authWithProvider(e) {
+        this.$.auth.signInWithPopup(e.detail.provider);
       }
 
       userChanged(user) {

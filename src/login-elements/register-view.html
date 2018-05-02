@@ -45,7 +45,7 @@
           auto-validate error-message="A senha deve ter no mínimo 8 caracteres."></paper-input>
       </div>
       <paper-button class="accent" on-tap="submitCredentials">Registrar</paper-button>
-      <paper-button class="facebook">Registrar com Facebook</paper-button>
+      <paper-button class="facebook" on-tap="signUpWithFacebook">Registrar com Facebook</paper-button>
       <span class="bottom center">Já possui uma conta? <a href="" on-tap="openLogin">Entrar</a></span>
     </div>
   </template>
@@ -74,6 +74,10 @@
           email: this.email,
           password: this.password,
         };
+      }
+
+      signUpWithFacebook(e) {
+        this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'facebook' } }));
       }
 
       openLogin(e) {
