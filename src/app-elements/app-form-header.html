@@ -18,7 +18,7 @@
       }
 
     </style>
-        <app-header slot="header" condenses fixed effects="waterfall">
+        <app-header slot="header" shadow$="{{shadow}}">
           <app-toolbar>
             <slot name="arrow-back"></slot>
             <h1 class="title" main-title>
@@ -35,8 +35,8 @@
 
       static get properties() {
         return {
-          icon: {
-            type:String
+          shadow: {
+            type: Boolean
           }
         }
       }

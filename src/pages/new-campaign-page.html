@@ -22,6 +22,7 @@
       :host {
         display: block;
         background: var(--secondary-background-color);
+        height: 100vh;
         @apply --default-font;
       }
       app-form-header {
@@ -34,12 +35,27 @@
       paper-button.block {
         margin-top: 15px;
       }
-      .step{
+      .fill {
         flex: 1;
-        padding: 20px;
+      }
+      .step {
+        padding: 0 20px;
       }
       .step h1 {
         color: var(--secondary-text-color);
+      }
+      .file-upload {
+        position: relative;
+      }
+      .file-upload input {
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .file-upload iron-icon {
+        --iron-icon-fill-color: var(--dark-primary-color);
       }
       .input-file {
         background: var(--divider-color);
@@ -138,96 +154,100 @@
 
     </style>
       <app-header-layout has-scrolling-region>
-        <app-form-header>
+        <app-form-header slot="header" shadow>
           <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
           <span slot="main-title">Criar Campanha</span>
           <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
-
-        <div class="step" id="step1">
-          <h1>Dados da campanha</h1>
-          <div class="fields">
-            <paper-input label="Titulo" placeholder="Nome da campanha"></paper-input>
-            <paper-input label="Imagem de capa" disabled value="Selecione uma imagem">
-              <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
-            </paper-input>
-            <paper-textarea label="Descrição" placeholder="Uma breve descrição da campanha" char-counter maxlength="500"></paper-textarea>
-            <div class="input-file">
-              <iron-icon icon="app:cloud-upload"></iron-icon>
-              <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
-              <span class="file">Selecionar arquivo</span>
-            </div>
-            <paper-input label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
-            <label>Links externos</label>
-            <div class="links">
-              <div class="row">
-                <span>Website<paper-icon-button icon="app:edit"></paper-icon-button></span>
-                <span>Facebook<paper-icon-button icon="app:edit"></paper-icon-button></span>
+        <div class="fill">
+          <div class="step" id="step1">
+            <h1>Dados da campanha</h1>
+            <div class="fields">
+              <paper-input label="Titulo" placeholder="Nome da campanha"></paper-input>
+              <div class="file-upload">
+                <paper-input label="Imagem de capa"  placeholder="Selecione uma imagem">
+                  <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
+                </paper-input>
+                <input type="file">
               </div>
-              <div class="row">
-                <span>Instagram<paper-icon-button icon="app:edit"></paper-icon-button></span>
-                <span>Twitter<paper-icon-button icon="app:edit"></paper-icon-button></span>
+              <paper-textarea label="Descrição" placeholder="Uma breve descrição da campanha" char-counter maxlength="500"></paper-textarea>
+              <div class="input-file">
+                <iron-icon icon="app:cloud-upload"></iron-icon>
+                <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
+                <span class="file">Selecionar arquivo</span>
               </div>
+              <paper-input label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
+              <label>Links externos</label>
+              <div class="links">
+                <div class="row">
+                  <span>Website<paper-icon-button icon="app:edit"></paper-icon-button></span>
+                  <span>Facebook<paper-icon-button icon="app:edit"></paper-icon-button></span>
+                </div>
+                <div class="row">
+                  <span>Instagram<paper-icon-button icon="app:edit"></paper-icon-button></span>
+                  <span>Twitter<paper-icon-button icon="app:edit"></paper-icon-button></span>
+                </div>
+              </div>
+              <paper-button class="accent block" on-tap="">Continuar</paper-button>
             </div>
+          </div>
+          <div class="step" id="step2">
+            <h1>Propostas <paper-button on-tap="open">Nova Proposta</paper-button></h1>
+            <paper-card><div class="card-title">ioeioueiou</div></paper-card>
+            <paper-card><div class="card-title">ioeioueiou</div></paper-card>
+            <paper-card><div class="card-title">ioeioueiou</div></paper-card>
+            <paper-card><div class="card-title">ioeioueiou</div></paper-card>
             <paper-button class="accent block" on-tap="">Continuar</paper-button>
+            <app-dialog id="dialog">
+              <proposal-dialog></proposal-dialog>
+            </app-dialog>
           </div>
-        </div>
-        <div class="step" id="step2">
-          <h1>Propostas <paper-button on-tap="open">Nova Proposta</paper-button></h1>
-          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
-          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
-          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
-          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
-          <paper-button class="accent block" on-tap="">Continuar</paper-button>
-          <app-dialog id="dialog">
-            <proposal-dialog></proposal-dialog>
-          </app-dialog>
-        </div>
-        <div class="step" id="step3">
-          <div class="about">
-            <h1>Sobre o candidato</h1>
-            <span></span>
-          </div>
-          <div class="candidate">
-            <paper-input label="Nome do candidato" placeholder="Nome do candidato"></paper-input>
-            <paper-dropdown-menu label="Cargo que irá disputar">
-              <paper-listbox slot="dropdown-content" class="dropdown-content">
-                <paper-item>Cargo 1</paper-item>
-                <paper-item>Cargo 2</paper-item>
-                <paper-item>Cargo 3</paper-item>
-                <paper-item>Cargo 4</paper-item>
-              </paper-listbox>
-            </paper-dropdown-menu>
-            <div class="region">
-              <paper-dropdown-menu label="Estado">
-                <paper-listbox slot="dropdown-content" class="dropdown-content">
-                  <paper-item>Estado 1</paper-item>
-                  <paper-item>Estado 2</paper-item>
-                  <paper-item>Estado 3</paper-item>
-                  <paper-item>Estado 4</paper-item>
-                </paper-listbox>
-              </paper-dropdown-menu>
-              <paper-dropdown-menu label="Cidade">
-                <paper-listbox slot="dropdown-content" class="dropdown-content">
-                  <paper-item>Cidade 1</paper-item>
-                  <paper-item>Cidade 2</paper-item>
-                  <paper-item>Cidade 3</paper-item>
-                  <paper-item>Cidade 4</paper-item>
-                </paper-listbox>
-              </paper-dropdown-menu>
+          <div class="step" id="step3">
+            <div class="about">
+              <h1>Sobre o candidato</h1>
+              <span></span>
             </div>
-            <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX"></paper-input>
-            <paper-dropdown-menu label="Partido">
-              <paper-listbox slot="dropdown-content" class="dropdown-content">
-                <paper-item>Partido 1</paper-item>
-                <paper-item>Partido 2</paper-item>
-                <paper-item>Partido 3</paper-item>
-                <paper-item>Partido 4</paper-item>
-              </paper-listbox>
-            </paper-dropdown-menu>
-            <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX"></paper-input>
+            <div class="candidate">
+              <paper-input label="Nome do candidato" placeholder="Nome do candidato"></paper-input>
+              <paper-dropdown-menu label="Cargo que irá disputar">
+                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                  <paper-item>Cargo 1</paper-item>
+                  <paper-item>Cargo 2</paper-item>
+                  <paper-item>Cargo 3</paper-item>
+                  <paper-item>Cargo 4</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <div class="region">
+                <paper-dropdown-menu label="Estado">
+                  <paper-listbox slot="dropdown-content" class="dropdown-content">
+                    <paper-item>Estado 1</paper-item>
+                    <paper-item>Estado 2</paper-item>
+                    <paper-item>Estado 3</paper-item>
+                    <paper-item>Estado 4</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-dropdown-menu label="Cidade">
+                  <paper-listbox slot="dropdown-content" class="dropdown-content">
+                    <paper-item>Cidade 1</paper-item>
+                    <paper-item>Cidade 2</paper-item>
+                    <paper-item>Cidade 3</paper-item>
+                    <paper-item>Cidade 4</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu>
+              </div>
+              <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX"></paper-input>
+              <paper-dropdown-menu label="Partido">
+                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                  <paper-item>Partido 1</paper-item>
+                  <paper-item>Partido 2</paper-item>
+                  <paper-item>Partido 3</paper-item>
+                  <paper-item>Partido 4</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX"></paper-input>
+            </div>
+            <paper-button class="accent block" on-tap="">Criar Campanha</paper-button>
           </div>
-          <paper-button class="accent block" on-tap="">Criar Campanha</paper-button>
         </div>
       </app-header-layout>
     </style>
