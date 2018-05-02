@@ -3,6 +3,8 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
@@ -15,7 +17,6 @@
     <style>
       :host {
         display: block;
-        height: 100vh;
         background: var(--secondary-background-color);
         @apply --default-font;
       }
@@ -30,11 +31,13 @@
         color: var(--default-primary-color);
         background: var(--accent-color);
       }
-      .fill {
+      .step1,
+      .step2 {
         flex: 1;
         padding: 20px;
       }
-      .fill h1 {
+      .step1 h1,
+      .step2 h1 {
         color: var(--secondary-text-color);
       }
       .input-file {
@@ -62,8 +65,38 @@
       label {
         color: var(--paper-input-container-color);
       }
+      .links {
+        margin: 10px 0 20px 0;
+      }
       .row {
-
+        flex: 1;
+      }
+      .row span {
+        display: inline-block;
+        position: relative;
+        background-color: white;
+        width: calc(50% - 25px);
+        height: 30px;
+        margin: 5px 0;
+        padding: 5px 10px;
+        color: var(--secondary-text-color);
+      }
+      .row span:nth-child(2) {
+        margin-left: 5px;
+      }
+      .row paper-icon-button {
+        width: 35px;
+        height: 35px;
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      paper-card {
+        width: 100%;
+        margin: 5px 0;
+      }
+      .card-title {
+        padding: 5px;
       }
 
     </style>
@@ -74,7 +107,7 @@
             <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
 
-        <div class="fill">
+        <div class="step1" id="step1">
           <h1>Dados da campanha</h1>
           <div class="fields">
             <paper-input label="Titulo" placeholder="Nome da campanha"></paper-input>
@@ -91,16 +124,23 @@
             <label>Links externos</label>
             <div class="links">
               <div class="row">
-                <paper-button class="social" on-tap=""></paper-button>
-                <paper-button class="social" on-tap="">Continuar</paper-button>
+                <span>Website<paper-icon-button icon="app:edit"></paper-icon-button></span>
+                <span>Facebook<paper-icon-button icon="app:edit"></paper-icon-button></span>
               </div>
               <div class="row">
-
+                <span>Instagram<paper-icon-button icon="app:edit"></paper-icon-button></span>
+                <span>Twitter<paper-icon-button icon="app:edit"></paper-icon-button></span>
               </div>
             </div>
             <paper-button class="accent block" on-tap="">Continuar</paper-button>
           </div>
-          
+        </div>
+        <div class="step2" id="step2">
+          <h1>Propostas</h1>
+          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
+          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
+          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
+          <paper-card><div class="card-title">ioeioueiou</div></paper-card>
         </div>
       </app-header-layout>
     </style>
