@@ -19,6 +19,7 @@
 <link rel="lazy-import" href="../pages/inbox-page.html">
 <link rel="lazy-import" href="../pages/campaign-page.html">
 <link rel="lazy-import" href="../pages/mission-page.html">
+<link rel="lazy-import" href="../pages/show-mission-page.html">
 <link rel="lazy-import" href="../pages/not-found-page.html">
 
 <link rel="import" href="app-icons.html">
@@ -78,7 +79,6 @@
         <app-toolbar>Menu</app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="inbox" href="[[rootPath]]inbox">Caixa de Entrada</a>
-          <a name="login" href="[[rootPath]]login">Login</a>
           <a name="campaign" href="[[rootPath]]new-campaign">Campanhas</a>
           <a name="login" href="[[rootPath]]login" on-tap="signOut">Sair</a>
         </iron-selector>
@@ -96,6 +96,7 @@
           <campaign-page name="campaign"></campaign-page>
           <new-campaign-page route="{{route}}" shell-page="{{page}}" name="new-campaign"></new-campaign-page>
           <mission-page name="mission" route="{{route}}" shell-page="{{page}}"></mission-page>
+          <show-mission-page name="show-mission" route="{{route}}" shell-page="{{page}}"></show-mission-page>
           <not-found-page name="not-found"></not-found-page>
           <login-page name="login" id="login"
           user="{{user}}" route="{{route}}">

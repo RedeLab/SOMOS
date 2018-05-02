@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="show-mission-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+  </template>
+
+  <script>
+    class ShowMissionPage extends Polymer.Element {
+      static get is() { return 'show-mission-page'; }
+      static get properties() {
+        return {
+          selected: {
+            observer: '_selectedChanged'
+          }
+        };
+      }
+
+      _selectedChanged(selected) {
+      }
+    }
+
+    window.customElements.define(ShowMissionPage.is, ShowMissionPage);
+  </script>
+</dom-module>
