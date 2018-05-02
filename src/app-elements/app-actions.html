@@ -182,7 +182,7 @@
         backdrp.classList.remove('visible');
         toggler.style.transform = 'rotate(360deg)';
         setTimeout(() => {
-          if(toggler.icon === 'app:close') toggler.icon = 'app:more-vert';
+          if(toggler.icon === 'app:close') toggler.icon = this.icon;
           toggler.style.transform = 'none';
           backdrp.style.display = 'none';
         }, 200);
