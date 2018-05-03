@@ -41,6 +41,11 @@
       }
 
 
+      .card-content-info p {
+        margin-top: -15px;
+        font-size: 0.8em;
+        line-height: 1;
+      }
       .mission-card .card-content-footer {
         position: absolute;
         bottom: 0;
@@ -76,7 +81,7 @@
             </div>
             <div class="card-content-footer">
               <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> 22 dias restantes </p>
-              <iron-icon class="go" icon="app:arrow-forward"></iron-icon>
+              <iron-icon class="go" on-tap= "_goToMission" icon="app:arrow-forward"></iron-icon>
             </div>
         </div>
   </template>
@@ -93,13 +98,15 @@
         }
       }
 
-      _setMission(e) {
-        this.$.localStorage.setItem(this.mission.title);
-        this.$.localStorage.setItem(this.mission.description);
-      }
-
       constructor() {
         super();
+      }
+
+      _goToMission() {
+        const appShell = document.querySelector('app-shell');
+        const router = appShell.shadowRoot.querySelector('app-route');
+        router.set('page', '/show-mission');
+        router.set('route.path', '/show-mission');
       }
     }
 customElements.define(MissionCard.is, MissionCard);
