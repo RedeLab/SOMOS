@@ -11,6 +11,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -28,6 +29,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
     </style>
+
+    <firebase-query
+      id="query"
+      path="/missions"
+      data="{{missions}}"
+      log="true">
+    </firebase-query>
 
     <app-header-layout has-scrolling-region>
 
@@ -53,7 +61,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
             <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
           </div>
-          <mission-card></mission-card>
+          <template is="dom-repeat" items="{{missions}}" as="mission">
+            <mission-card mission="{{mission.content}}"></mission-card>
+          </template>
+
         </div>
         <div>
         </div>
@@ -90,6 +101,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           route: {
             type: Object,
             notify: true
+          },
+          missions: {
+            type: Array,
+            observer: '_missionsChanged'
           }
         }
       }
@@ -97,6 +112,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _openMissionForm() {
         this.set('shellPage', 'mission');
         this.set('route.path', 'mission');
+      }
+
+      _missionsChanged() {
+        console.log(this.missions);
       }
     }
 
