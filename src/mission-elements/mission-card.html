@@ -10,25 +10,29 @@
   <template>
     <style include="shared-styles"></style>
     <style>
-      :host { 
+      :host {
         display: block;
       }
 
       .mission-card {
-        padding-bottom: 0px;
-        padding-top: 0px;
+        padding: 0px;
+        line-height: 0.7;
       }
 
-      .mission-image { display: inline-block; }
+      .mission-image {
+        display: inline-block;
+        width: 45%;
+    }
       .mission-image img {
-        height: 120px;
-        width: auto;
+        height: auto;
+        width: 100%;
         float: left;
 
       }
-      .card-content { 
-        max-width: 125px;
-        float: right; 
+      .card-content {
+        display: inline-block;
+        width: 50%;
+        float: right;
       }
 
       iron-icon {
@@ -39,14 +43,12 @@
 
     </style>
         <div class="card mission-card">
-        <div>
           <div class="mission-image"><img src="../../images/mission-card.jpg"></div>
             <div class="card-content">
               <h1> {{mission.title}} </h1>
               <p> {{mission.description}} </p>
               <iron-icon icon="app:arrow-forward"></iron-icon>
             </div>
-          </div>
         </div>
   </template>
   <script>
