@@ -17,6 +17,7 @@
       .mission-card {
         padding: 0px;
         line-height: 0.7;
+        position: relative;
       }
 
       .mission-image {
@@ -39,8 +40,29 @@
         display: block;
       }
 
-      .card-content-footer {
+
+      .mission-card .card-content-footer {
+        position: absolute;
+        bottom: 0;
+        right: 0;
         text-align: right;
+        width: 50%;
+      }
+
+      .timing {
+        font-size: 0.6em;
+        float: left;
+        margin-top: 10px;
+      }
+
+      .timing iron-icon {
+        width: 20px;
+        height: 20px;
+      }
+
+      .go {
+        float: right;
+        margin-top: 7px;
       }
 
     </style>
@@ -51,9 +73,10 @@
                 <h1> {{mission.title}} </h1>
                 <p> {{mission.description}} </p>
               </div>
-              <div class="card-content-footer">
-                <iron-icon icon="app:arrow-forward"></iron-icon>
-              </div>
+            </div>
+            <div class="card-content-footer">
+              <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> 22 dias restantes </p>
+              <iron-icon class="go" icon="app:arrow-forward"></iron-icon>
             </div>
         </div>
   </template>
