@@ -17,15 +17,15 @@
         display: block;
         --app-form-header-background: #fff;
         --app-form-header-color: #000;
+        background: var(--secondary-background-color);
+        @apply --default-font;
         height: 100vh;
       }
 
       .form {
-        max-width: 400px;
+        width: 90%;
         margin: auto;
       }
-
-      paper-button {float: right;}
 
     </style>
 
@@ -46,12 +46,12 @@
           <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
       <div class="form">
-        <paper-input value="{{mission.title}}" label="Título"></paper-input>
+        <paper-input value="{{mission.title}}" label="Título" char-counter maxlength="30"></paper-input>
         <paper-input type="date" value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
-        <paper-input value="{{mission.description}}" label="Descrição"></paper-input>
-        <paper-input value="{{mission.reward}}" label="Recompensa"></paper-input>
+        <paper-input value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
+        <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
         <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
-        <paper-button toggles raised class="green" on-tap="_saveMission">salvar</paper-button>
+        <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
       </div>
     </app-header-layout>
   </template>
