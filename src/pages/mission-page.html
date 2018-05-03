@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -35,10 +35,11 @@
       </div>
     </app-dialog>
 
-    <firebase-document
-      path="/missions"
-      data="{{missionData}}">
-    </firebase-document>
+    <firebase-query
+      id="query"
+      path="/users/[[user.uid]]/missions"
+      data="{{missionsData}}">
+    </firebase-query>
 
     <app-header-layout has-scrolling-region>
       <app-form-header>
@@ -49,10 +50,10 @@
     </app-header-layout>
         <div class="form">
           <paper-input value="{{mission.title}}" label="Título"></paper-input>
-          <paper-input type="date" value="{{endDate}}" label="Prazo da missão"></paper-input>
+          <paper-input type="date" value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
           <paper-input value="{{mission.description}}" label="Descrição"></paper-input>
-          <paper-input value="{{reward}}" label="Recompensa"></paper-input>
-          <paper-input value="{{video}}" label="Vídeo Explicativo"></paper-input>
+          <paper-input value="{{mission.reward}}" label="Recompensa"></paper-input>
+          <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
           <paper-button toggles raised class="green" on-tap="_saveMission">salvar</paper-button>
         </div>
   </template>
@@ -95,8 +96,8 @@
       }
 
       _saveMission(e) {
-        this.mission["mission_1"] = {title: this.mission.title, description: this.mission.description};
-        this.set("missionData", this.mission);
+        console.log(this.$.query.ref);
+        this.$.query.ref.push({ content: this.mission });
         this.$.confirmation.present();
       }
 

@@ -24,7 +24,10 @@
         return {
           selected: Boolean,
           statusKnown: Boolean,
-          user: Object,
+          user: {
+            type: Object,
+            notify: true
+          },
           route: Object,
           publicRoutes: {
             type: Array,
