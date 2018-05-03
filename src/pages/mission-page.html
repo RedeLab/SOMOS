@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../mission-elements/mission-modal.html">
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
@@ -29,12 +30,7 @@
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
-      <iron-icon style=" margin-left: 13px; --iron-icon-width: 200px; --iron-icon-height: 200px;" icon="app:done-all"></iron-icon>
-      <h2> Missão criada com sucesso </h2>
-      <p>Quanto mais pessoas souberem da sua missão maiores são as chances de alcançarmos nosso objetivo por isso não perca tempo e compartilhe em suas redes sociais </p>
-      <div class="buttons">
-        <paper-button>COMPARTILHAR</paper-button>
-      </div>
+      <mission-modal></mission-modal>
     </app-dialog>
 
     <firebase-query
