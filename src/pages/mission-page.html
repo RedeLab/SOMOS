@@ -13,8 +13,10 @@
     <style>
 
       :host {
+        display: block;
         --app-form-header-background: #fff;
         --app-form-header-color: #000;
+        height: 100vh;
       }
 
       .form {
@@ -37,25 +39,25 @@
 
     <firebase-query
       id="query"
-      path="/users/[[user.uid]]/missions"
+      path="/missions"
       data="{{missionsData}}">
     </firebase-query>
 
     <app-header-layout has-scrolling-region>
-      <app-form-header>
+      <app-form-header shadow slot="header">
           <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
           <span slot="main-title">Criar missão</span>
           <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
+      <div class="form">
+        <paper-input value="{{mission.title}}" label="Título"></paper-input>
+        <paper-input type="date" value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
+        <paper-input value="{{mission.description}}" label="Descrição"></paper-input>
+        <paper-input value="{{mission.reward}}" label="Recompensa"></paper-input>
+        <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
+        <paper-button toggles raised class="green" on-tap="_saveMission">salvar</paper-button>
+      </div>
     </app-header-layout>
-        <div class="form">
-          <paper-input value="{{mission.title}}" label="Título"></paper-input>
-          <paper-input type="date" value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
-          <paper-input value="{{mission.description}}" label="Descrição"></paper-input>
-          <paper-input value="{{mission.reward}}" label="Recompensa"></paper-input>
-          <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
-          <paper-button toggles raised class="green" on-tap="_saveMission">salvar</paper-button>
-        </div>
   </template>
   <script>
     class MissionPage extends Polymer.Element {
@@ -96,7 +98,7 @@
       }
 
       _saveMission(e) {
-        console.log(this.$.query.ref);
+        this.mission.uid = this.user.uid;
         this.$.query.ref.push({ content: this.mission });
         this.$.confirmation.present();
       }
