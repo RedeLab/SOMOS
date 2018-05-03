@@ -35,19 +35,25 @@
         float: right;
       }
 
-      iron-icon {
-        position: absolute;
-        bottom: 0px;
-        right: 10px;
-    }
+      .card-content .card-content-info, .card-content-footer {
+        display: block;
+      }
+
+      .card-content-footer {
+        text-align: right;
+      }
 
     </style>
         <div class="card mission-card">
           <div class="mission-image"><img src="../../images/mission-card.jpg"></div>
             <div class="card-content">
-              <h1> {{mission.title}} </h1>
-              <p> {{mission.description}} </p>
-              <iron-icon icon="app:arrow-forward"></iron-icon>
+              <div class="card-content-info">
+                <h1> {{mission.title}} </h1>
+                <p> {{mission.description}} </p>
+              </div>
+              <div class="card-content-footer">
+                <iron-icon icon="app:arrow-forward"></iron-icon>
+              </div>
             </div>
         </div>
   </template>
