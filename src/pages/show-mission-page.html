@@ -1,14 +1,47 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
 <dom-module id="show-mission-page">
   <template>
     <style include="shared-styles"></style>
     <style>
+
       :host {
         display: block;
+        --app-form-header-background: #fff;
+        --app-form-header-color: #000;
+        background: var(--secondary-background-color);
+        @apply --default-font;
+        height: 100vh;
       }
+
     </style>
+
+    <app-dialog id="confirmation" opened="{{openedModal}}">
+      <mission-modal></mission-modal>
+    </app-dialog>
+
+    <firebase-document
+      id="document"
+      path="/missions/{{mid}}"
+      data="{{mission}}">
+    </firebase-document>
+
+    <app-header-layout has-scrolling-region>
+      <app-form-header shadow slot="header">
+          <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+          <span slot="main-title">{{mission.title}}</span>
+          <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
+      </app-form-header>
+      <div class="form">
+      </div>
+    </app-header-layout>
   </template>
 
   <script>
@@ -24,6 +57,12 @@
 
       _selectedChanged(selected) {
       }
+
+      _returnToInbox() {
+        this.set('shellPage', 'inbox');
+        this.set('route.path', '/');
+      }
+
     }
 
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);

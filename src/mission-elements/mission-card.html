@@ -94,7 +94,8 @@
           mission: {
             type: Object,
             value: function() {}
-          }
+          },
+          key: String
         }
       }
 
@@ -103,10 +104,7 @@
       }
 
       _goToMission() {
-        const appShell = document.querySelector('app-shell');
-        const router = appShell.shadowRoot.querySelector('app-route');
-        router.set('page', '/show-mission');
-        router.set('route.path', '/show-mission');
+        this.dispatchEvent(new CustomEvent('show-mission', { detail: { mission: this.key } }))
       }
     }
 customElements.define(MissionCard.is, MissionCard);

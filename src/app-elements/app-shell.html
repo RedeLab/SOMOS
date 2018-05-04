@@ -92,11 +92,11 @@
           fallback-selection="not-found"
           on-selected-item-changed="_selectedPageChanged"
           role="main">
-          <inbox-page name="inbox" route="{{route}}" shell-page="{{page}}" on-open-drawer="_openDrawer"></inbox-page>
+          <inbox-page name="inbox" route="{{route}}"  on-open-drawer="_openDrawer"></inbox-page>
           <campaign-page name="campaign"></campaign-page>
-          <new-campaign-page route="{{route}}" shell-page="{{page}}" name="new-campaign"></new-campaign-page>
-          <mission-page name="mission" user="[[user]]" route="{{route}}" shell-page="{{page}}"></mission-page>
-          <show-mission-page name="show-mission" route="{{route}}" shell-page="{{page}}"></show-mission-page>
+          <new-campaign-page route="{{route}}"  name="new-campaign"></new-campaign-page>
+          <mission-page name="mission" user="[[user]]" route="{{route}}"></mission-page>
+          <show-mission-page name="show-mission" route="{{route}}" ></show-mission-page>
           <not-found-page name="not-found"></not-found-page>
           <login-page name="login" id="login"
           user="{{user}}" route="{{route}}">
