@@ -14,6 +14,8 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../campaign-elements/proposal-dialog.html">
+<link rel="import" href="../campaign-elements/create-campaign-dialog.html">
+<link rel="import" href="../app-elements/app-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -170,125 +172,129 @@
 
     </style>
 
+    <app-dialog id="confirm" opened="{{openedModal}}">
+      <create-campaign-dialog></create-campaign-dialog>
+    </app-dialog>
+
     <firebase-query
       id="query"
       path="/campaigns"
       data="{{campaignData}}">
     </firebase-query>
     
-      <app-header-layout has-scrolling-region>
-        <app-form-header slot="header" shadow>
-          <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
-          <span slot="main-title">Criar Campanha</span>
-          <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
-        </app-form-header>
-        <div class="fill">
-          <iron-pages selected="[[selection]]">
-            <div class="step" id="step1">
-              <h1>Dados da campanha</h1>
-              <div class="fields">
-                <paper-input value="{{campaign.name}}" label="Titulo" placeholder="Nome da campanha"></paper-input>
-                <div class="file-upload">
-                  <paper-input label="Imagem de capa" placeholder="Selecione uma imagem">
-                    <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
-                  </paper-input>
-                  <input type="file" on-change="setFileName" accept=".jpg, .jpeg, .png">
+    <app-header-layout has-scrolling-region>
+      <app-form-header slot="header" shadow>
+        <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
+        <span slot="main-title">Criar Campanha</span>
+        <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
+      </app-form-header>
+      <div class="fill">
+        <iron-pages selected="[[selection]]">
+          <div class="step" id="step1">
+            <h1>Dados da campanha</h1>
+            <div class="fields">
+              <paper-input value="{{campaign.name}}" label="Titulo" placeholder="Nome da campanha"></paper-input>
+              <div class="file-upload">
+                <paper-input label="Imagem de capa" placeholder="Selecione uma imagem">
+                  <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
+                </paper-input>
+                <input type="file" on-change="setFileName" accept=".jpg, .jpeg, .png">
+              </div>
+              <paper-textarea value="{{campaign.description}}" label="Descrição" placeholder="Uma breve descrição da campanha" char-counter
+                maxlength="500"></paper-textarea>
+              <div class="input-file">
+                <iron-icon icon="app:cloud-upload"></iron-icon>
+                <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
+                <div class="upload-button">
+                  <span class="file">Selecionar arquivo</span>
+                  <input type="file" multiple>
                 </div>
-                <paper-textarea value="{{campaign.description}}" label="Descrição" placeholder="Uma breve descrição da campanha" char-counter
-                  maxlength="500"></paper-textarea>
-                <div class="input-file">
-                  <iron-icon icon="app:cloud-upload"></iron-icon>
-                  <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
-                  <div class="upload-button">
-                    <span class="file">Selecionar arquivo</span>
-                    <input type="file" multiple>
-                  </div>
+              </div>
+              <paper-input value="{{campaign.calling}}" label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
+              <label>Links externos</label>
+              <div class="links">
+                <div class="row">
+                  <span>Website
+                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  </span>
+                  <span>Facebook
+                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  </span>
                 </div>
-                <paper-input value="{{campaign.calling}}" label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
-                <label>Links externos</label>
-                <div class="links">
-                  <div class="row">
-                    <span>Website
-                      <paper-icon-button icon="app:edit"></paper-icon-button>
-                    </span>
-                    <span>Facebook
-                      <paper-icon-button icon="app:edit"></paper-icon-button>
-                    </span>
-                  </div>
-                  <div class="row">
-                    <span>Instagram
-                      <paper-icon-button icon="app:edit"></paper-icon-button>
-                    </span>
-                    <span>Twitter
-                      <paper-icon-button icon="app:edit"></paper-icon-button>
-                    </span>
-                  </div>
+                <div class="row">
+                  <span>Instagram
+                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  </span>
+                  <span>Twitter
+                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  </span>
                 </div>
               </div>
             </div>
-            <div class="step" id="step2">
-              <h1>Propostas
-                <paper-button on-tap="open">Nova Proposta</paper-button>
-              </h1>
-              <app-dialog id="dialog">
-                <proposal-dialog></proposal-dialog>
-              </app-dialog>
+          </div>
+          <div class="step" id="step2">
+            <h1>Propostas
+              <paper-button on-tap="open">Nova Proposta</paper-button>
+            </h1>
+            <app-dialog id="dialog">
+              <proposal-dialog></proposal-dialog>
+            </app-dialog>
+          </div>
+          <div class="step" id="step3">
+            <div class="about">
+              <h1>Sobre o candidato</h1>
+              <span></span>
             </div>
-            <div class="step" id="step3">
-              <div class="about">
-                <h1>Sobre o candidato</h1>
-                <span></span>
-              </div>
-              <div class="candidate">
-                <paper-input label="Nome do candidato" placeholder="Nome do candidato"></paper-input>
-                <paper-dropdown-menu label="Cargo que irá disputar">
+            <div class="candidate">
+              <paper-input label="Nome do candidato" placeholder="Nome do candidato"></paper-input>
+              <paper-dropdown-menu label="Cargo que irá disputar">
+                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                  <paper-item>Cargo 1</paper-item>
+                  <paper-item>Cargo 2</paper-item>
+                  <paper-item>Cargo 3</paper-item>
+                  <paper-item>Cargo 4</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <div class="region">
+                <paper-dropdown-menu label="Estado">
                   <paper-listbox slot="dropdown-content" class="dropdown-content">
-                    <paper-item>Cargo 1</paper-item>
-                    <paper-item>Cargo 2</paper-item>
-                    <paper-item>Cargo 3</paper-item>
-                    <paper-item>Cargo 4</paper-item>
+                    <paper-item>Estado 1</paper-item>
+                    <paper-item>Estado 2</paper-item>
+                    <paper-item>Estado 3</paper-item>
+                    <paper-item>Estado 4</paper-item>
                   </paper-listbox>
                 </paper-dropdown-menu>
-                <div class="region">
-                  <paper-dropdown-menu label="Estado">
-                    <paper-listbox slot="dropdown-content" class="dropdown-content">
-                      <paper-item>Estado 1</paper-item>
-                      <paper-item>Estado 2</paper-item>
-                      <paper-item>Estado 3</paper-item>
-                      <paper-item>Estado 4</paper-item>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
-                  <paper-dropdown-menu label="Cidade">
-                    <paper-listbox slot="dropdown-content" class="dropdown-content">
-                      <paper-item>Cidade 1</paper-item>
-                      <paper-item>Cidade 2</paper-item>
-                      <paper-item>Cidade 3</paper-item>
-                      <paper-item>Cidade 4</paper-item>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
-                </div>
-                <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX"></paper-input>
-                <paper-dropdown-menu label="Partido">
+                <paper-dropdown-menu label="Cidade">
                   <paper-listbox slot="dropdown-content" class="dropdown-content">
-                    <paper-item>Partido 1</paper-item>
-                    <paper-item>Partido 2</paper-item>
-                    <paper-item>Partido 3</paper-item>
-                    <paper-item>Partido 4</paper-item>
+                    <paper-item>Cidade 1</paper-item>
+                    <paper-item>Cidade 2</paper-item>
+                    <paper-item>Cidade 3</paper-item>
+                    <paper-item>Cidade 4</paper-item>
                   </paper-listbox>
                 </paper-dropdown-menu>
-                <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX"></paper-input>
               </div>
+              <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX"></paper-input>
+              <paper-dropdown-menu label="Partido">
+                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                  <paper-item>Partido 1</paper-item>
+                  <paper-item>Partido 2</paper-item>
+                  <paper-item>Partido 3</paper-item>
+                  <paper-item>Partido 4</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX"></paper-input>
             </div>
-            <div></div>
-          </iron-pages>
-          <paper-stepper selected="{{selection}}" progress-bar back-label="Voltar" next-label="{{nextLabel}}">
-            <paper-step></paper-step>
-            <paper-step></paper-step>
-            <paper-step></paper-step>
-            <paper-step></paper-step>
-          </paper-stepper>
-        </div>
-      </app-header-layout>
+          </div>
+          <div></div>
+        </iron-pages>
+        <paper-stepper selected="{{selection}}" progress-bar back-label="Voltar" next-label="{{nextLabel}}">
+          <paper-step></paper-step>
+          <paper-step></paper-step>
+          <paper-step></paper-step>
+          <paper-step></paper-step>
+        </paper-stepper>
+      </div>
+    </app-header-layout>
   </template>
   <script>
     class NewCampaignPage extends Polymer.Element {
@@ -314,6 +320,10 @@
           nextLabel: {
             type: String,
             value: 'Próximo'
+          },
+          openedModal: {
+            type: Boolean,
+            observer: '_observeModal'
           }
         };
       }
@@ -336,16 +346,25 @@
         this.campaign.uid = this.user.uid;
         console.log(this.campaign);
         this.$.query.ref.push({ content: this.campaign });
+        this.campaign = {};
       }
 
       _setCreateCampaign(selection) {
         if(selection === 2) {
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
+          this.$.confirm.present();
+          // this._saveCampaign();
           
-          console.log('criou campanha');
         } else {
           this.nextLabel = 'Próximo';
+        }
+      }
+
+      _observeModal() {
+        if (!this.openedModal) {
+          this._returnToInbox();
+          this.selection = 0;
         }
       }
 
