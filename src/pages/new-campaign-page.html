@@ -5,14 +5,10 @@
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
-<<<<<<< 48ddd34544e7d7e54037bc669a35ccf2c6620274
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
-=======
-<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
->>>>>>> WIP new campaign page proposal
 
 <link rel="import" href="../campaign-elements/proposal-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
@@ -43,21 +39,17 @@
       .step2 {
         flex: 1;
       }
-<<<<<<< 48ddd34544e7d7e54037bc669a35ccf2c6620274
       .step {
         padding: 0 20px;
       }
       .step h1 {
-=======
-      .step1 h1,
-      .step2 h1 {
->>>>>>> WIP new campaign page proposal
         color: var(--secondary-text-color);
       }
       .file-upload {
         position: relative;
       }
-      .file-upload input {
+      .file-upload input,
+      .upload-button input {
         position: absolute;
         opacity: 0;
         top: 0;
@@ -89,15 +81,14 @@
         text-transform: uppercase;
         color: var(--accent-color);
       }
+      .upload-button {
+        position: relative;
+      }
       label {
         color: var(--paper-input-container-color);
       }
       .links {
-<<<<<<< 48ddd34544e7d7e54037bc669a35ccf2c6620274
         margin-top: 5px;
-=======
-        margin: 10px 0 20px 0;
->>>>>>> WIP new campaign page proposal
       }
       .row {
         flex: 1;
@@ -179,16 +170,19 @@
             <div class="fields">
               <paper-input label="Titulo" placeholder="Nome da campanha"></paper-input>
               <div class="file-upload">
-                <paper-input label="Imagem de capa"  placeholder="Selecione uma imagem">
+                <paper-input label="Imagem de capa" placeholder="Selecione uma imagem">
                   <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
                 </paper-input>
-                <input type="file">
+                <input type="file" on-change="setFileName" accept=".jpg, .jpeg, .png">
               </div>
               <paper-textarea label="Descrição" placeholder="Uma breve descrição da campanha" char-counter maxlength="500"></paper-textarea>
               <div class="input-file">
                 <iron-icon icon="app:cloud-upload"></iron-icon>
                 <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
-                <span class="file">Selecionar arquivo</span>
+                <div class="upload-button">
+                  <span class="file">Selecionar arquivo</span>
+                  <input type="file" multiple>
+                </div>
               </div>
               <paper-input label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
               <label>Links externos</label>
@@ -271,7 +265,6 @@
           <paper-card><div class="card-title">ioeioueiou</div></paper-card>
         </div>
       </app-header-layout>
-    </style>
   </template>
   <script>
     class NewCampaignPage extends Polymer.Element {
@@ -291,6 +284,12 @@
 
       open() {
         this.$.dialog.present();
+      }
+
+      setFileName(e) {
+        let filename = e.target.files[0].name;
+        const input = this.shadowRoot.querySelector('.file-upload paper-input');
+        input.value = filename.slice(0, 30) + "...";
       }
 
     }
