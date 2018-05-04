@@ -67,7 +67,25 @@
 
       .go {
         float: right;
-        margin-top: 7px;
+      }
+
+      @media only screen and (max-width: 400px) {
+        .mission-image, .card-content { display: block; }
+        .mission-image img, .card-content, .timing {float: unset; }
+
+        .mission-image { width: 100%; }
+
+        .mission-card .card-content-footer {
+          position: unset;
+          bottom: unset;
+          right: unset;
+          text-align: unset;
+          width: 100%;
+          display: flex;
+        }
+
+        .timing { flex-grow: 2; }
+
       }
 
     </style>
@@ -80,8 +98,8 @@
               </div>
             </div>
             <div class="card-content-footer">
-              <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> 22 dias restantes </p>
-              <iron-icon class="go" on-tap= "_goToMission" icon="app:arrow-forward"></iron-icon>
+              <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
+              <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
             </div>
         </div>
   </template>
@@ -95,7 +113,11 @@
             type: Object,
             value: function() {}
           },
-          key: String
+          key: String,
+          remainingTime: {
+            type: String,
+            value: "22 dias restantes"
+          }
         }
       }
 
