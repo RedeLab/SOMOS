@@ -1,0 +1,30 @@
+path / {
+  read() {true}
+}
+
+function validateMission(auth, data, newData) {
+  return auth != null && data.val() &&
+  newData.child('title').val().length > 0 &&
+  newData.child('description').val().length > 0 &&
+  newData.child('reward').val().length > 0 &&
+  newData.child('video').val().length > 0
+}
+
+function checkCredencial(auth, userKey) {
+  return  auth.uid == userKey
+}
+
+path /missions/{mid} {
+  read() {true}
+  write() {validateMission(auth, data, newData)}
+}
+
+path /campaigns/{cid} {
+  read() {true}
+  write() { auth != null }
+}
+
+path /users/{uid} {
+  read() {checkCredencial(auth, uid)}
+  write() { checkCredencial(auth, uid) }
+}
