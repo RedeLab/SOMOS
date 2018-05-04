@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/google-youtube/google-youtube.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -25,13 +26,15 @@
 
       
       app-header {
-        height: 212px;
+        height: 222px;
         color: var(--light-text-color);
         background-color: var(--default-prymary-color);
         /* https://bugs.chromium.org/p/chromium/issues/detail?id=637072 */
         --app-header-background-front-layer: {
           background-image: var(--layer-image);
-          background-position: left center;
+          background-position: center;
+          background-size: 125%;
+          filter: contrast(.7) brightness(.6);
         };
       }
       
@@ -42,26 +45,65 @@
         background: unset;
         width: 100px;
       }
-      .tall {
-        height: 148px;
-        background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+      app-header[shadow] .tall .actions {
+        display: none;
       }
-      .tall paper-icon-button {
-        float: right;
-        margin: -10px -15px;
+      .tall .play {
+        display: block;
+        margin: -65px auto 0;
+        height: 80px;
+        width: 80px;
+      }
+      .tall {
+        height: 158px;
+      }
+      .tall .actions {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+      }
+
+      h1.title[main-title] {
+        margin: 5px 20px;
+      }
+
+      .dark {
+        color: black;
+      }
+
+      .timing {
+        font-size: 0.6em;
+      }
+      .timing iron-icon {
+        height: 15px;
       }
 
       .content {
-        height: 100vh;
+        min-height: 100vh;
       }
-      h1.title[main-title] {
-        margin: 15px 20px;
+
+      app-dialog {
+        width: 100%;
+        height: 222px;
+        margin: 0;
+        top: 0;
       }
-      .dark {color: black;}
+
+      google-youtube {
+        width: 100vh;
+        margin: 0;
+        padding: 0;
+      }
 
     </style>
 
-    <app-dialog id="confirmation" opened="{{openedModal}}">
+    <app-dialog id="dialog">
+      <google-youtube id="video" chromeless
+        video-id="{{mission.content.video}}"
+        height="auto"
+        width="100vw"
+        autoplay="1">
+      </google-youtube>
     </app-dialog>
 
     <app-route route="{{route}}"
@@ -83,10 +125,24 @@
           <paper-icon-button icon="app:more-vert"></paper-icon-button>
         </app-toolbar>
         <app-toolbar class="tall">
-          <h1 bottom-item main-title class="title">{{mission.content.title}}</h1>
+          <h1 bottom-item main-title class="title">
+            {{mission.content.title}}
+            <div class="timing">
+              <iron-icon icon="app:watch-later"></iron-icon>
+              <span>22 dias restantes</span>
+            </div>
+          </h1>
+          <paper-icon-button class="play" icon="app:play-circle-outline"
+            on-tap="playVideo">
+          </paper-icon-button>
+          <div class="actions">
+            <paper-icon-button icon="app:chat-bubble-outline"></paper-icon-button>
+            <paper-icon-button icon="app:thumb-up"></paper-icon-button>
+          </div>
         </app-toolbar>
       </app-header>
       <div class="content">
+        <h2></h2>
       </div>
     </app-header-layout>
   </template>
@@ -123,6 +179,25 @@
         this.updateStyles({ '--layer-image': `url(https://img.youtube.com/vi/${mission.content.video}/0.jpg)` })
       }
 
+      playVideo(e) {
+        this.$.dialog.withBackdrop = false;
+        this.$.dialog.open();
+        this.$.video.play();
+        const iframe = this.$.video._player.a;
+        const requestFullScreen = iframe.requestFullScreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullScreen;
+        if (requestFullScreen) {
+          requestFullScreen.bind(iframe)();
+        }
+      }
+
+      dismissVideo(e) {
+        this.$.dialog.close();
+        this.$.video.pause();
+        const exitFullScreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitCancelFullScreen;
+        if(exitFullScreen) {
+          exitFullScreen.bind(document)();
+        }
+      }
     }
 
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
