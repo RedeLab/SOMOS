@@ -1,4 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
@@ -14,32 +17,76 @@
 
       :host {
         display: block;
-        --app-form-header-background: #fff;
-        --app-form-header-color: #000;
         background: var(--secondary-background-color);
         @apply --default-font;
         height: 100vh;
+        --layer-image: '';
       }
+
+      
+      app-header {
+        height: 212px;
+        color: var(--light-text-color);
+        background-color: var(--default-prymary-color);
+        /* https://bugs.chromium.org/p/chromium/issues/detail?id=637072 */
+        --app-header-background-front-layer: {
+          background-image: var(--layer-image);
+          background-position: left center;
+        };
+      }
+      
+      app-header[shadow] {
+        color: black;
+      }
+      app-header[shadow] .tall {
+        background: unset;
+        width: 100px;
+      }
+      .tall {
+        height: 148px;
+        background: linear-gradient(to top, rgba(0,0,0,0.4), transparent);
+      }
+      .tall paper-icon-button {
+        float: right;
+        margin: -10px -15px;
+      }
+
+      .content {
+        height: 100vh;
+      }
+      h1.title[main-title] {
+        margin: 15px 20px;
+      }
+      .dark {color: black;}
 
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
-      <mission-modal></mission-modal>
     </app-dialog>
+
+    <app-route route="{{route}}"
+      pattern="/show-mission/:key"
+      data="{{data}}">
+    </app-route>
 
     <firebase-document
       id="document"
-      path="/missions/{{mid}}"
+      path="/missions/{{data.key}}"
       data="{{mission}}">
     </firebase-document>
 
     <app-header-layout has-scrolling-region>
-      <app-form-header shadow slot="header">
-          <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-          <span slot="main-title">{{mission.title}}</span>
-          <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
-      </app-form-header>
-      <div class="form">
+      <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
+        <app-toolbar>
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+          <h1 condensed-title class="dark title">{{mission.content.title}}</h1>
+          <paper-icon-button icon="app:more-vert"></paper-icon-button>
+        </app-toolbar>
+        <app-toolbar class="tall">
+          <h1 bottom-item main-title class="title">{{mission.content.title}}</h1>
+        </app-toolbar>
+      </app-header>
+      <div class="content">
       </div>
     </app-header-layout>
   </template>
@@ -51,7 +98,16 @@
         return {
           selected: {
             observer: '_selectedChanged'
-          }
+          },
+          route: {
+            type: Object,
+            notify: true
+          },
+          mission: {
+            type: Object,
+            observer: '_setMissionLayer'
+          },
+          data: Object
         };
       }
 
@@ -59,8 +115,12 @@
       }
 
       _returnToInbox() {
-        this.set('shellPage', 'inbox');
         this.set('route.path', '/');
+      }
+
+      _setMissionLayer(mission) {
+        if(!mission || !mission.content) return;
+        this.updateStyles({ '--layer-image': `url(https://img.youtube.com/vi/${mission.content.video}/0.jpg)` })
       }
 
     }
