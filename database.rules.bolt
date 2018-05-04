@@ -2,12 +2,15 @@ path / {
   read() {true}
 }
 
+function contentChild(newData, child) {
+  return newData.child('content').child(child)
+}
+
 function validateMission(auth, data, newData) {
-  return auth != null && data.val() &&
-  newData.child('title').val().length > 0 &&
-  newData.child('description').val().length > 0 &&
-  newData.child('reward').val().length > 0 &&
-  newData.child('video').val().length > 0
+  return auth != null &&
+    contentChild(newData, 'title').val().length > 0 &&
+    contentChild(newData, 'description').val().length > 0 &&
+    contentChild(newData, 'endDate').val().length > 0
 }
 
 function checkCredencial(auth, userKey) {
