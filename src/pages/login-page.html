@@ -34,8 +34,8 @@
             value() {
               return [
                 '/campaign',
-                '/mission',
-                '/not-found'
+                'show-mission',
+                'not-found'
               ];
             }
           }
@@ -51,8 +51,12 @@
           if(this.selected) this.set('route.path', '/');
           this.$.dialog.dismiss();
         } else {
-          if(this.publicRoutes.includes(this.route.path)) return;
-          this.$.dialog.present();
+          const reducer = (isPublic, pub) => isPublic || path.includes(pub);
+          if(this.publicRoutes.reduce(reducer, false)) {
+            this.$.dialog.dismiss();
+          } else {
+            this.$.dialog.present();
+          }
         }
       }
 

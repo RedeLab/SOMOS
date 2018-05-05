@@ -34,7 +34,9 @@
     "web-animations-js": "web-animations/web-animations-js#^2.3.1",
     "app-media": "PolymerElements/app-media#^0.10.0",
     "webrtc-adapter": "^6.1.5",
-    "google-youtube": "GoogleWebComponents/google-youtube#^2.0.0"
+    "google-youtube": "GoogleWebComponents/google-youtube#^2.0.0",
+    "paper-progress": "PolymerElements/paper-progress#^2.1.1",
+    "paper-spinner": "PolymerElements/paper-spinner#^2.1.0"
   },
   "resolutions": {
     "polymer": "^2.0.0"
