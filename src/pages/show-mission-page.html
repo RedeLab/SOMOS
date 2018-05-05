@@ -3,13 +3,20 @@
 <link rel="import" href="../../bower_components/app-layout/app-header/app-header.html">
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/google-youtube/google-youtube.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../mission-elements/mission-comment.html">
 
 <dom-module id="show-mission-page">
   <template>
@@ -28,7 +35,6 @@
       app-header {
         height: 222px;
         color: var(--light-text-color);
-        background-color: var(--default-prymary-color);
         /* https://bugs.chromium.org/p/chromium/issues/detail?id=637072 */
         --app-header-background-front-layer: {
           background-image: var(--layer-image);
@@ -78,8 +84,27 @@
         height: 15px;
       }
 
+      .progress {
+        position: absolute;
+        top: 0; bottom: 0;
+        left: 0; right: 0;
+      }
+      .progress paper-progress {
+        width: 100%;
+      }
+      .progress .spinner {
+        height: 125px;
+        text-align: center;
+        padding-top: 97px;
+      }
+
       .content {
-        min-height: 100vh;
+        min-height: calc(100vh - 150px);
+        padding: 0 20px 80px;;
+      }
+      .content p,
+      .content h2 {
+        margin: 10px 0;
       }
 
       app-dialog {
@@ -89,21 +114,44 @@
         top: 0;
       }
 
-      google-youtube {
-        width: 100vh;
+      #fullscreen {
         margin: 0;
         padding: 0;
+      }
+      #dismiss {
+        position: absolute;
+        top: 12px;
+        left: 7px;
+        color: white;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.3);
+        --paper-icon-button-ink-color: var(--secondary-text-color);
+      }
+
+      .comment .message {
+        display: flex;
+      }
+      .comment .message paper-input {
+        flex: 1;
+      }
+      .comment .message paper-button {
+        margin: auto 5px 5px;
       }
 
     </style>
 
     <app-dialog id="dialog">
-      <google-youtube id="video" chromeless
-        video-id="{{mission.content.video}}"
-        height="auto"
-        width="100vw"
-        autoplay="1">
-      </google-youtube>
+      <div id="fullscreen">
+        <google-youtube id="video" chromeless
+          video-id="{{mission.content.video}}"
+          height="100vh"
+          width="100vw"
+          autoplay="1">
+        </google-youtube>
+        <paper-icon-button icon="app:close"
+          on-tap="dismissVideo" id="dismiss">
+        </paper-icon-button>
+      </div>
     </app-dialog>
 
     <app-route route="{{route}}"
@@ -116,6 +164,12 @@
       path="/missions/{{data.key}}"
       data="{{mission}}">
     </firebase-document>
+
+    <firebase-query
+      id="query"
+      path="/comments/{{data.key}}"
+      data="{{comments}}">
+    </firebase-query>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
@@ -142,9 +196,63 @@
         </app-toolbar>
       </app-header>
       <div class="content">
-        <h2></h2>
+        <dom-if if="{{mission.content}}">
+          <template>
+            <h2>Entenda a missão</h2>
+            <p>{{mission.content.description}}</p>
+            <h2>Recompensa</h2>
+            <p>{{mission.content.reward}}</p>
+            <div class="comments">
+              <h2>Comentários</h2>
+              <dom-repeat items="{{comments}}" as="comment">
+                <template>
+                  <mission-comment comment="{{comment.content}}" key="{{comment.key}}">
+                  </mission-comment>
+                </template>
+              </dom-repeat>
+              <div class="comment">
+                <dom-if if="{{user}}">
+                  <template>
+                    <div class="message">
+                      <paper-input id="commentInput" label="Escreva um comentário"
+                        required auto-validate minlength="1"
+                        error-message="O campo não pode ser vazio.">
+                      </paper-input>
+                      <paper-button on-tap="addComment" class="plain">Enviar</paper-button>
+                    </div>
+                  </template>
+                </dom-if>
+                <dom-if if="{{!user}}">
+                  <template>
+                    Faça o <a href="/login">login</a> para comentar.
+                  </template>
+                </dom-if>
+              </div>
+            </div>
+          </template>
+        </dom-if>
       </div>
+      <app-actions id="actions" selected="{{missionAction}}" icon="app:more-vert" collapsed$="[[collapsed]]">
+        <paper-fab slot="actions" mini icon="app:share" id="share" on-tap="_shareMission" name="share"></paper-fab>
+        <paper-tooltip slot="actions" for="share">Compartilhar</paper-tooltip>
+        <paper-fab slot="actions" mini icon="app:assistant-photo" id="accept" name="accept"></paper-fab>
+        <paper-tooltip slot="actions" for="accept">Aceitar</paper-tooltip>
+        <paper-fab slot="actions" mini icon="app:remove-circle-outline" id="close" name="close"></paper-fab>
+        <paper-tooltip slot="actions" for="close">Recusar</paper-tooltip>
+      </app-actions>
     </app-header-layout>
+
+    <dom-if if="{{!mission.content}}">
+      <template>
+        <div class="progress">
+          <div class="spinner">
+            <paper-spinner active></paper-spinner>
+          </div>
+          <paper-progress indeterminate></paper-progress>
+        </div>
+      </template>
+    </dom-if>
+
   </template>
 
   <script>
@@ -152,6 +260,10 @@
       static get is() { return 'show-mission-page'; }
       static get properties() {
         return {
+          missionAction: {
+            type: String,
+            value: ''
+          },
           selected: {
             observer: '_selectedChanged'
           },
@@ -183,10 +295,10 @@
         this.$.dialog.withBackdrop = false;
         this.$.dialog.open();
         this.$.video.play();
-        const iframe = this.$.video._player.a;
-        const requestFullScreen = iframe.requestFullScreen || iframe.mozRequestFullScreen || iframe.webkitRequestFullScreen;
+        const fs = this.$.fullscreen;
+        const requestFullScreen = fs.requestFullScreen || fs.mozRequestFullScreen || fs.webkitRequestFullScreen;
         if (requestFullScreen) {
-          requestFullScreen.bind(iframe)();
+          requestFullScreen.bind(fs)();
         }
       }
 
@@ -197,6 +309,16 @@
         if(exitFullScreen) {
           exitFullScreen.bind(document)();
         }
+      }
+      addComment(e) {
+        const input = this.shadowRoot.querySelector('#commentInput');
+        if(input.invalid || !input.value) return;
+        const content = {
+          username: this.user.displayName,
+          image: this.user.photoURL,
+          text: input.value
+        };
+        this.$.query.ref.push({ content });
       }
     }
 

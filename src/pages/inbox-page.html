@@ -17,8 +17,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../mission-elements/mission-card.html">
-<link rel="import" href="../../bower_components/app-route/app-location.html">
-<link rel="import" href="../../bower_components/app-route/app-route.html">
 
 <dom-module id="inbox-page">
   <template>
@@ -82,10 +80,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     class InboxPage extends Polymer.Element {
       static get is() { return 'inbox-page'; }
-      openDrawer() {
-        this.dispatchEvent(new CustomEvent('open-drawer'));
-      }
-
       static get properties() {
         return {
           inboxAction: {
@@ -101,6 +95,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_missionsChanged'
           }
         }
+      }
+
+      openDrawer() {
+        this.dispatchEvent(new CustomEvent('open-drawer'));
       }
 
       _openMissionForm() {
