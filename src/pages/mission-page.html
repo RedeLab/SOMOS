@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
@@ -45,10 +46,10 @@
           <span slot="main-title">Criar missão</span>
           <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
-      <div class="form">
-        <paper-input value="{{mission.title}}" label="Título" char-counter maxlength="30"></paper-input>
-        <paper-input type="date" value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
-        <paper-input value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
+      <div class="form" id="form">
+        <paper-input id="missionTitle" required error-message="Titulo da missão está em branco" value="{{mission.title}}" label="Título" char-counter maxlength="30"></paper-input>
+        <paper-input id="missionDate" required error-message="Duração da missão está em branco" type="date"  value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
+        <paper-input id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
         <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
         <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
         <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
@@ -89,9 +90,31 @@
       }
 
       _saveMission(e) {
-        this.mission.uid = this.user.uid;
-        this.$.query.ref.push({ content: this.mission });
-        this.$.confirmation.present();
+        if (this._validMission()) {
+          this.mission.uid = this.user.uid;
+          this.$.query.ref.push({ content: this.mission });
+          this.$.confirmation.present();
+        }
+      }
+
+      _validMission() {
+        var valid;
+        if (!this.mission.title) {
+          this.$.missionTitle.invalid = true;
+          valid = false;
+        }
+
+        if (!this.mission.endDate) {
+          this.$.missionDate.invalid = true;
+          valid = false;
+        }
+
+        if (!this.mission.description) {
+          this.$.missionDesc.invalid = true;
+          valid = false;
+        }
+
+        return valid;
       }
 
       _observeModal() {
