@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../mission-elements/mission-modal.html">
@@ -28,6 +29,19 @@
         margin: auto;
       }
 
+      .file-upload {
+        position: relative;
+      }
+      .file-upload input {
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .file-upload iron-icon {
+        --iron-icon-fill-color: var(--dark-primary-color);
+      }
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
@@ -40,6 +54,14 @@
       data="{{missionsData}}">
     </firebase-query>
 
+    <firebase-storage-multiupload
+      path="/missions"
+      files="[[fileArray]]"
+      upload-tasks="{{uploadTasks}}"
+      log="true"
+      id="storage">
+    </firebase-storage-multiupload>
+
     <app-header-layout has-scrolling-region>
       <app-form-header shadow slot="header">
           <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
@@ -50,6 +72,11 @@
         <paper-input id="missionTitle" required error-message="Titulo da missão está em branco" value="{{mission.title}}" label="Título" char-counter maxlength="30"></paper-input>
         <paper-input id="missionDate" required error-message="Duração da missão está em branco" type="date"  value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
         <paper-input id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
+        <div class="file-upload">
+          <paper-input id="missionPhoto" type="file" value="{{mission.photo}}" label="Imagem de capa"  placeholder="Selecione uma imagem">
+            <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
+          </paper-input>
+        </div>
         <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
         <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
         <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
@@ -77,6 +104,14 @@
           openedModal: {
             type: Boolean,
             observer: '_observeModal'
+          },
+          fileArray: {
+            type: Array,
+            value: []
+          },
+          uploadTasks: {
+            type: Array,
+            value: []
           }
         }
       }
@@ -92,6 +127,8 @@
       _saveMission(e) {
         if (this._validMission()) {
           this.mission.uid = this.user.uid;
+          this.fileArray.push(this.$.missionPhoto.inputElement.inputElement.files[0]);
+          this.$.storage.upload();
           this.$.query.ref.push({ content: this.mission });
           this.$.confirmation.present();
         }
