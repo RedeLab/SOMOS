@@ -51,11 +51,11 @@
     <firebase-query
       id="query"
       path="/missions"
-      data="{{missionsData}}">
+      data="{{missionData}}">
     </firebase-query>
 
     <firebase-storage-multiupload
-      path="/missions"
+      path="/missions/[[missionId]]"
       files="[[fileArray]]"
       upload-tasks="{{uploadTasks}}"
       log="true"
@@ -112,6 +112,9 @@
           uploadTasks: {
             type: Array,
             value: []
+          },
+          missionId: {
+            type: String
           }
         }
       }
@@ -127,9 +130,10 @@
       _saveMission(e) {
         if (this._validMission()) {
           this.mission.uid = this.user.uid;
+          this.$.query.ref.push({ content: this.mission });
+          this.missionId = this.missionData[this.missionData.length - 1].$key;
           this.fileArray.push(this.$.missionPhoto.inputElement.inputElement.files[0]);
           this.$.storage.upload();
-          this.$.query.ref.push({ content: this.mission });
           this.$.confirmation.present();
         }
       }
