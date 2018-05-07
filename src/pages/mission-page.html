@@ -84,7 +84,11 @@
           </paper-input>
         </div>
 
-        <paper-button on-tap="_getAudio"></paper-button>
+        <iron-label>
+          <paper-icon-button on-tap="_getAudio" icon="app:mic"></paper-icon-button>
+          Envie um audio para seus seguidores.
+        </iron-label>
+
         <audio id="audio" controls on-pause="saveAudio"></audio>
         <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
         <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
@@ -137,7 +141,17 @@
       }
 
       _saveMission(e) {
-        this.$.result_audio.src = this.$.audio.src;
+        if (this._validMission()) {
+          this.mission.uid = this.user.uid;
+          const missionImage = this.$.missionImage.inputElement.inputElement.files[0];
+          this.mission.imageTitle = missionImage.name;
+          this.$.query.ref.push({ content: this.mission });
+          this.missionId = this.missionData[this.missionData.length - 1].$key;
+          this.fileArray.push(this.$.missionImage.inputElement.inputElement.files[0]);
+          this.fileArray.push(this.mission.audio);
+          this.$.storage.upload();
+          this.$.confirmation.present();
+        }
       }
 
       _validMission() {
@@ -172,11 +186,11 @@
             var chunks = [];
             const recorder = new MediaRecorder(mediaStream)
             recorder.ondataavailable = e => {
-              console.log(e.data);
               chunks.push(e.data);
               if (recorder.state == 'inactive') {
                 const blob = new Blob(chunks, { type: 'audio/webm' });
                 navigator.component.$.audio.src = (URL.createObjectURL(blob));
+                navigator.component.mission.audio = blob;
                 navigator.component.$.audio.setAttribute("style", "display: block");
               }
             };
@@ -188,7 +202,6 @@
       }
 
       _saveAudio(recorder) {
-        console.log("eai");
         recorder.stop();
       }
     }
