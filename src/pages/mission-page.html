@@ -4,6 +4,8 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
+<link rel="import" href="../../bower_components/app-media/app-media.html">
+<link rel="import" href="../../bower_components/app-media/app-media-recorder.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../mission-elements/mission-modal.html">
@@ -42,6 +44,10 @@
       .file-upload iron-icon {
         --iron-icon-fill-color: var(--dark-primary-color);
       }
+
+      audio {
+        display: none;
+      }
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
@@ -77,6 +83,9 @@
             <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
           </paper-input>
         </div>
+
+        <paper-button on-tap="_getAudio"></paper-button>
+        <audio id="audio" controls on-pause="saveAudio"></audio>
         <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
         <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
         <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
@@ -128,17 +137,7 @@
       }
 
       _saveMission(e) {
-        if (this._validMission()) {
-          console.log("eai");
-          this.mission.uid = this.user.uid;
-          const missionImage = this.$.missionImage.inputElement.inputElement.files[0];
-          this.mission.imageTitle = missionImage.name;
-          this.$.query.ref.push({ content: this.mission });
-          this.missionId = this.missionData[this.missionData.length - 1].$key;
-          this.fileArray.push(this.$.missionImage.inputElement.inputElement.files[0]);
-          this.$.storage.upload();
-          this.$.confirmation.present();
-        }
+        this.$.result_audio.src = this.$.audio.src;
       }
 
       _validMission() {
@@ -166,6 +165,32 @@
           this._returnToInbox();
       }
 
+      _getAudio() {
+        Navigator.prototype.component = this;
+        navigator.mediaDevices.getUserMedia ( { audio: true })
+          .then( function(mediaStream) {
+            var chunks = [];
+            const recorder = new MediaRecorder(mediaStream)
+            recorder.ondataavailable = e => {
+              console.log(e.data);
+              chunks.push(e.data);
+              if (recorder.state == 'inactive') {
+                const blob = new Blob(chunks, { type: 'audio/webm' });
+                navigator.component.$.audio.src = (URL.createObjectURL(blob));
+                navigator.component.$.audio.setAttribute("style", "display: block");
+              }
+            };
+            recorder.start(2000);
+            setTimeout(navigator.component._saveAudio, 4000, recorder); 
+          }
+          )
+          .catch(function(error) { alert(error); });
+      }
+
+      _saveAudio(recorder) {
+        console.log("eai");
+        recorder.stop();
+      }
     }
     customElements.define(MissionPage.is, MissionPage);
 </script>
