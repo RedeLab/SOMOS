@@ -20,8 +20,8 @@
       }
     </style>
     <div>
-      <paper-input label="Titulo" placeholder="Nome da proposta"></paper-input>
-      <paper-dropdown-menu label="Categoria">
+      <paper-input label="Titulo" placeholder="Nome da proposta" value="{{proposal.title}}"></paper-input>
+      <paper-dropdown-menu label="Categoria" value="{{proposal.category}}">
         <paper-listbox slot="dropdown-content" class="dropdown-content">
           <paper-item>Categoria 1</paper-item>
           <paper-item>Categoria 2</paper-item>
@@ -29,12 +29,12 @@
           <paper-item>Categoria 4</paper-item>
         </paper-listbox>
       </paper-dropdown-menu>
-      <paper-textarea label="Descrição" placeholder="Uma descrição da proposta" char-counter maxlength="1000"></paper-textarea>
+      <paper-textarea label="Descrição" placeholder="Uma descrição da proposta" char-counter maxlength="1000" value="{{proposal.description}}"></paper-textarea>
       <paper-input label="Imagem de capa" disabled value="Selecione uma imagem">
         <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
       </paper-input>
       <div class="submit">
-        <paper-button class="plain">Criar Proposta</paper-button>
+        <paper-button class="plain" on-tap="_saveProposal">Criar Proposta</paper-button>
       </div>
     </div>
   </template>
@@ -42,7 +42,23 @@
     class ProposalDialog extends Polymer.Element {
       static get is() { return 'proposal-dialog'; }
       static get properties() {
-        return {};
+        return {
+          proposal: {
+            type: Object,
+            value: function () { return {}; }
+          },
+          proposals: {
+            type: Array,
+            value: [],
+            notify: true
+          }
+        };
+      }
+
+      _saveProposal() {
+        const proposal = JSON.parse(JSON.stringify(this.proposal));
+        this.dispatchEvent(new CustomEvent('create-proposal', { detail: { proposal }}));
+        this.proposal = {};
       }
       
     }

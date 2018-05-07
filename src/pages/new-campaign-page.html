@@ -12,8 +12,11 @@
 <link rel="import" href="../../bower_components/paper-stepper/paper-step.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
 
 <link rel="import" href="../campaign-elements/proposal-dialog.html">
+<link rel="import" href="../campaign-elements/social-dialog.html">
 <link rel="import" href="../campaign-elements/create-campaign-dialog.html">
 <link rel="import" href="../app-elements/app-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
@@ -109,14 +112,11 @@
         display: inline-block;
         position: relative;
         background-color: white;
-        width: calc(50% - 25px);
+        width: calc(100% - 25px);
         height: 30px;
         margin: 5px 0;
         padding: 5px 10px;
         color: var(--secondary-text-color);
-      }
-      .row span:nth-child(2) {
-        margin-left: 5px;
       }
       .row paper-icon-button {
         width: 35px;
@@ -176,11 +176,32 @@
       <create-campaign-dialog></create-campaign-dialog>
     </app-dialog>
 
-    <firebase-query
-      id="query"
-      path="/campaigns"
+    <app-dialog id="dialog">
+      <proposal-dialog on-create-proposal="_saveProposal" proposals="{{proposals}}"></proposal-dialog>
+    </app-dialog>
+
+    <app-dialog id="social">
+      <social-dialog on-save-social="_saveSocialLink"></social-dialog>
+    </app-dialog>
+
+    <firebase-document
+      id="document"
       data="{{campaignData}}">
+    </firebase-document>
+
+    <firebase-query
+      id="proposal"
+      path="/proposals/[[campaignId]]"
+      data="{{proposalData}}">
     </firebase-query>
+
+    <firebase-storage-multiupload 
+      path="/campaigns/[[campaignId]]"
+      files="[[fileArray]]"
+      upload-tasks="{{uploadTasks}}"
+      log="true"
+      id="storage">
+    </firebase-storage-multiupload>
     
     <app-header-layout has-scrolling-region>
       <app-form-header slot="header" shadow>
@@ -195,10 +216,10 @@
             <div class="fields">
               <paper-input value="{{campaign.name}}" label="Titulo" placeholder="Nome da campanha"></paper-input>
               <div class="file-upload">
-                <paper-input label="Imagem de capa" placeholder="Selecione uma imagem">
+                <paper-input label="Imagem de capa" placeholder="Selecione uma imagem" value="{{campaign.coverImage}}">
                   <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
                 </paper-input>
-                <input type="file" on-change="setFileName" accept=".jpg, .jpeg, .png">
+                <input id="coverImage" type="file" on-change="getFileName" accept=".jpg, .jpeg, .png">
               </div>
               <paper-textarea value="{{campaign.description}}" label="Descrição" placeholder="Uma breve descrição da campanha" char-counter
                 maxlength="500"></paper-textarea>
@@ -214,19 +235,19 @@
               <label>Links externos</label>
               <div class="links">
                 <div class="row">
-                  <span>Website
-                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  <span>Website: {{campaign.website}}
+                    <paper-icon-button icon="app:edit" on-tap="openSocial" name="website"></paper-icon-button>
                   </span>
-                  <span>Facebook
-                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  <span>Facebook: {{campaign.facebook}}
+                    <paper-icon-button icon="app:edit" on-tap="openSocial" name="facebook"></paper-icon-button>
                   </span>
                 </div>
                 <div class="row">
-                  <span>Instagram
-                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  <span>Instagram: {{campaign.instagram}}
+                    <paper-icon-button icon="app:edit" on-tap="openSocial" name="instagram"></paper-icon-button>
                   </span>
-                  <span>Twitter
-                    <paper-icon-button icon="app:edit"></paper-icon-button>
+                  <span>Twitter: {{campaign.twitter}}
+                    <paper-icon-button icon="app:edit" on-tap="openSocial" name="twitter"></paper-icon-button>
                   </span>
                 </div>
               </div>
@@ -236,9 +257,11 @@
             <h1>Propostas
               <paper-button on-tap="open">Nova Proposta</paper-button>
             </h1>
-            <app-dialog id="dialog">
-              <proposal-dialog></proposal-dialog>
-            </app-dialog>
+            <template is="dom-repeat" items="{{proposalData}}">
+              <paper-card>
+                <div class="card-title">{{item.content.title}}</div>
+              </paper-card>
+            </template>
           </div>
           <div class="step" id="step3">
             <div class="about">
@@ -246,8 +269,8 @@
               <span></span>
             </div>
             <div class="candidate">
-              <paper-input label="Nome do candidato" placeholder="Nome do candidato"></paper-input>
-              <paper-dropdown-menu label="Cargo que irá disputar">
+              <paper-input label="Nome do candidato" placeholder="Nome do candidato" value="{{campaign.candidateName}}"></paper-input>
+              <paper-dropdown-menu label="Cargo que irá disputar" value="{{campaign.role}}">
                 <paper-listbox slot="dropdown-content" class="dropdown-content">
                   <paper-item>Cargo 1</paper-item>
                   <paper-item>Cargo 2</paper-item>
@@ -256,7 +279,7 @@
                 </paper-listbox>
               </paper-dropdown-menu>
               <div class="region">
-                <paper-dropdown-menu label="Estado">
+                <paper-dropdown-menu label="Estado" value="{{campaign.state}}">
                   <paper-listbox slot="dropdown-content" class="dropdown-content">
                     <paper-item>Estado 1</paper-item>
                     <paper-item>Estado 2</paper-item>
@@ -264,7 +287,7 @@
                     <paper-item>Estado 4</paper-item>
                   </paper-listbox>
                 </paper-dropdown-menu>
-                <paper-dropdown-menu label="Cidade">
+                <paper-dropdown-menu label="Cidade" value="{{campaign.city}}">
                   <paper-listbox slot="dropdown-content" class="dropdown-content">
                     <paper-item>Cidade 1</paper-item>
                     <paper-item>Cidade 2</paper-item>
@@ -273,8 +296,8 @@
                   </paper-listbox>
                 </paper-dropdown-menu>
               </div>
-              <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX"></paper-input>
-              <paper-dropdown-menu label="Partido">
+              <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX" value="{{campaign.voter}}"></paper-input>
+              <paper-dropdown-menu label="Partido" value="{{campaign.party}}">
                 <paper-listbox slot="dropdown-content" class="dropdown-content">
                   <paper-item>Partido 1</paper-item>
                   <paper-item>Partido 2</paper-item>
@@ -282,7 +305,7 @@
                   <paper-item>Partido 4</paper-item>
                 </paper-listbox>
               </paper-dropdown-menu>
-              <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX"></paper-input>
+              <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX" value="{{campaign.membership}}"></paper-input>
             </div>
           </div>
           <div></div>
@@ -324,6 +347,21 @@
           openedModal: {
             type: Boolean,
             observer: '_observeModal'
+          },
+          fileArray: {
+            type: Array,
+            value: []
+          },
+          uploadTasks: {
+            type: Array,
+            value: []
+          },
+          campaignId: {
+            type: String
+          },
+          proposals: {
+            type: Array,
+            observer: '_handleProposals'
           }
         };
       }
@@ -336,25 +374,57 @@
         this.$.dialog.present();
       }
 
-      setFileName(e) {
+      openSocial(e) {
+        this.$.social.present();
+        this.$.social.socialMedia = e.target.getAttribute('name');
+        
+      }
+
+      _saveSocialLink(e) {
+        const data = e.detail;
+        this.set(`campaign.${this.$.social.socialMedia}`, data.link);
+        this.$.social.dismiss();
+      }
+
+      getFileName(e) {
         let filename = e.target.files[0].name;
         const input = this.shadowRoot.querySelector('.file-upload paper-input');
-        input.value = filename.slice(0, 30) + "...";
+        input.value = filename;
       }
 
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
         console.log(this.campaign);
-        this.$.query.ref.push({ content: this.campaign });
-        this.campaign = {};
+        console.log(this.proposals);
+        //save campaing
+        if(this.campaignId) {
+          this.$.document.path = `/campaigns/${this.campaignId}`;
+          this.campaignData = { content: this.campaign };
+        } else {
+          this.campaignData = { content: this.campaign };
+          this.$.document.saveValue('/campaigns').then(function() {
+            this.campaignId = this.$.document.path.match(/\/.*\/(.*)/)[1];
+          }.bind(this));
+        }
+        //upload image
+        if(this.$.coverImage.files[0]) {
+          this.fileArray.push(this.$.coverImage.files[0]);
+          this.$.storage.upload();
+        } 
+      }
+      
+      _saveProposal(e) {
+        const proposal = e.detail.proposal;
+        this.$.proposal.ref.push({ content: proposal });
       }
 
       _setCreateCampaign(selection) {
+        if(!selection) return;
+        this._saveCampaign();
         if(selection === 2) {
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
           this.$.confirm.present();
-          // this._saveCampaign();
           
         } else {
           this.nextLabel = 'Próximo';
@@ -365,7 +435,13 @@
         if (!this.openedModal) {
           this._returnToInbox();
           this.selection = 0;
+          this.campaign = {};
+          this.campaignId = undefined;
         }
+      }
+
+      _handleProposals() {
+        console.log(this.proposals);
       }
 
     }
