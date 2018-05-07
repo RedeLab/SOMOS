@@ -73,7 +73,7 @@
         <paper-input id="missionDate" required error-message="Duração da missão está em branco" type="date"  value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
         <paper-input id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
         <div class="file-upload">
-          <paper-input id="missionPhoto" type="file" value="{{mission.photo}}" label="Imagem de capa"  placeholder="Selecione uma imagem">
+          <paper-input id="missionImage" type="file" value="{{mission.photo}}" label="Imagem de capa"  placeholder="Selecione uma imagem">
             <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
           </paper-input>
         </div>
@@ -129,17 +129,20 @@
 
       _saveMission(e) {
         if (this._validMission()) {
+          console.log("eai");
           this.mission.uid = this.user.uid;
+          const missionImage = this.$.missionImage.inputElement.inputElement.files[0];
+          this.mission.imageTitle = missionImage.name;
           this.$.query.ref.push({ content: this.mission });
           this.missionId = this.missionData[this.missionData.length - 1].$key;
-          this.fileArray.push(this.$.missionPhoto.inputElement.inputElement.files[0]);
+          this.fileArray.push(this.$.missionImage.inputElement.inputElement.files[0]);
           this.$.storage.upload();
           this.$.confirmation.present();
         }
       }
 
       _validMission() {
-        var valid;
+        let valid = true;
         if (!this.mission.title) {
           this.$.missionTitle.invalid = true;
           valid = false;

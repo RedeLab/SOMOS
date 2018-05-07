@@ -60,8 +60,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               on-show-mission="_goToMission"></mission-card>
           </template>
         </div>
-        <div class="missions">
-        </div>
       </iron-pages>
       <app-actions id="actions" collapsed$="[[collapsed]]" selected="{{inboxAction}}" icon="app:add">
         <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="_openMissionForm" name="edit"></paper-fab>
@@ -93,18 +91,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify: true
           },
           missions: {
-            type: Array,
-            observer: '_missionsChanged'
+            type: Array
           }
         }
       }
 
       _openMissionForm() {
         this.set('route.path', 'mission');
-      }
-
-      _missionsChanged() {
-        console.log(this.missions);
       }
 
       _goToMission(e) {
