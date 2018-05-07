@@ -79,17 +79,23 @@
         <paper-input id="missionDate" required error-message="Duração da missão está em branco" type="date"  value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
         <paper-input id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
         <div class="file-upload">
-          <paper-input id="missionImage" type="file" value="{{mission.photo}}" label="Imagem de capa"  placeholder="Selecione uma imagem">
+          <paper-input id="missionImage" type="file" label="Imagem de capa"  placeholder="Selecione uma imagem">
             <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
+          </paper-input>
+        </div>
+
+        <div class="file-upload">
+          <paper-input id="uploadedAudio" type="file" label="Audio da missão"  placeholder="Envie um audio">
+            <iron-icon icon="app:mic" slot="suffix"></iron-icon>
           </paper-input>
         </div>
 
         <iron-label>
           <paper-icon-button on-tap="_getAudio" icon="app:mic"></paper-icon-button>
-          Envie um audio para seus seguidores.
+          Grave um audio com seu microfone.
         </iron-label>
+        <audio id="micAudio" controls></audio>
 
-        <audio id="audio" controls on-pause="saveAudio"></audio>
         <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
         <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
         <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
@@ -144,15 +150,22 @@
         if (this._validMission()) {
           this.mission.uid = this.user.uid;
           const missionImage = this.$.missionImage.inputElement.inputElement.files[0];
+          const uploadedAudio = this.$.uploadedAudio.inputElement.inputElement.files[0];
           this.mission.imageTitle = missionImage.name;
+          this.mission.audioTitle = uploadedAudio.name;
           this.$.query.ref.push({ content: this.mission });
-          this.missionId = this.missionData[this.missionData.length - 1].$key;
-          this.fileArray.push(this.$.missionImage.inputElement.inputElement.files[0]);
-          this.fileArray.push(this.mission.audio);
-          this.$.storage.upload();
+          this._saveMissionStorage(missionImage, uploadedAudio);
           this.$.confirmation.present();
         }
       }
+
+      _saveMissionStorage(missionImage, uploadedAudio) {
+        this.missionId = this.missionData[this.missionData.length - 1].$key;
+        this.fileArray.push(missionImage);
+        this.fileArray.push(uploadedAudio);
+        this.$.storage.upload();
+      }
+
 
       _validMission() {
         let valid = true;
@@ -179,6 +192,7 @@
           this._returnToInbox();
       }
 
+      //TODO: I will improve this code later. Is not a priority right now.
       _getAudio() {
         Navigator.prototype.component = this;
         navigator.mediaDevices.getUserMedia ( { audio: true })
@@ -195,7 +209,7 @@
               }
             };
             recorder.start(2000);
-            setTimeout(navigator.component._saveAudio, 4000, recorder); 
+            setTimeout(navigator.component._saveAudio, 4000, recorder);
           }
           )
           .catch(function(error) { alert(error); });
