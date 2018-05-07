@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -67,6 +68,7 @@
 
       .go {
         float: right;
+<<<<<<< HEAD
       }
 
       @media only screen and (max-width: 400px) {
@@ -88,9 +90,38 @@
 
       }
 
+      @media only screen and (max-width: 400px) {
+        .mission-image, .card-content { display: block; }
+        .mission-image img, .card-content, .timing {float: unset; }
+
+        .mission-image { width: 100%; }
+
+        .mission-card .card-content-footer {
+          position: unset;
+          bottom: unset;
+          right: unset;
+          text-align: unset;
+          width: 100%;
+          display: flex;
+        }
+
+        .timing { flex-grow: 2; }
+
+      }
+
+
     </style>
+    <firebase-storage-ref
+      path="/missions/[[key]]/[[mission.imageTitle]]"
+      metadata="{{metadata}}"
+      storage-uri="{{gsUri}}"
+      download-url="{{downloadUrl}}"
+      log="true"
+      id="storage">
+    </firebase-storage-ref>
+
         <div class="card mission-card">
-          <div class="mission-image"><img src="../../images/mission-card.jpg"></div>
+          <div class="mission-image"><img src="{{downloadUrl}}"></div>
             <div class="card-content">
               <div class="card-content-info">
                 <h1> {{mission.title}} </h1>
@@ -113,11 +144,17 @@
             type: Object,
             value: function() {}
           },
+          gsUri: String,
+          downloadUrl: String,
           key: String,
           remainingTime: {
             type: String,
             value: "22 dias restantes"
-          }
+          },
+          fileArray: {
+            type: Array,
+            value: []
+          },
         }
       }
 
