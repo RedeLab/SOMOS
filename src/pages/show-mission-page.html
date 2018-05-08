@@ -177,7 +177,7 @@
     </firebase-query>
 
     <firebase-query 
-      id="reject" 
+      id="rejected" 
       path="/users/{{user.uid}}/rejected/{{data.key}}" 
       data="{{rejectedMission}}">
     </firebase-query>
@@ -333,13 +333,23 @@
       }
 
       _acceptMission(e) {
-        const mission = this.mission;
+        const mission = JSON.parse(JSON.stringify(this.mission));
+        delete mission.content.usersAccepted;
         this.$.accepted.ref.set(mission);
+        const usersAccepted = new Set(this.mission.content.usersAccepted);
+        usersAccepted.add(this.user.uid);
+        this.mission.content.usersAccepted = Array.from(usersAccepted);
+        this.$.document.ref.set(this.mission);
       }
 
       _rejectMission(e) { 
-        const mission = this.mission;
-        this.$.reject.ref.set(mission);
+        const mission = JSON.parse(JSON.stringify(this.mission));
+        delete mission.content.usersRejected;
+        this.$.rejected.ref.set(mission);
+        const usersRejected = new Set(this.mission.content.usersRejected);
+        usersRejected.add(this.user.uid);
+        this.mission.content.usersRejected = Array.from(usersRejected);
+        this.$.document.ref.set(this.mission);
       }
     }
 

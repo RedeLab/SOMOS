@@ -42,8 +42,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <firebase-query
       id="accepted"
       path="/users/{{user.uid}}/accepted"
-      data="{{acceptedMissions}}"
-      log="true">
+      data="{{acceptedMissions}}">
+    </firebase-query>
+
+    <firebase-query
+      id="rejected"
+      path="/users/{{user.uid}}/rejected"
+      data="{{rejectedMissions}}">
     </firebase-query>
 
     <app-header-layout has-scrolling-region>
@@ -64,7 +69,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header>
       <iron-pages selected="{{inboxtab}}">
         <div class="inbox">
-          <template is="dom-repeat" items="{{missions}}" as="mission">
+          <template is="dom-repeat" items="{{filteredMissions}}" as="mission">
             <mission-card mission="{{mission.content}}" key="{{mission.$key}}"
               on-show-mission="_goToMission"></mission-card>
           </template>
@@ -101,12 +106,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify: true
           },
           missions: {
-            type: Array
+            type: Array,
+            observer: '_filterMissions'
           },
           acceptedMissions: {
             type: Array
+          },
+          rejectedMissions: {
+            type: Array
+          },
+          filteredMissions: {
+            type: Array
           }
         }
+      }
+      
+      static get observers()  {
+        return ['_filterMissions(missions, acceptedMissions, rejectedMissions)'];
       }
 
       openDrawer() {
@@ -124,6 +140,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _goToMission(e) {
         let mission = e.detail.mission;
         this.set('route.path', `/show-mission/${mission}`);
+      }
+
+      _filterMissions(missions, acceptedMissions, rejectedMissions) {
+        if(!acceptedMissions || !rejectedMissions) return;
+        const keys = [].concat.apply([], acceptedMissions.map((m) => m.$key), rejectedMissions.map((m) => m.$key));
+        this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
       }
     }
 
