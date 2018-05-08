@@ -12,23 +12,6 @@
       :host {
         display: block;
       }
-      .record-form-actions {
-        position: absolute;
-        top: 12px;
-        right: 10px;
-      }
-      .record-form-actions.fixed {
-        opacity: 1;
-        position: fixed;
-        bottom: 0;
-        top: unset;
-        width: 40px;
-        right: 30px;
-        overflow: hidden;
-        padding: 0 4px 0 120px;
-        height: 0;
-        opacity: 0;
-      }
       .backdrop {
         position: fixed;
         left: 0; right: 0;
@@ -37,89 +20,60 @@
         transition: opacity ease .35s;
         opacity: 0;
       }
-      .record-form-actions.fixed ::slotted(paper-fab) {
-        box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
-        background-color: var(--primary-background-color);
-        margin-top: 10px;
-      }
-      .record-form-actions.fixed.visible {
-        height: 300px;
-        opacity: 1;
-      }
       .animatable {
         transition: all ease .35s;
       }
+      .record-form-actions,
+      .record-form-actions.fixed {
+        opacity: 0;
+        height: 0;
+        position: fixed;
+        bottom: 60px;
+        top: unset;
+        width: 40px;
+        right: 19px;
+        overflow: hidden;
+        padding: 0 4px 0 120px;
+        transition: all ease .35s;
+      }
+      .record-form-actions.visible {
+        padding: 10px 4px 35px 120px;
+        height: 150px;
+        opacity: 1;
+      }
       .record-form-actions ::slotted(paper-fab) {
-        display: inline-block;
-        background: transparent;
+        box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
+        background-color: var(--primary-background-color);
+        margin-top: 10px;
         border-radius: 50%;
         color: var(--secondary-text-color);
-        box-shadow: none;
-      }
-      .record-form-actions ::slotted(paper-fab.iron-selected) {
-        background: white;
-        color: var(--default-primary-color);
       }
       .toggle-actions {
         position: fixed;
         height: 60px;
         top: unset;
-        bottom: 25px;
-        right: 25px;
+        bottom: 15px;
+        right: 15px;
         transition: all ease .35s;
-        transform: scale(0);
-      }
-      .toggle-actions.visible {
         transform: scale(1);
       }
       .toggle-actions paper-fab {
         position: absolute;
         top: 0;
       }
-
       .toggle-actions #toggle {
         box-shadow: none;
         transition: transform ease .5s;
         position: relative;
         background: transparent;
       }
+      paper-fab {
+        @apply --accent-gradient;
+      }
       @media screen and (max-width: 640px) {
         .backdrop.visible {
           opacity: 0.3;
         }
-      }
-      @media screen and (max-width: 420px) {
-        .toggle-actions {
-          transform: scale(1) !important;
-          bottom: 15px;
-          right: 15px;
-        }
-        .record-form-actions,
-        .record-form-actions.fixed {
-          opacity: 0;
-          height: 0;
-          position: fixed;
-          bottom: 60px;
-          top: unset;
-          width: 40px;
-          right: 19px;
-          overflow: hidden;
-          padding: 10px 4px 35px 120px;
-          transition: all ease .35s;
-        }
-        .record-form-actions.visible {
-          height: 150px;
-          opacity: 1;
-        }
-        .record-form-actions ::slotted(paper-fab) {
-          box-shadow: var(--shadow-elevation-2dp_-_box-shadow);
-          background-color: var(--primary-background-color);
-          margin-top: 10px;
-        }
-      }
-      paper-button,
-      paper-fab {
-        @apply --accent-gradient;
       }
     </style>
     <div class="backdrop" on-tap="_hideActions"></div>

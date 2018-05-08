@@ -9,20 +9,20 @@
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
-<link rel="import" href="../../bower_components/google-youtube/google-youtube.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../mission-elements/mission-comment.html">
+<link rel="import" href="../mission-elements/mission-player.html">
 
 <dom-module id="show-mission-page">
   <template>
     <style include="shared-styles"></style>
     <style>
-
       :host {
         display: block;
         background: var(--secondary-background-color);
@@ -31,7 +31,10 @@
         --layer-image: '';
       }
 
-      
+      mission-player {
+        margin: auto;
+      }
+
       app-header {
         height: 222px;
         color: var(--light-text-color);
@@ -40,6 +43,7 @@
           background-image: var(--layer-image);
           background-position: center;
           background-size: 125%;
+          background-color: black;
           filter: contrast(.7) brightness(.6);
         };
       }
@@ -53,12 +57,6 @@
       }
       app-header[shadow] .tall .actions {
         display: none;
-      }
-      .tall .play {
-        display: block;
-        margin: -65px auto 0;
-        height: 80px;
-        width: 80px;
       }
       .tall {
         height: 158px;
@@ -107,27 +105,6 @@
         margin: 10px 0;
       }
 
-      app-dialog {
-        width: 100%;
-        height: 222px;
-        margin: 0;
-        top: 0;
-      }
-
-      #fullscreen {
-        margin: 0;
-        padding: 0;
-      }
-      #dismiss {
-        position: absolute;
-        top: 12px;
-        left: 7px;
-        color: white;
-        border-radius: 50%;
-        background: rgba(0,0,0,0.3);
-        --paper-icon-button-ink-color: var(--secondary-text-color);
-      }
-
       .comment .message {
         display: flex;
       }
@@ -137,21 +114,7 @@
       .comment .message paper-button {
         margin: auto 5px 5px;
       }
-
     </style>
-
-    <app-dialog id="dialog">
-      <div id="fullscreen">
-        <google-youtube id="video" chromeless
-          video-id="{{mission.content.video}}"
-          height="100vh"
-          width="100vw">
-        </google-youtube>
-        <paper-icon-button icon="app:close"
-          on-tap="dismissVideo" id="dismiss">
-        </paper-icon-button>
-      </div>
-    </app-dialog>
 
     <app-route route="{{route}}"
       pattern="/show-mission/:key"
@@ -160,13 +123,13 @@
 
     <firebase-document
       id="document"
-      path="/missions/{{data.key}}"
+      path="/missions/[[data.key]]"
       data="{{mission}}">
     </firebase-document>
 
     <firebase-query
       id="query"
-      path="/comments/{{data.key}}"
+      path="/comments/[[data.key]]"
       data="{{comments}}">
     </firebase-query>
 
@@ -181,6 +144,18 @@
       path="/users/{{user.uid}}/rejected/{{data.key}}" 
       data="{{rejectedMission}}">
     </firebase-query>
+
+    <firebase-storage-ref
+      path="/missions/[[data.key]]/[[mission.content.imageTitle]]"
+      download-url="{{imageUrl}}"
+      id="storage">
+    </firebase-storage-ref>
+
+    <firebase-storage-ref
+      path="/missions/[[data.key]]/[[mission.content.audioTitle]]"
+      download-url="{{audioUrl}}"
+      id="audio">
+    </firebase-storage-ref>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
@@ -197,9 +172,7 @@
               <span>22 dias restantes</span>
             </div>
           </h1>
-          <paper-icon-button class="play" icon="app:play-circle-outline"
-            on-tap="playVideo">
-          </paper-icon-button>
+          <mission-player id="player" media-type="{{mediaType}}" media-url="{{mediaUrl}}"></mission-player>
           <div class="actions">
             <paper-icon-button icon="app:chat-bubble-outline"></paper-icon-button>
             <paper-icon-button icon="app:thumb-up"></paper-icon-button>
@@ -269,6 +242,7 @@
   <script>
     class ShowMissionPage extends Polymer.Element {
       static get is() { return 'show-mission-page'; }
+      static get observers() { return ['_setMissionLayer(imageUrl, audioUrl)']; }
       static get properties() {
         return {
           missionAction: {
@@ -282,45 +256,39 @@
             type: Object,
             notify: true
           },
-          mission: {
-            type: Object,
-            observer: '_setMissionLayer'
+          mission: Object,
+          imageUrl: {
+            type: String,
           },
           data: Object
         };
       }
 
       _selectedChanged(selected) {
+        if(!selected) this.$.player.stop();
       }
 
       _returnToInbox() {
         this.set('route.path', '/');
       }
 
-      _setMissionLayer(mission) {
+      _setMissionLayer(imageUrl, audioUrl) {
+        const mission = this.mission;
+        let image = '';
         if(!mission || !mission.content) return;
-        this.updateStyles({ '--layer-image': `url(https://img.youtube.com/vi/${mission.content.video}/0.jpg)` })
+        if(mission.content.video) {
+          image = `https://img.youtube.com/vi/${mission.content.video}/0.jpg`;
+          this.mediaUrl = mission.content.video;
+          this.mediaType = 'video';
+        } else if(this.audioUrl) {
+          image = `/images/audiowave.png`;
+          this.mediaUrl = this.audioUrl;
+          this.mediaType = 'audio';
+        }
+        if(this.imageUrl) image = this.imageUrl;
+        this.updateStyles({ '--layer-image': `url(${image})` });
       }
 
-      playVideo(e) {
-        this.$.dialog.withBackdrop = false;
-        this.$.dialog.open();
-        this.$.video.play();
-        const fs = this.$.fullscreen;
-        const requestFullScreen = fs.requestFullScreen || fs.mozRequestFullScreen || fs.webkitRequestFullScreen;
-        if (requestFullScreen) {
-          requestFullScreen.bind(fs)();
-        }
-      }
-
-      dismissVideo(e) {
-        this.$.dialog.close();
-        this.$.video.pause();
-        const exitFullScreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitCancelFullScreen;
-        if(exitFullScreen) {
-          exitFullScreen.bind(document)();
-        }
-      }
       addComment(e) {
         const input = this.shadowRoot.querySelector('#commentInput');
         if(input.invalid || !input.value) return;
