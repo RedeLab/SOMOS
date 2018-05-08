@@ -148,7 +148,7 @@
           key: String,
           remainingTime: {
             type: String,
-            value: "22 dias restantes"
+            computed: 'calcMissionDate()'
           },
           fileArray: {
             type: Array,
@@ -163,6 +163,31 @@
 
       _goToMission() {
         this.dispatchEvent(new CustomEvent('show-mission', { detail: { mission: this.key } }))
+      }
+
+      calcMissionDate() {
+        const dayToMiliseconds = 86400000;
+        const hourToMiliseconds = 360000;
+        const currentDate = new Date();
+        const year = parseInt(this.mission.endDate.split('-')[0]);
+        // months are from 0 to 11
+        const month = parseInt(this.mission.endDate.split('-')[1]) - 1;
+        const day = parseInt(this.mission.endDate.split('-')[2]);
+        const missionDate = new Date(year, month, day);
+        // all missions will end at 18:00.
+        missionDate.setHours(18);
+        const differenceInMiliseconds = missionDate.getTime() - currentDate.getTime();
+        const differenceInDays = Math.round(differenceInMiliseconds / dayToMiliseconds); 
+        return this.humanizeDate(differenceInDays);
+      }
+
+      humanizeDate(remainingTime){
+        if (remainingTime === 1)
+          return 'Encerra amanhã'
+        if (remainingTime > 1)
+          return remainingTime.toString().concat(' dias restantes');
+        if (remainingTime < 1)
+          return "Encerra hoje"
       }
     }
 customElements.define(MissionCard.is, MissionCard);
