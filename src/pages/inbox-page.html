@@ -39,6 +39,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       log="true">
     </firebase-query>
 
+    <firebase-query
+      id="accepted"
+      path="/users/{{user.uid}}/accepted"
+      data="{{acceptedMissions}}"
+      log="true">
+    </firebase-query>
+
     <app-header-layout has-scrolling-region>
 
       <app-header slot="header" condenses reveals fixed effects="waterfall">
@@ -60,6 +67,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <template is="dom-repeat" items="{{missions}}" as="mission">
             <mission-card mission="{{mission.content}}" key="{{mission.$key}}"
               on-show-mission="_goToMission"></mission-card>
+          </template>
+        </div>
+        <div class="inbox">
+          <template is="dom-repeat" items="{{acceptedMissions}}" as="acceptedMissions">
+            <mission-card mission="{{acceptedMissions.content}}" key="{{acceptedMissions.$key}}" on-show-mission="_goToMission"></mission-card>
           </template>
         </div>
       </iron-pages>
@@ -89,6 +101,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             notify: true
           },
           missions: {
+            type: Array
+          },
+          acceptedMissions: {
             type: Array
           }
         }

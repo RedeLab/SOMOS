@@ -170,6 +170,18 @@
       data="{{comments}}">
     </firebase-query>
 
+    <firebase-query 
+      id="accepted" 
+      path="/users/{{user.uid}}/accepted/{{data.key}}" 
+      data="{{acceptedMission}}">
+    </firebase-query>
+
+    <firebase-query 
+      id="reject" 
+      path="/users/{{user.uid}}/rejected/{{data.key}}" 
+      data="{{rejectedMission}}">
+    </firebase-query>
+
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
         <app-toolbar>
@@ -234,9 +246,9 @@
       <app-actions id="actions" selected="{{missionAction}}" icon="app:more-vert" collapsed$="[[collapsed]]">
         <paper-fab slot="actions" mini icon="app:share" id="share" on-tap="_shareMission" name="share"></paper-fab>
         <paper-tooltip slot="actions" for="share">Compartilhar</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:assistant-photo" id="accept" name="accept"></paper-fab>
+        <paper-fab slot="actions" mini icon="app:assistant-photo" id="accept" name="accept" on-tap="_acceptMission"></paper-fab>
         <paper-tooltip slot="actions" for="accept">Aceitar</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:remove-circle-outline" id="close" name="close"></paper-fab>
+        <paper-fab slot="actions" mini icon="app:remove-circle-outline" id="close" name="close" on-tap="_rejectMission"></paper-fab>
         <paper-tooltip slot="actions" for="close">Recusar</paper-tooltip>
       </app-actions>
     </app-header-layout>
@@ -318,6 +330,16 @@
           text: input.value
         };
         this.$.query.ref.push({ content });
+      }
+
+      _acceptMission(e) {
+        const mission = this.mission;
+        this.$.accepted.ref.set(mission);
+      }
+
+      _rejectMission(e) { 
+        const mission = this.mission;
+        this.$.reject.ref.set(mission);
       }
     }
 

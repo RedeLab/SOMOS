@@ -93,7 +93,7 @@
           fallback-selection="not-found"
           on-selected-item-changed="_selectedPageChanged"
           role="main">
-          <inbox-page name="inbox" route="{{route}}"  on-open-drawer="_openDrawer"></inbox-page>
+          <inbox-page name="inbox" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></inbox-page>
           <campaign-page name="campaign"></campaign-page>
           <new-campaign-page route="{{route}}" user="[[user]]" name="new-campaign"></new-campaign-page>
           <mission-page name="mission" user="[[user]]" route="{{route}}"></mission-page>
