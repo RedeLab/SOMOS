@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -15,38 +16,33 @@
         display: block;
       }
 
+      .mission-card, .card-header { display: flex; }
+
       .mission-card {
         padding: 0px;
         line-height: 0.7;
+        flex-direction: column;
         position: relative;
       }
 
-      .mission-image {
-        display: inline-block;
-        width: 45%;
-    }
-      .mission-image img {
-        height: auto;
-        width: 100%;
-        float: left;
-
-      }
-      .card-content {
-        display: inline-block;
+      .card-header img[src] {
         width: 50%;
-        float: right;
+        height: 50%;
       }
 
-      .card-content .card-content-info, .card-content-footer {
-        display: block;
+      .mission-card .card-image {
+        height: 50%;
+        width: 50%;
       }
 
+      .card-content { margin-left: 12px; }
 
       .card-content-info p {
         margin-top: -15px;
         font-size: 0.8em;
         line-height: 1;
       }
+
       .mission-card .card-content-footer {
         position: absolute;
         bottom: 0;
@@ -91,10 +87,8 @@
       }
 
       @media only screen and (max-width: 400px) {
-        .mission-image, .card-content { display: block; }
-        .mission-image img, .card-content, .timing {float: unset; }
-
-        .mission-image { width: 100%; }
+        .card-header { display: block; }
+        .card-header img { width: 100% !important; }
 
         .mission-card .card-content-footer {
           position: unset;
@@ -121,17 +115,21 @@
     </firebase-storage-ref>
 
         <div class="card mission-card">
-          <div class="mission-image"><img src="{{downloadUrl}}"></div>
+          <div class="card-header">
+            <img src="{{downloadUrl}}"></img>
             <div class="card-content">
               <div class="card-content-info">
                 <h1> {{mission.title}} </h1>
                 <p> {{mission.description}} </p>
               </div>
             </div>
+          </div>
+          <div class="card-footer">
             <div class="card-content-footer">
               <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
               <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
             </div>
+          </div>
         </div>
   </template>
   <script>
@@ -145,7 +143,9 @@
             value: function() {}
           },
           gsUri: String,
-          downloadUrl: String,
+          downloadUrl: {
+            type: String
+          },
           key: String,
           remainingTime: {
             type: String,
