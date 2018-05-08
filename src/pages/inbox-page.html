@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -24,11 +25,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       :host {
         display: block;
         height: 100vh;
+
       }
 
       .inbox {
         padding-bottom: 80px;
       }
+
+      #inboxLoading {
+        position: absolute;
+        top: 50%;
+        right: 45%;
+        background-color: var(--default-primary-color);
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+      }
+
+      paper-spinner {
+        width: 40px;
+        height: 40px;
+        margin-left: 5px;
+        margin-top: 4px;
+      }
+
 
     </style>
 
@@ -69,7 +89,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header>
       <iron-pages selected="{{inboxtab}}">
         <div class="inbox">
-          <template is="dom-repeat" items="{{filteredMissions}}" as="mission">
+          <div id="inboxLoading">
+            <paper-spinner active></paper-spinner>
+          </div>
+
+          <template id="missionsList" is="dom-repeat" items="{{filteredMissions}}" as="mission" notify-dom-change="true">
             <mission-card mission="{{mission.content}}" key="{{mission.$key}}"
               on-show-mission="_goToMission"></mission-card>
           </template>
@@ -117,6 +141,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           filteredMissions: {
             type: Array
+          },
+          domChangeEventCount: {
+            type: Number,
+            value: 1
           }
         }
       }
@@ -146,6 +174,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(!acceptedMissions || !rejectedMissions) return;
         const keys = [].concat.apply([], acceptedMissions.map((m) => m.$key), rejectedMissions.map((m) => m.$key));
         this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
+      }
+
+      ready() {
+        super.ready();
+        this.addEventListener('dom-change', (e) => {
+          // dom-repeat trigger two dom-change events. The last one is when
+          // the load is complete.
+          if (this.domChangeEventCount > 1)
+          {
+            this.shadowRoot.querySelector('paper-spinner').active = false;
+            this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+          }
+          this.domChangeEventCount += 1;
+        });
       }
     }
 
