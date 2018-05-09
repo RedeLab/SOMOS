@@ -43,7 +43,7 @@
         <p>Quanto mais pessoas souberem da sua missão maiores são as chances de alcançarmos nosso objetivo por isso não perca tempo e compartilhe em suas redes sociais </p>
       <div class="buttons">
         <paper-button class="accent block" on-tap="_shareMision">Compartilhar</paper-button>
-        <share-menu id="shareMenu" title="Ohai!" text="Just a test" url="https://www.example.com/"></share-menu>
+        <share-menu id="shareMenu" title="{{mission.title}}" text="{{mission.description}}" url="https://dev.tmj.pencillabs.com.br"></share-menu>
       </div>
       </div>
       </div>
@@ -59,11 +59,6 @@
             value: function() {}
           }
         }
-      }
-
-      _setMission(e) {
-        this.$.localStorage.setItem(this.mission.title);
-        this.$.localStorage.setItem(this.mission.description);
       }
 
       _shareMision(e) {

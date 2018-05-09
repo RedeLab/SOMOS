@@ -51,7 +51,7 @@
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
-      <mission-modal id="modal"></mission-modal>
+      <mission-modal id="modal" mission="{{mission}}"></mission-modal>
     </app-dialog>
 
     <firebase-query
@@ -149,22 +149,27 @@
       }
 
       _saveMission(e) {
+          console.log(this.$.missionImage.inputElement.inputElement.files.length);
         if (this._validMission()) {
           this.mission.uid = this.user.uid;
-          const missionImage = this.$.missionImage.inputElement.inputElement.files[0];
-          const uploadedAudio = this.$.uploadedAudio.inputElement.inputElement.files[0];
-          this.mission.imageTitle = missionImage.name;
-          this.mission.audioTitle = uploadedAudio.name;
+            if (this.$.missionImage.inputElement.inputElement.files.length > 0) {
+            this.missionImage = this.$.missionImage.inputElement.inputElement.files[0];
+            this.mission.imageTitle = this.missionImage.name;
+          }
+          if (this.$.uploadedAudio.inputElement.inputElement.files.length > 0) {
+            this.uploadedAudio = this.$.uploadedAudio.inputElement.inputElement.files[0];
+            this.mission.audioTitle = this.uploadedAudio.name;
+          }
           this.$.query.ref.push({ content: this.mission });
-          this._saveMissionStorage(missionImage, uploadedAudio);
+          this._saveMissionStorage();
+          this.$.confirmation.present();
         }
-        this.$.confirmation.present();
       }
 
       _saveMissionStorage(missionImage, uploadedAudio) {
         this.missionId = this.missionData[this.missionData.length - 1].$key;
-        this.fileArray.push(missionImage);
-        this.fileArray.push(uploadedAudio);
+        if (this.missionImage) this.fileArray.push(this.missionImage);
+        if (this.uploadedAudio) this.fileArray.push(this.uploadedAudio);
         this.$.storage.upload();
       }
 
