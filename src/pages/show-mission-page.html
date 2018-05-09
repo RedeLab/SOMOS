@@ -301,6 +301,7 @@
         }
         if(mission.content.imageTitle) image = this.imageUrl;
         if(image) this.updateStyles({ '--layer-image': `url(${image})` });
+        this.hideFabs();
       }
 
       addComment(e) {
@@ -363,6 +364,16 @@
           return `Encerrada`;
         if (remainingTime < 1)
           return `Encerra em ${Math.round(remainingTime*24)} horas`;
+      }
+      
+      hideFabs() {
+        const fabs = this.shadowRoot.querySelector('app-actions').querySelectorAll('paper-fab.hide');
+        const accepted = this.mission.content.usersAccepted;
+        if (accepted && accepted.includes(this.user.uid)) {
+          Array.from(fabs).forEach((fab) => fab.disabled = true);
+        } else {
+          Array.from(fabs).forEach((fab) => fab.disabled = false);
+        }
       }
     }
 
