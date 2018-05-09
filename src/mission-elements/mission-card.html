@@ -16,45 +16,37 @@
         display: block;
       }
 
-      .mission-card, .card-header { display: flex; }
-
       .mission-card {
+        display: flex;
         padding: 0px;
         line-height: 0.7;
-        flex-direction: column;
         position: relative;
       }
 
-      .card-header img[src] {
-        width: 50%;
-        height: 50%;
+      .mission-card iron-image {
+        width: 180px;
+        height: 180px;
+        background-color: var(--dark-primary-color);
       }
 
-      .mission-card .card-image {
-        height: 50%;
-        width: 50%;
+      .card-content {
+        flex: 1;
+        margin-left: 20px;
+        display: flex;
+        flex-direction: column;
       }
 
-      .card-content { margin-left: 12px; }
-
-      .card-content-info p {
+      .card-content p {
         margin-top: -15px;
         font-size: 0.8em;
         line-height: 1;
+        flex-grow: 1;
       }
 
-      .mission-card .card-content-footer {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        text-align: right;
-        width: 50%;
-      }
-
-      .timing {
+      .card-content .timing {
         font-size: 0.6em;
-        float: left;
-        margin-top: 10px;
+        margin: 20px 0;
+        flex-grow: unset;
       }
 
       .timing iron-icon {
@@ -63,46 +55,24 @@
       }
 
       .go {
-        float: right;
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
       }
 
       @media only screen and (max-width: 400px) {
-        .mission-image, .card-content { display: block; }
-        .mission-image img, .card-content, .timing {float: unset; }
-
-        .mission-image { width: 100%; }
-
-        .mission-card .card-content-footer {
-          position: unset;
-          bottom: unset;
-          right: unset;
-          text-align: unset;
-          width: 100%;
-          display: flex;
+        .mission-card {
+          display: block;
+          padding-bottom: 1px;
         }
 
-        .timing { flex-grow: 2; }
-
-      }
-
-      @media only screen and (max-width: 400px) {
-        .card-header { display: block; }
-        .card-header img { width: 100% !important; }
-
-        .mission-card .card-content-footer {
-          position: unset;
-          bottom: unset;
-          right: unset;
-          text-align: unset;
+        .mission-card iron-image {
           width: 100%;
-          display: flex;
+          height: 200px;
         }
-
-        .timing { flex-grow: 2; }
+        .card-content { display: block; }
 
       }
-
-
     </style>
     <firebase-storage-ref
       path="/missions/[[key]]/[[mission.imageTitle]]"
@@ -113,23 +83,17 @@
       id="storage">
     </firebase-storage-ref>
 
-        <div class="card mission-card">
-          <div class="card-header">
-            <img src="{{downloadUrl}}"></img>
-            <div class="card-content">
-              <div class="card-content-info">
-                <h1> {{mission.title}} </h1>
-                <p> {{mission.description}} </p>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer">
-            <div class="card-content-footer">
-              <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
-              <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
-            </div>
-          </div>
-        </div>
+    <div class="card mission-card">
+      <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
+      <div class="card-content">
+        <h1> {{mission.title}} </h1>
+        <p> {{mission.description}} </p>
+        <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
+        <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
+      </div>
+      <div class="card-footer">
+      </div>
+    </div>
   </template>
   <script>
     class MissionCard extends Polymer.Element {
@@ -180,7 +144,7 @@
         missionDate.setMinutes(59);
         missionDate.setMilliseconds(59);
         const differenceInMiliseconds = missionDate.getTime() - currentDate.getTime();
-        const differenceInDays = Math.round(differenceInMiliseconds*100 / dayToMiliseconds)/100; 
+        const differenceInDays = Math.round(differenceInMiliseconds*100 / dayToMiliseconds)/100;
         return this.humanizeDate(differenceInDays);
       }
 

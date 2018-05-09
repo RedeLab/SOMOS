@@ -35,18 +35,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       #inboxLoading {
         position: absolute;
         top: 50%;
-        right: 45%;
-        background-color: var(--default-primary-color);
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        right: 50%;
+        transform: translate(50%);
       }
 
       paper-spinner {
         width: 40px;
         height: 40px;
-        margin-left: 5px;
-        margin-top: 4px;
+        padding: 5px;
+        background-color: var(--default-primary-color);
+        border-radius: 50%;
       }
 
 
@@ -89,11 +87,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header>
       <iron-pages selected="{{inboxtab}}">
         <div class="inbox">
-          <div id="inboxLoading">
-            <paper-spinner active></paper-spinner>
-          </div>
-
-          <template id="missionsList" is="dom-repeat" items="{{filteredMissions}}" as="mission" notify-dom-change="true">
+          <template id="missionsList" is="dom-repeat" items="{{filteredMissions}}" as="mission"
+            notify-dom-change="true" on-dom-change="hideLoading">
             <mission-card mission="{{mission.content}}" key="{{mission.$key}}"
               on-show-mission="_goToMission"></mission-card>
           </template>
@@ -104,6 +99,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </template>
         </div>
       </iron-pages>
+      <div id="inboxLoading">
+        <paper-spinner active></paper-spinner>
+      </div>
       <app-actions id="actions" collapsed$="[[collapsed]]" selected="{{inboxAction}}" icon="app:add">
         <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="_openMissionForm" name="edit"></paper-fab>
         <paper-tooltip slot="actions" for="newMission">Sugerir Missão</paper-tooltip>
@@ -144,21 +142,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           domChangeEventCount: {
             type: Number,
-            value: 1
+            value: 0
           }
         }
       }
-      
       static get observers()  {
         return ['_filterMissions(missions, acceptedMissions, rejectedMissions)'];
       }
 
       openDrawer() {
         this.dispatchEvent(new CustomEvent('open-drawer'));
-      }
-
-      _openMissionForm() {
-        this.set('route.path', 'mission');
       }
 
       _openMissionForm() {
@@ -176,18 +169,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
       }
 
-      ready() {
-        super.ready();
-        this.addEventListener('dom-change', (e) => {
-          // dom-repeat trigger two dom-change events. The last one is when
-          // the load is complete.
-          if (this.domChangeEventCount > 1)
-          {
-            this.shadowRoot.querySelector('paper-spinner').active = false;
-            this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
-          }
-          this.domChangeEventCount += 1;
-        });
+      hideLoading(e) {
+        // the load is complete.
+        if (this.domChangeEventCount > 1) {
+          this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+        }
+        this.domChangeEventCount += 1;
+        console.log(this.domChangeEventCount);
       }
     }
 
