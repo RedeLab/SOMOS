@@ -2,8 +2,10 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../../bower_components/share-menu/share-menu.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/app-dialog.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
 <dom-module id="mission-modal">
@@ -40,7 +42,8 @@
       <div class="confirmation-text">
         <p>Quanto mais pessoas souberem da sua missão maiores são as chances de alcançarmos nosso objetivo por isso não perca tempo e compartilhe em suas redes sociais </p>
       <div class="buttons">
-      <paper-button class="accent block" on-tap="">Compartilhar</paper-button>
+        <paper-button class="accent block" on-tap="_shareMision">Compartilhar</paper-button>
+        <share-menu id="shareMenu" title="Ohai!" text="Just a test" url="https://www.example.com/"></share-menu>
       </div>
       </div>
       </div>
@@ -63,8 +66,20 @@
         this.$.localStorage.setItem(this.mission.description);
       }
 
+      _shareMision(e) {
+        document.body.appendChild(this.$.shareMenu);
+        this.$.shareMenu.share();
+      }
+
       constructor() {
         super();
+      }
+
+      ready() {
+        super.ready();
+        this.$.shareMenu.addEventListener('iron-overlay-closed', function() {
+          this.dispatchEvent(new CustomEvent('finished', {}));
+        });
       }
     }
 customElements.define(MissionModal.is, MissionModal);

@@ -51,7 +51,7 @@
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
-      <mission-modal></mission-modal>
+      <mission-modal id="modal"></mission-modal>
     </app-dialog>
 
     <firebase-query
@@ -144,6 +144,7 @@
       }
 
       _returnToInbox() {
+        this.$.confirmation.dismiss();
         this.set('route.path', '/');
       }
 
@@ -156,8 +157,8 @@
           this.mission.audioTitle = uploadedAudio.name;
           this.$.query.ref.push({ content: this.mission });
           this._saveMissionStorage(missionImage, uploadedAudio);
-          this.$.confirmation.present();
         }
+        this.$.confirmation.present();
       }
 
       _saveMissionStorage(missionImage, uploadedAudio) {
@@ -217,6 +218,11 @@
 
       _saveAudio(recorder) {
         recorder.stop();
+      }
+
+      ready() {
+        super.ready();
+        this.$.modal.shadowRoot.querySelector("share-menu").addEventListener('finished', this._returnToInbox.bind(this));
       }
     }
     customElements.define(MissionPage.is, MissionPage);
