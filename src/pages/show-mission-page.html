@@ -18,6 +18,8 @@
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../mission-elements/mission-comment.html">
 <link rel="import" href="../mission-elements/mission-player.html">
+<link rel="import" href="../mission-elements/accept-mission-modal.html">
+<link rel="import" href="../mission-elements/reject-mission-modal.html">
 
 <dom-module id="show-mission-page">
   <template>
@@ -162,6 +164,14 @@
       id="audio">
     </firebase-storage-ref>
 
+    <app-dialog id="acceptedDialog">
+      <accept-mission-modal></accept-mission-modal>
+    </app-dialog>
+
+    <app-dialog id="rejectedDialog" opened="{{openedModal}}">
+      <reject-mission-modal></reject-mission-modal>
+    </app-dialog>
+
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
         <app-toolbar>
@@ -261,6 +271,10 @@
             type: Object,
             notify: true
           },
+          openedModal: {
+            type: Boolean,
+            observer: '_observeModal'
+          },
           mission: Object,
           remainingTime: {
             type: String,
@@ -282,6 +296,11 @@
 
       _returnToInbox() {
         this.set('route.path', '/');
+      }
+
+      _observeModal() {
+        if (!this.openedModal)
+          this._returnToInbox();
       }
 
       _setMissionLayer(imageUrl, audioUrl, mission) {
@@ -323,6 +342,8 @@
         usersAccepted.add(this.user.uid);
         this.mission.content.usersAccepted = Array.from(usersAccepted);
         this.$.document.ref.set(this.mission);
+        this.$.acceptedDialog.present();
+        this.hideFabs();
       }
 
       _rejectMission(e) {
@@ -333,6 +354,9 @@
         usersRejected.add(this.user.uid);
         this.mission.content.usersRejected = Array.from(usersRejected);
         this.$.document.ref.set(this.mission);
+        this.$.rejectedDialog.present();
+        this.hideFabs();
+
       }
 
       calcMissionDate(mission) {
@@ -368,8 +392,8 @@
       
       hideFabs() {
         const fabs = this.shadowRoot.querySelector('app-actions').querySelectorAll('paper-fab.hide');
-        const accepted = this.mission.content.usersAccepted;
-        if (accepted && accepted.includes(this.user.uid)) {
+        const users = [].concat.apply([], [this.mission.content.usersAccepted, this.mission.content.usersRejected]);
+        if (users && users.includes(this.user.uid)) {
           Array.from(fabs).forEach((fab) => fab.disabled = true);
         } else {
           Array.from(fabs).forEach((fab) => fab.disabled = false);

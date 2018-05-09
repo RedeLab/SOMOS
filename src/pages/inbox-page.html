@@ -173,7 +173,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _filterMissions(missions, acceptedMissions, rejectedMissions) {
         if(!acceptedMissions || !rejectedMissions) return;
-        console.log(acceptedMissions, rejectedMissions);
         const keys = [].concat.apply([], [acceptedMissions.map((m) => m.$key), rejectedMissions.map((m) => m.$key)]);
         this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
       }
@@ -184,7 +183,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
         }
         this.domChangeEventCount += 1;
-        console.log(this.domChangeEventCount);
       }
     }
 

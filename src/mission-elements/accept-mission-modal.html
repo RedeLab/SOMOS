@@ -1,0 +1,63 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+
+<dom-module id="accept-mission-modal">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      confirmation-icon,
+      .confirmation-text {
+        margin: auto;
+        text-align: center;
+      }
+
+      .confirmation-icon {
+        width: 100%;
+        text-align: center;
+      }
+
+      .confirmation-text {
+        width: 80%;
+      }
+
+      .modal-header {
+        width: 100%;
+      }
+
+
+      iron-icon {
+        --iron-icon-width: 50%;
+        --iron-icon-height: 50%;
+      }
+    </style>
+
+    <div class="modal-header">
+      <div class="confirmation-icon">
+        <iron-icon icon="app:thumb-up"></iron-icon>
+        <h2>Você aceitou esta missão!</h2>
+      </div>
+      <div class="confirmation-text">
+        <p>Fique atento ao prazo restante e não deixe de concluir a missão.</p>
+        <div class="buttons">
+          <!-- <paper-button class="accent block" on-tap="">Compartilhar</paper-button> -->
+        </div>
+      </div>
+    </div>
+  </template>
+  <script>
+    class AcceptMissionModal extends Polymer.Element {
+      static get is() { return 'accept-mission-modal'; }
+      static get properties() {
+        return {};
+      }
+
+    }
+    window.customElements.define(AcceptMissionModal.is, AcceptMissionModal);
+  </script>
+</dom-module>
