@@ -114,6 +114,11 @@
       .comment .message paper-button {
         margin: auto 5px 5px;
       }
+
+      .hide[disabled] {
+        opacity: 0.4;
+      }
+
     </style>
 
     <app-route route="{{route}}"
@@ -217,12 +222,12 @@
         </dom-if>
       </div>
       <app-actions id="actions" selected="{{missionAction}}" icon="app:more-vert" collapsed$="[[collapsed]]">
+        <paper-fab class="hide" slot="actions" mini icon="app:assistant-photo" id="accept" name="accept" on-tap="_acceptMission"></paper-fab>
+        <paper-tooltip slot="actions" for="accept">Aceitar</paper-tooltip>
+        <paper-fab class="hide" slot="actions" mini icon="app:remove-circle-outline" id="close" name="close" on-tap="_rejectMission"></paper-fab>
+        <paper-tooltip slot="actions" for="close">Recusar</paper-tooltip>
         <paper-fab slot="actions" mini icon="app:share" id="share" on-tap="_shareMission" name="share"></paper-fab>
         <paper-tooltip slot="actions" for="share">Compartilhar</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:assistant-photo" id="accept" name="accept" on-tap="_acceptMission"></paper-fab>
-        <paper-tooltip slot="actions" for="accept">Aceitar</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:remove-circle-outline" id="close" name="close" on-tap="_rejectMission"></paper-fab>
-        <paper-tooltip slot="actions" for="close">Recusar</paper-tooltip>
       </app-actions>
     </app-header-layout>
 
@@ -349,7 +354,7 @@
         return this.humanizeDate(differenceInDays);
       }
 
-      humanizeDate(remainingTime){
+      humanizeDate(remainingTime) {
         if (Math.round(remainingTime) === 1)
           return 'Encerra amanhã'
         if (remainingTime > 1)

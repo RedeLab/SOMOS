@@ -127,6 +127,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Object,
             notify: true
           },
+          selected: {
+            observer: '_selectedChanged'
+          },
           missions: {
             type: Array,
             observer: '_filterMissions'
@@ -150,6 +153,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return ['_filterMissions(missions, acceptedMissions, rejectedMissions)'];
       }
 
+      _selectedChanged(selected) {
+        if(!selected) return;
+        this._filterMissions(this.missions, this.acceptedMissions, this.rejectedMissions);
+      }
+
       openDrawer() {
         this.dispatchEvent(new CustomEvent('open-drawer'));
       }
@@ -165,6 +173,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _filterMissions(missions, acceptedMissions, rejectedMissions) {
         if(!acceptedMissions || !rejectedMissions) return;
+        console.log(acceptedMissions, rejectedMissions);
         const keys = [].concat.apply([], [acceptedMissions.map((m) => m.$key), rejectedMissions.map((m) => m.$key)]);
         this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
       }
