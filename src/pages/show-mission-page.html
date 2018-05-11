@@ -145,6 +145,12 @@
     </firebase-query>
 
     <firebase-query
+      id="receipts"
+      path="/missions/[[data.key]]/content/receipts"
+      data="{{receipts}}">
+    </firebase-query>
+
+    <firebase-query
       id="accepted"
       path="/users/{{user.uid}}/accepted/{{data.key}}"
       data="{{acceptedMission}}">
@@ -389,6 +395,37 @@
         this.hideFabs();
       }
 
+      calcMissionDate(mission) {
+        if(!mission || !mission.content) return;
+        const m = mission.content;
+        const dayToMiliseconds = 86400000;
+        const hourToMiliseconds = 360000;
+        const currentDate = new Date();
+        const year = parseInt(m.endDate.split('-')[0]);
+        // months are from 0 to 11
+        const month = parseInt(m.endDate.split('-')[1]) - 1;
+        const day = parseInt(m.endDate.split('-')[2]);
+        const mDate = new Date(year, month, day);
+        // all ms will end at 23:59:59.
+        mDate.setHours(23);
+        mDate.setMinutes(59);
+        mDate.setMilliseconds(59);
+        const differenceInMiliseconds = mDate.getTime() - currentDate.getTime();
+        const differenceInDays = Math.round(differenceInMiliseconds*100 / dayToMiliseconds)/100; 
+        return this.humanizeDate(differenceInDays);
+      }
+
+      humanizeDate(remainingTime) {
+        if (Math.round(remainingTime) === 1)
+          return 'Encerra amanhã'
+        if (remainingTime > 1)
+          return `${Math.round(remainingTime)} dias restantes`;
+        if (remainingTime < 0)
+          return `Encerrada`;
+        if (remainingTime < 1)
+          return `Encerra em ${Math.round(remainingTime*24)} horas`;
+      }
+
       hideFabs() {
         const users = this.mission.content.usersAccepted;
         if (users && users.includes(this.user.uid)) {
@@ -414,6 +451,11 @@
             this.$.storage.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.imageTitle);
           if (mission.content.audioTitle)
             this.$.audio.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.audioTitle);
+        } else {
+          this.$.close.style.display = 'none';
+          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'none';
+          this.$.accept.style.display = 'block';
+          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
         }
       }
 
