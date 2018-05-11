@@ -98,7 +98,7 @@
         <audio id="micAudio" controls></audio> -->
 
         <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
-        <paper-input value="{{mission.video}}" label="Vídeo Explicativo"></paper-input>
+        <paper-input id="video" value="{{mission.video}}" label="Link do video explicativo" error-message="O link deve ser do youtube."></paper-input>
         <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
       </div>
     </app-header-layout>
@@ -138,6 +138,10 @@
           },
           savedMission: {
             type: Object
+          },
+          vidRegex: {
+            type: Object,
+            value() { return /https.*youtu.?be\/?(.*)/; }
           }
         }
       }
@@ -162,6 +166,9 @@
             this.uploadedAudio = this.$.uploadedAudio.inputElement.inputElement.files[0];
             this.mission.audioTitle = this.uploadedAudio.name;
           }
+          let vid = this.mission.video.match(this.vidRegex)[1];
+          if (vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+          this.mission.video = vid;
           this.$.query.ref.push({ content: this.mission });
           this._saveMissionStorage();
           this.set('mission', {});
@@ -195,7 +202,16 @@
           valid = false;
         }
 
+        if (!this._validVideo(this.mission.video)) {
+          this.$.video.invalid = true;
+          valid = false;
+        }
+
         return valid;
+      }
+
+      _validVideo(video) {
+        return this.vidRegex.test(video);
       }
 
       _observeModal() {
