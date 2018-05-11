@@ -51,7 +51,7 @@
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
-      <mission-modal id="modal" mission="{{mission}}"></mission-modal>
+      <mission-modal id="modal" mission="{{savedMission}}"></mission-modal>
     </app-dialog>
 
     <firebase-query
@@ -135,6 +135,9 @@
           },
           missionId: {
             type: String
+          },
+          savedMission: {
+            type: Object
           }
         }
       }
@@ -149,7 +152,6 @@
       }
 
       _saveMission(e) {
-          console.log(this.$.missionImage.inputElement.inputElement.files.length);
         if (this._validMission()) {
           this.mission.uid = this.user.uid;
             if (this.$.missionImage.inputElement.inputElement.files.length > 0) {
@@ -162,6 +164,9 @@
           }
           this.$.query.ref.push({ content: this.mission });
           this._saveMissionStorage();
+          this.set('mission', {});
+          this.savedMission = this.missionData[this.missionData.length - 1];
+          console.log(this.savedMission);
           this.$.confirmation.present();
         }
       }
