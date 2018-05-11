@@ -60,7 +60,7 @@
           },
           address: {
             type: String,
-            value: 'http://localhost:8081/show-mission'
+            value: function() {window.location.origin.concat('/show-mission')}
           }
         }
       }
