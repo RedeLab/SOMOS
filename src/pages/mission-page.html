@@ -51,7 +51,7 @@
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
-      <mission-modal id="modal" mission="{{savedMission}}"></mission-modal>
+      <mission-modal id="modal" mission="{{sharedMission}}"></mission-modal>
     </app-dialog>
 
     <firebase-query
@@ -136,7 +136,7 @@
           missionId: {
             type: String
           },
-          savedMission: {
+          sharedMission: {
             type: Object
           },
           vidRegex: {
@@ -172,8 +172,7 @@
           this.$.query.ref.push({ content: this.mission });
           this._saveMissionStorage();
           this.set('mission', {});
-          this.savedMission = this.missionData[this.missionData.length - 1];
-          console.log(this.savedMission);
+          this.sharedMission = this.missionData[this.missionData.length - 1];
           this.$.confirmation.present();
         }
       }
