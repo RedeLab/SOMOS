@@ -11,6 +11,7 @@
     <style>
       :host {
         display: block;
+        --actions-height: 0;
       }
       .backdrop {
         position: fixed;
@@ -38,7 +39,7 @@
       }
       .record-form-actions.visible {
         padding: 10px 4px 35px 120px;
-        height: 150px;
+        height: var(--actions-height, 150px);
         opacity: 1;
       }
       .record-form-actions ::slotted(paper-fab) {
@@ -61,7 +62,7 @@
         position: absolute;
         top: 0;
       }
-      .toggle-actions #toggle {
+      .toggle-actions #toggler {
         box-shadow: none;
         transition: transform ease .5s;
         position: relative;
@@ -76,15 +77,16 @@
         }
       }
     </style>
-    <div class="backdrop" on-tap="_hideActions"></div>
+    <div class="backdrop" id="backdrop" style="display: none;" on-tap="_toggleActions"></div>
     <div class="record-form-actions" id="actions">
-      <iron-selector attr-for-selected="name" selected="{{selected}}" role="navigator">
+      <iron-selector attr-for-selected="name" selected="{{selected}}" role="navigator"
+        fallback-selection="" on-selected-changed="_setHeight">
         <slot id="slot" name="actions"></slot>
       </iron-selector>
     </div>
     <div class="toggle-actions">
       <paper-fab icon=""></paper-fab>
-      <paper-fab icon="[[icon]]" id="toggle" on-tap="_toggleActions"></paper-fab>
+      <paper-fab icon="[[icon]]" id="toggler" on-tap="_toggleActions"></paper-fab>
     </div>
   </template>
   <script>
@@ -106,76 +108,69 @@
         };
       }
 
+      ready() {
+        super.ready();
+        this.$.slot.addEventListener('slotchange', this._setHeight.bind(this));
+      }
+
       _toggleActions(e) {
-        const actions = this.shadowRoot.querySelector('#actions');
-        const backdrp = this.shadowRoot.querySelector('.backdrop');
-        const toggler = this.shadowRoot.querySelector('#toggle');
-        if(!actions) return;
-        backdrp.style.display = 'block';
-        actions.classList.toggle('visible');
-        toggler.style.transform = 'rotate(360deg)';
-        let visible;
+        if(this.__visible) {
+          this._hideActions();
+        } else {
+          this._showActions();
+        }
+      }
+
+      _setHeight() {
+        const tips = this.$.slot.assignedNodes().filter(n => n.nodeName === 'PAPER-TOOLTIP');
+        const visibleTips = tips.filter(n => n.style.display !== 'none');
+        tips.forEach((tip) => {
+          tip.position = 'left';
+          tip.updatePosition();
+        });
+        this.updateStyles({ '--actions-height': `${visibleTips.length*50}px` });
+        this.__tips = tips;
+      }
+
+      _showTips() {
+        this.__tips.forEach((tip) => {
+          tip.show();
+        });
+      }
+
+      _showActions() {
+        this.__visible = true;
+        this.$.backdrop.style.display = 'block';
+        this.$.actions.classList.add('visible');
+        this.$.toggler.style.transform = 'rotate(360deg)';
         setTimeout(() => {
-          visible = backdrp.classList.toggle('visible');
+          this.$.backdrop.classList.add('visible');
           this._showTips();
         }, 100);
         setTimeout(() => {
-          if(toggler.icon === 'app:close') toggler.icon = this.icon;
-          else toggler.icon = 'app:close';
-          toggler.style.transform = 'none';
-          if(!visible) backdrp.style.display = 'none';
+          this.$.toggler.icon = 'app:close';
+          this.$.toggler.style.transform = 'none';
         }, 300);
       }
 
       _hideActions() {
-        const actions = this.shadowRoot.querySelector('#actions');
-        const backdrp = this.shadowRoot.querySelector('.backdrop');
-        const toggler = this.shadowRoot.querySelector('#toggle');
-        if(!actions) return;
-        actions.classList.remove('visible');
-        backdrp.classList.remove('visible');
-        toggler.style.transform = 'rotate(360deg)';
+        this.__visible = false;
+        this.$.backdrop.classList.remove('visible');
+        this.$.actions.classList.remove('visible');
+        this.$.toggler.style.transform = 'rotate(360deg)';
         setTimeout(() => {
-          if(toggler.icon === 'app:close') toggler.icon = this.icon;
-          toggler.style.transform = 'none';
-          backdrp.style.display = 'none';
-        }, 200);
-        this._hideTips();
-      }
-
-      _setcollapsedStyle(collapsed) {
-        const actions = this.shadowRoot.querySelector('#actions');
-        const toggler = this.shadowRoot.querySelector('.toggle-actions');
-        if(!actions) return;
-        if(collapsed) {
-          toggler.classList.add('visible');
-          actions.classList.add('fixed');
-          setTimeout(() => {
-            actions.classList.add('animatable');
-          }, 350);
-        } else {
-          actions.classList.remove('fixed');
-          actions.classList.remove('animatable');
-          this._hideActions();
-          toggler.classList.remove('visible');
-        }
-      }
-
-      _showTips() {
-        const tips = this.$.slot.assignedNodes().filter(n => n.nodeName === 'PAPER-TOOLTIP');
-        tips.forEach((tip) => {
-          tip.position = "left";
-          tip.show();
-          tip.updatePosition();
-        });
+          this.$.backdrop.style.display = 'none';
+          this._hideTips();
+        }, 100);
+        setTimeout(() => {
+          this.$.toggler.icon = this.icon;
+          this.$.toggler.style.transform = 'none';
+        }, 300);
       }
 
       _hideTips() {
-        const tips = this.$.slot.assignedNodes().filter(n => n.nodeName === 'PAPER-TOOLTIP');
-        tips.forEach((tip) => {
-          tip.position = "bottom";
+        this.__tips.forEach((tip) => {
           tip.hide();
-          tip.updatePosition();
         });
       }
 

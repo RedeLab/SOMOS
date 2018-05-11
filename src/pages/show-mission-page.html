@@ -146,12 +146,6 @@
       data="{{acceptedMission}}">
     </firebase-query>
 
-    <firebase-query 
-      id="rejected" 
-      path="/users/{{user.uid}}/rejected/{{data.key}}" 
-      data="{{rejectedMission}}">
-    </firebase-query>
-
     <firebase-storage-ref
       path="/missions/[[data.key]]/[[mission.content.imageTitle]]"
       download-url="{{imageUrl}}"
@@ -231,12 +225,15 @@
           </template>
         </dom-if>
       </div>
-      <app-actions id="actions" selected="{{missionAction}}" icon="app:more-vert" collapsed$="[[collapsed]]">
-        <paper-fab class="hide" slot="actions" mini icon="app:assistant-photo" id="accept" name="accept" on-tap="_acceptMission"></paper-fab>
+      <app-actions id="actions" icon="app:more-vert" selected="{{selected}}">
+        <paper-fab class="hide" slot="actions" mini icon="app:assistant-photo"
+          id="accept" name="accept" on-tap="_acceptMission"></paper-fab>
         <paper-tooltip slot="actions" for="accept">Aceitar</paper-tooltip>
-        <paper-fab class="hide" slot="actions" mini icon="app:remove-circle-outline" id="close" name="close" on-tap="_rejectMission"></paper-fab>
-        <paper-tooltip slot="actions" for="close">Recusar</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:share" id="share" on-tap="_shareMission" name="share"></paper-fab>
+        <paper-fab class="hide" slot="actions" mini icon="app:remove-circle-outline"
+          id="close" name="close" on-tap="_rejectMission" style="display: none;"></paper-fab>
+        <paper-tooltip slot="actions" style="display: none;" for="close">Recusar</paper-tooltip>
+        <paper-fab slot="actions" mini icon="app:share" id="share"
+          on-tap="_shareMission" name="share"></paper-fab>
         <paper-tooltip slot="actions" for="share">Compartilhar</paper-tooltip>
       </app-actions>
     </app-header-layout>
@@ -347,16 +344,13 @@
       }
 
       _rejectMission(e) {
-        const mission = JSON.parse(JSON.stringify(this.mission));
-        delete mission.content.usersRejected;
-        this.$.rejected.ref.set(mission);
-        const usersRejected = new Set(this.mission.content.usersRejected);
-        usersRejected.add(this.user.uid);
-        this.mission.content.usersRejected = Array.from(usersRejected);
+        this.$.accepted.ref.remove();
+        const usersAccepted = new Set(this.mission.content.usersAccepted);
+        usersAccepted.delete(this.user.uid);
+        this.mission.content.usersAccepted = Array.from(usersAccepted);
         this.$.document.ref.set(this.mission);
         this.$.rejectedDialog.present();
         this.hideFabs();
-
       }
 
       calcMissionDate(mission) {
@@ -389,14 +383,19 @@
         if (remainingTime < 1)
           return `Encerra em ${Math.round(remainingTime*24)} horas`;
       }
-      
+
       hideFabs() {
-        const fabs = this.shadowRoot.querySelector('app-actions').querySelectorAll('paper-fab.hide');
-        const users = [].concat.apply([], [this.mission.content.usersAccepted, this.mission.content.usersRejected]);
+        const users = this.mission.content.usersAccepted;
         if (users && users.includes(this.user.uid)) {
-          Array.from(fabs).forEach((fab) => fab.disabled = true);
+          this.$.accept.style.display = 'none';
+          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'none';
+          this.$.close.style.display = 'block';
+          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'block';
         } else {
-          Array.from(fabs).forEach((fab) => fab.disabled = false);
+          this.$.close.style.display = 'none';
+          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'none';
+          this.$.accept.style.display = 'block';
+          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
         }
       }
     }
