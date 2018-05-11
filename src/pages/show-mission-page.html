@@ -50,7 +50,7 @@
           filter: contrast(.7) brightness(.6);
         };
       }
-      
+
       app-header[shadow] {
         color: black;
       }
@@ -141,9 +141,9 @@
       data="{{comments}}">
     </firebase-query>
 
-    <firebase-query 
-      id="accepted" 
-      path="/users/{{user.uid}}/accepted/{{data.key}}" 
+    <firebase-query
+      id="accepted"
+      path="/users/{{user.uid}}/accepted/{{data.key}}"
       data="{{acceptedMission}}">
     </firebase-query>
 
@@ -370,6 +370,10 @@
           this.$.accept.style.display = 'block';
           this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
         }
+      }
+
+      _finishMission(e) {
+        this.$.finish.present();
       }
     }
 
