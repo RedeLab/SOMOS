@@ -122,6 +122,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: var(--secondary-text-color);
       }
 
+      .file-upload {
+        position: relative;
+      }
+      .file-upload input,
+      .upload-button input {
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .file-upload iron-icon {
+        --iron-icon-fill-color: var(--dark-primary-color);
+      }
+
 
     </style>
   </template>
