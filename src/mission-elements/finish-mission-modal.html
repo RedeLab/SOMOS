@@ -1,0 +1,138 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/app-dialog.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="finish-mission-modal">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .confirmation-icon, .confirmation-text {
+        margin: auto;
+        text-align: center;
+      }
+
+      .confirmation-icon { width: 50%; }
+
+      .confirmation-text { width: 80%; }
+
+      .modal-header { width: 100%; }
+
+
+    iron-icon {
+        --iron-icon-width: 50%;
+        --iron-icon-height: 50%;
+    }
+
+    .input-file-container {
+      display: flex;
+    }
+
+    #file-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.9em;
+    }
+
+    </style>
+
+    <firebase-document
+      id="document"
+      data="{{missionReceipt}}"
+    </firebase-document>
+
+    <firebase-storage-multiupload
+      path="/missions/[[missionId]]"
+      files="[[fileArray]]"
+      upload-tasks="{{uploadTasks}}"
+      log="true"
+      id="storage">
+    </firebase-storage-multiupload>
+
+      <div class="modal-header">
+        <div class="confirmation-icon">
+          <iron-icon icon="app:done-all"></iron-icon>
+          <h2> Obrigado! </h2>
+        </div>
+      <div class="confirmation-text">
+        <p>Agora é hora de pedir para o comitê de campanha validar sua missão e oferecer a sua recompensa. Pra isso basta enviar a
+        comprovação solicitada na missão clicando no botão abaixo.</p>
+      <div class="buttons">
+
+        <div class="input-file-container">
+          <paper-icon-button slot="suffix" icon="app:cloud-upload" on-tap="_openInput"><paper-input id="input" type="file"></paper-input></paper-icon-button>
+          <h3 id="file-name">
+            {{fileName}}
+          </h3>
+        </div>
+        <paper-button toggles raised class="accent block" on-tap="_sendFile">enviar</paper-button>
+      </div>
+      </div>
+      </div>
+  </template>
+  <script>
+    class FinishMissionModal extends Polymer.mixinBehaviors([Polymer.PaperInputBehavior], Polymer.Element) {
+      static get is() { return 'finish-mission-modal'; }
+      static get properties() {
+        return {
+          input: {
+            type: Object
+          },
+          fileName: {
+            type: String,
+            value: 'Nenhum arquivo selecionado'
+          },
+          file: {
+            type: Object
+          },
+          missionId: String,
+          missionReceipt: {
+            type: Object
+          },
+          fileArray: {
+            type: Array,
+            value: []
+          }
+        }
+      }
+
+      _openInput() {
+        this.input = this.$.input.inputElement.inputElement;
+        this.input.addEventListener('change', this._setFileName.bind(this));
+        this.input.click();
+      }
+
+      _setFileName() {
+        if(this.input.files.length === 0)
+          this.set('fileName',  'Nenhum arquivo selecionado');
+        else {
+          this.set('fileName',  this.input.files[0].name);
+          this.set('file',  this.input.files[0]);
+        }
+      }
+
+      _sendFile() {
+        if(this.input.files.length > 0){
+          this.set('missionReceipt', [{"uid": this.user.uid, "receiptFileName": this.fileName}]);
+          this.$.document.saveValue("/missions/".concat(this.missionId).concat("/content"),  "receipts");
+          this.fileArray.push(this.file);
+          this.$.storage.upload();
+        } else {
+          console.log("sem arquivos");
+        }
+      }
+
+    }
+customElements.define(FinishMissionModal.is, FinishMissionModal);
+</script>
+</dom-module>
