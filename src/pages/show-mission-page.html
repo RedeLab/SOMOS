@@ -150,9 +150,9 @@
     </firebase-query>
 
 
-    <firebase-query 
-      id="accepted" 
-      path="/users/{{user.uid}}/accepted/{{data.key}}" 
+    <firebase-query
+      id="accepted"
+      path="/users/{{user.uid}}/accepted/{{data.key}}"
       data="{{acceptedMission}}">
     </firebase-query>
 
@@ -353,7 +353,6 @@
         }
         if(mission.content.imageTitle) image = this.imageUrl;
         if(image) this.updateStyles({ '--layer-image': `url(${image})` });
-        this._loadReceipts();
         this.hideFabs();
       }
 
@@ -421,9 +420,6 @@
           if (mission.content.audioTitle)
             this.$.audio.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.audioTitle);
         }
-      }
-
-      _loadReceipts() {
       }
     }
 
