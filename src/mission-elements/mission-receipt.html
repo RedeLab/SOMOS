@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../mixin-elements/mission-duration-mixin.html">
+
+<dom-module id="mission-receipt">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .receipt {
+        display: block;
+      }
+    </style>
+
+    <firebase-storage-ref
+      path="/missions/[[missionId]]/[[receipt.receiptFileName]]"
+      metadata="{{metadata}}"
+      storage-uri="{{gsUri}}"
+      download-url="{{downloadUrl}}"
+      log="true"
+      id="storage">
+    </firebase-storage-ref>
+
+    <div class="card">
+      <div class="card-content">
+        <span> Apoiador: David Carlos </span>
+        <div class="receipt">
+          <span> <a href="{{downloadUrl}}">Comprovante</a></span>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script>
+    class MissionReceipt extends Polymer.Element {
+      static get is() { return 'mission-receipt'; }
+
+      static get properties() {
+        return {
+          supporter: {
+            type: Object
+          },
+          receipt: {
+            type: Object
+          },
+          downloadUrl: String,
+          missionId: String
+        };
+      }
+
+      constructor() {
+        super();
+      }
+
+    }
+customElements.define(MissionReceipt.is, MissionReceipt);
+</script>
+</dom-module>
