@@ -123,7 +123,7 @@
 
       _sendFile() {
         if(this.input.files.length > 0){
-          this.set('missionReceipt', {"uid": this.user.uid, "receiptFileName": this.fileName});
+          this.set('missionReceipt', [{"uid": this.user.uid, "receiptFileName": this.fileName}]);
           this.$.document.saveValue("/missions/".concat(this.missionId).concat("/content"),  "receipts");
           this.fileArray.push(this.file);
           this.$.storage.upload();
