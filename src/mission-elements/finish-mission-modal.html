@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/app-dialog.html">
@@ -50,6 +51,14 @@
       data="{{missionReceipt}}"
     </firebase-document>
 
+    <firebase-storage-multiupload
+      path="/missions/[[missionId]]"
+      files="[[fileArray]]"
+      upload-tasks="{{uploadTasks}}"
+      log="true"
+      id="storage">
+    </firebase-storage-multiupload>
+
       <div class="modal-header">
         <div class="confirmation-icon">
           <iron-icon icon="app:done-all"></iron-icon>
@@ -86,9 +95,13 @@
           file: {
             type: Object
           },
-          missionKey: String,
+          missionId: String,
           missionReceipt: {
             type: Object
+          },
+          fileArray: {
+            type: Array,
+            value: []
           }
         }
       }
@@ -111,7 +124,9 @@
       _sendFile() {
         if(this.input.files.length > 0){
           this.set('missionReceipt', {"uid": this.user.uid, "receiptFileName": this.fileName});
-          this.$.document.saveValue("/missions/".concat(this.missionKey).concat("/content"),  "receipts");
+          this.$.document.saveValue("/missions/".concat(this.missionId).concat("/content"),  "receipts");
+          this.fileArray.push(this.file);
+          this.$.storage.upload();
         } else {
           console.log("sem arquivos");
         }
