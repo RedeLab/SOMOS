@@ -1,0 +1,79 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/app-dialog.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="finish-mission-modal">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .confirmation-icon, .confirmation-text {
+        margin: auto;
+        text-align: center;
+      }
+
+      .confirmation-icon { width: 50%; }
+
+      .confirmation-text { width: 80%; }
+
+      .modal-header { width: 100%; }
+
+
+    iron-icon {
+        --iron-icon-width: 50%;
+        --iron-icon-height: 50%;
+    }
+
+    </style>
+
+      <div class="modal-header">
+        <div class="confirmation-icon">
+          <iron-icon icon="app:done-all"></iron-icon>
+          <h2> Obrigado! </h2>
+        </div>
+      <div class="confirmation-text">
+        <p>Agora é hora de pedir para o comitê de campanha validar sua missão e oferecer a sua recompensa. Pra isso basta enviar a 
+        comprovação solicitada na missão clicando no botão abaixo.</p>
+      <div class="buttons">
+        
+        <paper-icon-button slot="suffix" icon="app:cloud-upload" on-tap="_openInput"><paper-input id="input" type="file"></paper-input></paper-icon-button>
+        <paper-button toggles raised class="accent block" on-tap="_sendFile">enviar</paper-button>
+      </div>
+      </div>
+      </div>
+  </template>
+  <script>
+    class FinishMissionModal extends Polymer.mixinBehaviors([Polymer.PaperInputBehavior], Polymer.Element) {
+      static get is() { return 'finish-mission-modal'; }
+      static get properties() {
+        return {
+          input: {
+            type: Object
+          }
+        };
+      }
+
+      _openInput() {
+        this.input = this.$.input.inputElement.inputElement;
+        this.input.click();
+      }
+
+      _sendFile() {
+        if(this.input.files.length > 0){
+          console.log("enviar para firebase");
+        } else {
+          console.log("sem arquivos");
+        }
+      }
+
+    }
+customElements.define(FinishMissionModal.is, FinishMissionModal);
+</script>
+</dom-module>
