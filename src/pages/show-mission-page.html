@@ -149,13 +149,11 @@
     </firebase-query>
 
     <firebase-storage-ref
-      path="/missions/[[data.key]]/[[mission.content.imageTitle]]"
       download-url="{{imageUrl}}"
       id="storage">
     </firebase-storage-ref>
 
     <firebase-storage-ref
-      path="/missions/[[data.key]]/[[mission.content.audioTitle]]"
       download-url="{{audioUrl}}"
       id="audio">
     </firebase-storage-ref>
@@ -323,6 +321,7 @@
       _setMissionLayer(imageUrl, audioUrl, mission) {
         let image = '';
         if(!mission || !mission.content) return;
+        this.setFirebasePaths(mission);
         if(mission.content.video) {
           image = `https://img.youtube.com/vi/${mission.content.video}/0.jpg`;
           this.mediaUrl = mission.content.video;
@@ -397,8 +396,13 @@
         }
       }
 
-      _finishMission(e) {
-        this.$.finish.present();
+      setFirebasePaths(mission) {
+        if(mission.content) {
+          if (mission.content.imageTitle)
+            this.$.storage.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.imageTitle);
+          if (mission.content.audioTitle)
+            this.$.audio.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.audioTitle);
+        }
       }
     }
 
