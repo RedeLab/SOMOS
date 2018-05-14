@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/app-dialog.html">
@@ -44,6 +45,11 @@
 
     </style>
 
+    <firebase-document
+      id="document"
+      data="{{missionReceipt}}"
+    </firebase-document>
+
       <div class="modal-header">
         <div class="confirmation-icon">
           <iron-icon icon="app:done-all"></iron-icon>
@@ -76,8 +82,15 @@
           fileName: {
             type: String,
             value: 'Nenhum arquivo selecionado'
+          },
+          file: {
+            type: Object
+          },
+          missionKey: String,
+          missionReceipt: {
+            type: Object
           }
-        };
+        }
       }
 
       _openInput() {
@@ -89,13 +102,16 @@
       _setFileName() {
         if(this.input.files.length === 0)
           this.set('fileName',  'Nenhum arquivo selecionado');
-        else
+        else {
           this.set('fileName',  this.input.files[0].name);
+          this.set('file',  this.input.files[0]);
+        }
       }
 
       _sendFile() {
         if(this.input.files.length > 0){
-          console.log("enviar para firebase");
+          this.set('missionReceipt', {"uid": this.user.uid, "receiptFileName": this.fileName});
+          this.$.document.saveValue("/missions/".concat(this.missionKey).concat("/content"),  "receipts");
         } else {
           console.log("sem arquivos");
         }
