@@ -76,7 +76,6 @@
       }
     </style>
     <firebase-storage-ref
-      path="/missions/[[key]]/[[mission.imageTitle]]"
       metadata="{{metadata}}"
       storage-uri="{{gsUri}}"
       download-url="{{downloadUrl}}"
@@ -129,6 +128,13 @@
       _goToMission() {
         this.dispatchEvent(new CustomEvent('show-mission', { detail: { mission: this.key } }))
       }
+
+      ready() {
+        super.ready();
+        if (this.mission.imageTitle)
+          this.$.storage.path = "/missions/".concat(this.key).concat('/').concat(this.mission.imageTitle);
+      }
+
     }
 customElements.define(MissionCard.is, MissionCard);
 </script>
