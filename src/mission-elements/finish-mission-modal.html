@@ -31,6 +31,17 @@
         --iron-icon-height: 50%;
     }
 
+    .input-file-container {
+      display: flex;
+    }
+
+    #file-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 0.9em;
+    }
+
     </style>
 
       <div class="modal-header">
@@ -39,11 +50,16 @@
           <h2> Obrigado! </h2>
         </div>
       <div class="confirmation-text">
-        <p>Agora é hora de pedir para o comitê de campanha validar sua missão e oferecer a sua recompensa. Pra isso basta enviar a 
+        <p>Agora é hora de pedir para o comitê de campanha validar sua missão e oferecer a sua recompensa. Pra isso basta enviar a
         comprovação solicitada na missão clicando no botão abaixo.</p>
       <div class="buttons">
-        
-        <paper-icon-button slot="suffix" icon="app:cloud-upload" on-tap="_openInput"><paper-input id="input" type="file"></paper-input></paper-icon-button>
+
+        <div class="input-file-container">
+          <paper-icon-button slot="suffix" icon="app:cloud-upload" on-tap="_openInput"><paper-input id="input" type="file"></paper-input></paper-icon-button>
+          <h3 id="file-name">
+            {{fileName}}
+          </h3>
+        </div>
         <paper-button toggles raised class="accent block" on-tap="_sendFile">enviar</paper-button>
       </div>
       </div>
@@ -56,13 +72,25 @@
         return {
           input: {
             type: Object
+          },
+          fileName: {
+            type: String,
+            value: 'Nenhum arquivo selecionado'
           }
         };
       }
 
       _openInput() {
         this.input = this.$.input.inputElement.inputElement;
+        this.input.addEventListener('change', this._setFileName.bind(this));
         this.input.click();
+      }
+
+      _setFileName() {
+        if(this.input.files.length === 0)
+          this.set('fileName',  'Nenhum arquivo selecionado');
+        else
+          this.set('fileName',  this.input.files[0].name);
       }
 
       _sendFile() {
