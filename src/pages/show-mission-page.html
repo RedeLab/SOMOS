@@ -20,6 +20,7 @@
 <link rel="import" href="../mission-elements/mission-player.html">
 <link rel="import" href="../mission-elements/accept-mission-modal.html">
 <link rel="import" href="../mission-elements/reject-mission-modal.html">
+<link rel="import" href="../mission-elements/finish-mission-modal.html">
 <link rel="import" href="../mixin-elements/mission-duration-mixin.html">
 
 <dom-module id="show-mission-page">
@@ -159,13 +160,18 @@
       id="audio">
     </firebase-storage-ref>
 
+    <app-dialog id="finishedDialog" opened="{{finishedModal}}">
+      <finish-mission-modal></finish-mission-modal>
+    </app-dialog>
+
     <app-dialog id="acceptedDialog">
       <accept-mission-modal></accept-mission-modal>
     </app-dialog>
 
-    <app-dialog id="rejectedDialog" opened="{{openedModal}}">
+    <app-dialog id="rejectedDialog" opened="{{rejectedModal}}">
       <reject-mission-modal></reject-mission-modal>
     </app-dialog>
+
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
@@ -233,12 +239,12 @@
         <paper-fab class="hide" slot="actions" mini icon="app:remove-circle-outline"
           id="close" name="close" on-tap="_rejectMission" style="display: none;"></paper-fab>
         <paper-tooltip slot="actions" style="display: none;" for="close">Recusar</paper-tooltip>
+        <paper-fab class="hide" slot="actions" mini icon="app:check"
+          id="check" name="check" on-tap="_finishMission" style="display: none;"></paper-fab>
+        <paper-tooltip slot="actions" style="display: none;" for="check">Concluir</paper-tooltip>
         <paper-fab slot="actions" mini icon="app:share" id="share"
           on-tap="_shareMission" name="share"></paper-fab>
         <paper-tooltip slot="actions" for="share">Compartilhar</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:check" id="check"
-          on-tap="_finishMission" name="check"></paper-fab>
-        <paper-tooltip slot="actions" for="check">Concluir</paper-tooltip>
       </app-actions>
     </app-header-layout>
 
@@ -272,9 +278,13 @@
             type: Object,
             notify: true
           },
-          openedModal: {
+          finishedModal: {
             type: Boolean,
-            observer: '_observeModal'
+            observer: '_observeFinishedModal'
+          },
+          rejectedModal: {
+            type: Boolean,
+            observer: '_observeRejectedModal'
           },
           mission: Object,
           remainingTime: {
@@ -299,10 +309,16 @@
         this.set('route.path', '/');
       }
 
-      _observeModal() {
-        if (!this.openedModal)
+      _observeFinishedModal() {
+        if (!this.finishedModal)
           this._returnToInbox();
       }
+
+      _observeRejectedModal() {
+        if (!this.rejectedModal)
+          this._returnToInbox();
+      }
+
 
       _setMissionLayer(imageUrl, audioUrl, mission) {
         let image = '';
@@ -357,6 +373,11 @@
         this.hideFabs();
       }
 
+      _finishMission(e) {
+        this.$.finishedDialog.present();
+        this.hideFabs();
+      }
+
       hideFabs() {
         const users = this.mission.content.usersAccepted;
         if (users && users.includes(this.user.uid)) {
@@ -364,9 +385,13 @@
           this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'none';
           this.$.close.style.display = 'block';
           this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'block';
+          this.$.check.style.display = 'block';
+          this.shadowRoot.querySelector('paper-tooltip[for="check"]').style.display = 'block';
         } else {
           this.$.close.style.display = 'none';
           this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'none';
+          this.$.check.style.display = 'none';
+          this.shadowRoot.querySelector('paper-tooltip[for="check"]').style.display = 'none';
           this.$.accept.style.display = 'block';
           this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
         }
