@@ -1,4 +1,4 @@
-# TamoJunto Polymer App
+# SOMOS Polymer App
 
 This template, along with the `polymer-cli` toolchain, also demonstrates use
 of the "PRPL pattern" This pattern allows fast first delivery and interaction with
