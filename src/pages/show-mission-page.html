@@ -23,6 +23,7 @@
 <link rel="import" href="../mission-elements/finish-mission-modal.html">
 <link rel="import" href="../mission-elements/mission-receipt.html">
 <link rel="import" href="../mixin-elements/mission-duration-mixin.html">
+<link rel="import" href="../mission-elements/mission-receipts-modal.html">
 
 <dom-module id="show-mission-page">
   <template>
@@ -144,13 +145,6 @@
     </firebase-query>
 
     <firebase-query
-      id="receipts"
-      path="/missions/[[data.key]]/content/receipts"
-      data="{{receipts}}">
-    </firebase-query>
-
-
-    <firebase-query
       id="accepted"
       path="/users/{{user.uid}}/accepted/{{data.key}}"
       data="{{acceptedMission}}">
@@ -178,6 +172,10 @@
       <reject-mission-modal></reject-mission-modal>
     </app-dialog>
 
+    <app-dialog id="receiptsDialog">
+      <mission-receipts-modal receipts="{{mission.content.receipts}}"></mission-receipts-modal>
+    </app-dialog>
+
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall blend-background parallax-background">
@@ -198,6 +196,7 @@
           <div class="actions">
             <paper-icon-button icon="app:chat-bubble-outline"></paper-icon-button>
             <paper-icon-button icon="app:thumb-up"></paper-icon-button>
+            <paper-icon-button icon="app:assessment" on-tap="missionReceipts"></paper-icon-button>
           </div>
         </app-toolbar>
       </app-header>
@@ -208,10 +207,6 @@
             <p>{{mission.content.description}}</p>
             <h2>Recompensa</h2>
             <p>{{mission.content.reward}}</p>
-
-            <template is="dom-repeat" items="{{receipts}}">
-              <mission-receipt mission-id="{{data.key}}" receipt="{{item}}"></mission-receipt>
-            </template>
 
             <div class="comments">
               <h2>Comentários</h2>
@@ -307,8 +302,7 @@
           },
           data: Object,
           receipts: {
-            type: Array,
-            value: []
+            type: Array
           }
         };
       }
@@ -353,6 +347,7 @@
         }
         if(mission.content.imageTitle) image = this.imageUrl;
         if(image) this.updateStyles({ '--layer-image': `url(${image})` });
+        this.set('receipts',  mission.content.receipts);
         this.hideFabs();
       }
 
@@ -421,7 +416,13 @@
             this.$.audio.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.audioTitle);
         }
       }
+
+      missionReceipts() {
+        this.$.receiptsDialog.present();
+      }
+
     }
+
 
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
