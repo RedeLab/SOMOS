@@ -166,9 +166,9 @@
             this.uploadedAudio = this.$.uploadedAudio.inputElement.inputElement.files[0];
             this.mission.audioTitle = this.uploadedAudio.name;
           }
-          let vid = this.mission.video.match(this.vidRegex)[1];
-          if (vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-          this.mission.video = vid;
+          let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
+          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+          if (vid) this.mission.video = vid;
           this.$.query.ref.push({ content: this.mission });
           this._saveMissionStorage();
           this.set('mission', {});
@@ -210,7 +210,7 @@
       }
 
       _validVideo(video) {
-        return this.vidRegex.test(video);
+        return !video || this.vidRegex.test(video);
       }
 
       _observeModal() {

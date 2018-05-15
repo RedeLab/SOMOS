@@ -9,6 +9,8 @@
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../mixin-elements/mission-duration-mixin.html">
 
+<link rel="import" href="./mission-player.html">
+
 <dom-module id="mission-card">
   <template>
     <style include="shared-styles"></style>
@@ -18,81 +20,131 @@
       }
 
       .mission-card {
-        display: flex;
+        display: block;
         padding: 0px;
         line-height: 0.7;
         position: relative;
+        max-width: 500px;
+        margin: 20px auto;
       }
 
       .mission-card iron-image {
-        width: 180px;
-        height: 180px;
+        width: 100%;
+        height: 300px;
         background-color: var(--dark-primary-color);
+      }
+
+      .mission-card mission-player {
+        position: relative;
+        top: -200px;
+        color: white;
+      }
+
+      .card-header {
+        position: relative;
+      }
+
+      .mission-card iron-image.campaign {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        margin: 10px;
       }
 
       .card-content {
         flex: 1;
-        margin-left: 20px;
+        margin: 0 20px;
         display: flex;
         flex-direction: column;
       }
-
+      .card-content h1 {
+        margin: 0;
+        color: black;
+        font-weight: bold;
+      }
       .card-content p {
-        margin-top: -15px;
         font-size: 0.8em;
-        line-height: 1;
+        line-height: 1.5;
         flex-grow: 1;
+        max-height: 6em;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
       }
 
-      .card-content .timing {
-        font-size: 0.6em;
-        margin: 20px 0;
-        flex-grow: unset;
+      .card-header .timing {
+        font-size: 0.8em;
+        position: absolute;
+        bottom: 0;
+        left: 60px;
       }
 
       .timing iron-icon {
-        width: 20px;
-        height: 20px;
+        width: 15px;
+        height: 15px;
+        margin-top: -3px;
       }
 
       .go {
         position: absolute;
-        bottom: 10px;
+        bottom: 15px;
         right: 10px;
       }
 
-      @media only screen and (max-width: 400px) {
-        .mission-card {
-          display: block;
-          padding-bottom: 1px;
-        }
-
-        .mission-card iron-image {
-          width: 100%;
-          height: 200px;
-        }
-        .card-content { display: block; }
-
+      .card-footer .stats {
+        padding: 10px;
+      }
+      .card-footer .stats .stats-number {
+        color: var(--accent-color);
+        font-weight: bold;
+      }
+      .card-footer .actions paper-button {
+        border: none;
+        text-transform: none;
+        font-size: 0.9em;
+        margin: 10px;
+      }
+      .card-footer .actions iron-icon {
+        margin-right: 5px;
       }
     </style>
-    <firebase-storage-ref
-      metadata="{{metadata}}"
-      storage-uri="{{gsUri}}"
-      download-url="{{downloadUrl}}"
-      log="true"
-      id="storage">
-    </firebase-storage-ref>
 
     <div class="card mission-card">
-      <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
+      <div class="card-header">
+        <a href="/campaigns/{{mission.campaignKey}}">
+          <iron-image sizing="cover" class="campaign" src="{{campaignImg}}"></iron-image>
+          <span>{{mission.campaignName}}</span>
+          <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
+        </a>
+        <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
+      </div>
       <div class="card-content">
         <h1> {{mission.title}} </h1>
         <p> {{mission.description}} </p>
-        <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
-        <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
       </div>
+      <iron-image sizing="cover" preload fade src="{{missionImage}}"></iron-image>
       <div class="card-footer">
+        <div class="stats">
+          <span><span class="stats-number">{{accepted}}</span> pessoas aceitaram | </span>
+          <span><span class="stats-number">{{concluded}}</span> concluiram</span>
+        </div>
+        <div class="actions">
+          <paper-button>
+            <iron-icon icon="app:thumb-up"></iron-icon>
+            Curtir
+          </paper-button>
+          <paper-button>
+            <iron-icon icon="app:chat-bubble-outline"></iron-icon>
+            Comentar
+          </paper-button>
+        </div>
       </div>
+
+      <mission-player id="player" mission-image="{{missionImage}}"
+        mission="{{mission}}" mission-key="{{key}}">
+      </mission-player>
+
     </div>
   </template>
   <script>
@@ -103,10 +155,10 @@
         return {
           mission: {
             type: Object,
-            value: function() {}
+            observer: 'setMissionData'
           },
           gsUri: String,
-          downloadUrl: {
+          missionImage: {
             type: String
           },
           key: String,
@@ -129,13 +181,12 @@
         this.dispatchEvent(new CustomEvent('show-mission', { detail: { mission: this.key } }))
       }
 
-      ready() {
-        super.ready();
-        if (this.mission.imageTitle)
-          this.$.storage.path = "/missions/".concat(this.key).concat('/').concat(this.mission.imageTitle);
+      setMissionData(mission) {
+        this.accepted = mission.usersAccepted ? mission.usersAccepted.length : '0';
+        this.concluded = mission.usersConcluded ? mission.usersConcluded.length : '0';
       }
 
     }
-customElements.define(MissionCard.is, MissionCard);
-</script>
+    customElements.define(MissionCard.is, MissionCard);
+  </script>
 </dom-module>
