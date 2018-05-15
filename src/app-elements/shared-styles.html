@@ -125,7 +125,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background: var(--default-primary-color);
         color: var(--secondary-text-color);
       }
-
+      @media screen and (min-width: 641px) {
+        app-header [drawer-toggle] {
+          display: none;
+        }
+      }
 
     </style>
   </template>
