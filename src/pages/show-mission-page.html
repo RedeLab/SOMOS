@@ -156,16 +156,6 @@
       data="{{acceptedMission}}">
     </firebase-query>
 
-    <firebase-storage-ref
-      download-url="{{imageUrl}}"
-      id="storage">
-    </firebase-storage-ref>
-
-    <firebase-storage-ref
-      download-url="{{audioUrl}}"
-      id="audio">
-    </firebase-storage-ref>
-
     <app-dialog id="finishedDialog" opened="{{finishedModal}}">
       <finish-mission-modal  user="[[user]]" mission-id="{{data.key}}"></finish-mission-modal>
     </app-dialog>
@@ -198,7 +188,9 @@
               <span>{{remainingTime}}</span>
             </div>
           </h1>
-          <mission-player id="player" media-type="{{mediaType}}" media-url="{{mediaUrl}}"></mission-player>
+          <mission-player id="player" mission-image="{{missionImage}}"
+            mission="{{mission.content}}" mission-key="{{data.key}}">
+          </mission-player>
           <div class="actions">
             <paper-icon-button icon="app:chat-bubble-outline"></paper-icon-button>
             <paper-icon-button icon="app:thumb-up"></paper-icon-button>
@@ -276,7 +268,6 @@
   <script>
     class ShowMissionPage extends MissionDurationMixin(Polymer.Element) {
       static get is() { return 'show-mission-page'; }
-      static get observers() { return ['_setMissionLayer(imageUrl, audioUrl, mission)']; }
       static get properties() {
         return {
           missionAction: {
@@ -303,8 +294,9 @@
             type: String,
             computed: 'calcMissionDate(mission.content)'
           },
-          imageUrl: {
+          missionImage: {
             type: String,
+            observer: '_setLayerImage'
           },
           data: Object,
           receipts: {
@@ -317,6 +309,8 @@
         if(!selected) {
           this.$.player.stop();
           this.updateStyles({ '--layer-image': 'linear-gradient(to top, grey, grey)' });
+        } else {
+          this._setLayerImage(this.missionImage);
         }
       }
 
@@ -333,7 +327,6 @@
         if (!this.rejectedModal)
           this._returnToInbox();
       }
-
 
       _setMissionLayer(imageUrl, audioUrl, mission) {
         let image = '';
@@ -390,40 +383,17 @@
         this.hideFabs();
       }
 
+      _setLayerImage(missionImage) {
+        console.log(this.mission);
+        if(missionImage && this.mission.content) {
+          this.updateStyles({ '--layer-image': `url(${missionImage})` });
+          this.hideFabs();
+        }
+      }
+
       _finishMission(e) {
         this.$.finishedDialog.present();
         this.hideFabs();
-      }
-
-      calcMissionDate(mission) {
-        if(!mission || !mission.content) return;
-        const m = mission.content;
-        const dayToMiliseconds = 86400000;
-        const hourToMiliseconds = 360000;
-        const currentDate = new Date();
-        const year = parseInt(m.endDate.split('-')[0]);
-        // months are from 0 to 11
-        const month = parseInt(m.endDate.split('-')[1]) - 1;
-        const day = parseInt(m.endDate.split('-')[2]);
-        const mDate = new Date(year, month, day);
-        // all ms will end at 23:59:59.
-        mDate.setHours(23);
-        mDate.setMinutes(59);
-        mDate.setMilliseconds(59);
-        const differenceInMiliseconds = mDate.getTime() - currentDate.getTime();
-        const differenceInDays = Math.round(differenceInMiliseconds*100 / dayToMiliseconds)/100; 
-        return this.humanizeDate(differenceInDays);
-      }
-
-      humanizeDate(remainingTime) {
-        if (Math.round(remainingTime) === 1)
-          return 'Encerra amanhã'
-        if (remainingTime > 1)
-          return `${Math.round(remainingTime)} dias restantes`;
-        if (remainingTime < 0)
-          return `Encerrada`;
-        if (remainingTime < 1)
-          return `Encerra em ${Math.round(remainingTime*24)} horas`;
       }
 
       hideFabs() {
@@ -464,8 +434,6 @@
       }
 
     }
-
-
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
 </dom-module>

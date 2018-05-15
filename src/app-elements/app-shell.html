@@ -32,6 +32,12 @@
         display: block;
       }
 
+      app-drawer-layout:-webkit-full-screen-ancestor app-header,
+      app-header-layout:-webkit-full-screen-ancestor app-header,
+      app-drawer-layout:-webkit-full-screen-ancestor app-drawer {
+        z-index: -1 !important;
+      }
+
       app-drawer-layout:not([narrow]) [drawer-toggle] {
         display: none;
       }
