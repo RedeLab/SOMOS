@@ -11,16 +11,49 @@
     <style include="shared-styles"></style>
     <style>
       :host {
-        display: block;
+        width: 85%;
+        display: inline-block;
         background: var(--secondary-background-color);
         @apply --default-font;
       }
-      
-      .header paper-icon-button {
+      .card {
+        margin: 0 10px 0 0;
+        border-radius: unset;
+      }
+      .campaign-card paper-icon-button {
         position: absolute;
         right: 0;
-        top: 23px;
+        top: -10px;
       }
+      .campaign-card {
+        padding: 0px;
+      }
+      .campaign-card h1 {
+        margin: 0;
+      }
+      .campaign-card p {
+        white-space: normal;
+        margin: 0;
+        line-height: 1.1;
+        height: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .campaign-card iron-image {
+        width: 100%;
+        height: 150px;
+        background-color: var(--dark-primary-color);
+      }
+      .card-content {
+        flex: 1;
+        padding: 0 10px;
+        position: relative;
+      }
+      .card-footer span,
+      .card-footer paper-toggle-button {
+        display: inline-block;
+      }
+      
     </style>
 
     <firebase-storage-ref 
@@ -32,24 +65,19 @@
       id="storage">
     </firebase-storage-ref>
     
-    <div class="fill">
-      <paper-card image="{{downloadUrl}}">
-        <div class="card-content">
-          <div class="header">
-            <h1>
-              {{campaign.candidateName}}
-              <paper-icon-button class="go" on-tap="_goToMission" icon="app:arrow-forward"></paper-icon-button>
-            </h1>
-          </div>
-          <div class="description">
-            {{campaign.description}}
-          </div>
-          <div class="card-footer">
-            <span>301 apoiadores | Brasília/DF</span>
-            <paper-toggle-button></paper-toggle-button>
-          </div>
+    <div class="card campaign-card">
+      <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
+      <div class="card-content">
+        <h1>
+          {{campaign.candidateName}}
+          <paper-icon-button class="go" on-tap="_goToMission" icon="app:arrow-forward"></paper-icon-button>
+        </h1>
+        <p>{{campaign.description}}</p>
+        <div class="card-footer">
+          <span>301 apoiadores | Brasília/DF</span>
+          <paper-toggle-button></paper-toggle-button>
         </div>
-      </paper-card>
+      </div>
     </div>
 
   </template>
