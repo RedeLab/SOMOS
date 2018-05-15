@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
@@ -31,9 +32,16 @@
       id="storage">
     </firebase-storage-ref>
 
+    <firebase-document
+      path="/users/[[receipt.uid]]/content"
+      id="document"
+      data="{{supporter}}">
+    </firebase-document>
+
+
     <div class="card">
       <div class="card-content">
-        <span> Apoiador: David Carlos </span>
+        <span> Apoiador: {{supporter.name}} </span>
         <div class="receipt">
           <span> <a href="{{downloadUrl}}">Comprovante</a></span>
         </div>
