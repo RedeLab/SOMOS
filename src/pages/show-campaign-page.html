@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -11,7 +12,7 @@
     <style>
       :host {
         display: block;
-        background: var(--secondary-background-color);
+        background: var(--primary-background-color);
         height: 100vh;
         @apply --default-font;
       }
@@ -19,6 +20,50 @@
         background-color: orange;
         height: 150px;
       }
+      .fill {
+        padding: 0 20px;
+      }
+      .row:nth-child(5) {
+        margin: 10px 0;
+      }
+      .candidate-info span,
+      .row span {
+        display: block;
+      }
+      .candidate-info h1 {
+        margin-bottom: 0;
+      }
+      h6 {
+        margin: 0;
+      }
+      .main {
+        text-align: center
+      }
+      .details {
+        display: inline-block;
+        font-size: 14px;
+      }
+      .details:nth-of-type(2) {
+        width: 50%;
+        margin-right: 5px;
+      }
+      .row {
+        display: flex;
+        margin: 20px 0;
+      }
+      .row .col {
+        flex: 1;
+        text-align: center;
+        line-height: 1
+      }
+      .col span:first-child {
+        font-size: 28px;
+      }
+      .description {
+        background-color: var(--secondary-background-color);
+        
+      }
+
     </style>
 
     <app-route 
@@ -49,7 +94,54 @@
         </app-toolbar>
       </app-header>
       <div class="fill">
-        eouieouieoiu
+        <div class="candidate-info">
+          <div class="main">
+            <h1>{{campaign.content.candidateName}}</h1>
+            <span>18</span>
+          </div>
+          <div class="details">
+            <span>Brasília/DF</span>
+            <span>Começou em: 05/06/18</span>
+          </div>
+          <div class="details">
+            <span>Cargo: {{campaign.content.role}}</span>
+            <span>Partido: {{campaign.content.party}}</span>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col">
+            <span>321</span>
+            <span>apoiadores</span>
+          </div>
+          <div class="col">
+            <span>321</span>
+            <span>novos membros</span>
+          </div>
+          <div class="col">
+            <span>321</span>
+            <span>membros ativos</span>
+          </div>
+          <div class="col">
+            <span>321</span>
+            <span>missões concluídas</span>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <paper-icon-button class="go" on-tap="_goToMission" icon="app:comment"></paper-icon-button>
+          <div class="col"></div>
+          <paper-toggle-button></paper-toggle-button>
+        </div>
+        <hr>
+        <h6>Administradores</h6>
+        <div></div>
+        <div class="description">
+          <h1>Descrição</h1>
+          <p>{{campaign.content.description}}</p>
+        </div>
+          <!-- {{campaign.content.description}}
+          {{campaign.content.party}} -->
       </div>
     </app-header-layout>
 
