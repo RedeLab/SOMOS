@@ -19,6 +19,7 @@
       .card {
         margin: 0 10px 0 0;
         border-radius: unset;
+        box-shadow: unset;
       }
       .campaign-card paper-icon-button {
         position: absolute;
@@ -49,6 +50,15 @@
         padding: 0 10px;
         position: relative;
       }
+      .card-footer {
+        background-color: #F2F1F3;
+        display: flex;
+        margin-top: 5px;
+        padding: 5px 10px;
+      }
+      .card-footer span {
+        flex: 1;
+      }
       .card-footer span,
       .card-footer paper-toggle-button {
         display: inline-block;
@@ -73,10 +83,10 @@
           <paper-icon-button class="go" on-tap="_goToMission" icon="app:arrow-forward"></paper-icon-button>
         </h1>
         <p>{{campaign.description}}</p>
-        <div class="card-footer">
-          <span>301 apoiadores | Brasília/DF</span>
-          <paper-toggle-button></paper-toggle-button>
-        </div>
+      </div>
+      <div class="card-footer">
+        <span>301 apoiadores | Brasília/DF</span>
+        <paper-toggle-button></paper-toggle-button>
       </div>
     </div>
 

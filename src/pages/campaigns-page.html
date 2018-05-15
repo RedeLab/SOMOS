@@ -1,7 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 
 <link rel="import" href="../campaign-elements/campaign-card.html">
+<link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
 <dom-module id="campaigns-page">
@@ -32,7 +35,8 @@
         color: var(--secondary-text-color);
       }
       .scrollable {
-        overflow-y: scroll;
+        overflow-x: scroll;
+        overflow-y: hidden;
         margin-bottom: 30px;
       }
       .scroll-content {
@@ -49,7 +53,7 @@
     </firebase-query>
 
     <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed condenses effects="waterfall blend-background parallax-background">
+      <app-header slot="header" fixed condenses effects="waterfall">
         <app-toolbar>
           <paper-icon-button icon="app:menu" on-tap="openDrawer"></paper-icon-button>
           <h1 main-title>Encontrar Campanha</h1>
@@ -83,6 +87,10 @@
           </div>
         </div>
       </div>
+      <app-actions id="actions" selected="{{selected}}" icon="app:add">
+        <paper-fab slot="actions" mini icon="app:person-pin" id="campaign" name="create" on-tap="_openCampaignForm"></paper-fab>
+        <paper-tooltip slot="actions" for="campaign">Criar campanha</paper-tooltip>
+      </app-actions>
     </app-header-layout>
 
   </template>
@@ -104,6 +112,10 @@
 
         openDrawer() {
           this.dispatchEvent(new CustomEvent('open-drawer'));
+        }
+
+        _openCampaignForm() {
+          this.set('route.path', '/new-campaign');
         }
       }
 
