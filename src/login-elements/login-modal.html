@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="./register-view.html">
@@ -12,7 +13,7 @@
     <style include="shared-styles">
       :host {
         display: block;
-        background: var(--primary-background-color);
+        background: var(--secondary-background-color);
       }
       #content {
         display: flex;
@@ -33,20 +34,26 @@
         margin: 20px;
       }
       .image {
-        min-height: 24vh;
+        height: 24vh;
         margin: 6vh 10px 0;
       }
       .image iron-image {
         width: 100%;
+        height: 100%;
         max-width: 250px;
       }
     </style>
+    <firebase-document
+      id="document"
+      data="{{newUser}}">
+    </firebase-document>
+
     <div id="content">
       <div class="fill center">
         <div class="image">
-          <iron-image src="/images/splash.svg"></iron-image>
+          <iron-image sizing="contain" src="/images/splash.png"></iron-image>
         </div>
-        <p>#tamojunto é uma plataforma para engajar eleitores e candidatos 
+        <p>SOMOS é uma plataforma para engajar eleitores e candidatos 
           a desempenharem suas melhores versões pela renovação da política.
         </p>
         <paper-button class="accent" on-tap="openRegister">Começar</paper-button>
@@ -82,6 +89,9 @@
           },
           statusKnown: {
             notify: true
+          },
+          newUser: {
+            type: Object
           }
         };
       }
@@ -108,8 +118,15 @@
         this.$.auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
             // use app-notify to display success message
+            this._saveUserData(res);
           }.bind(this))
           .catch((err) => console.error(err));
+      }
+
+      _saveUserData(res) {
+        const data = this.signUpData;
+        this.set('newUser', {"name": data.displayName, "email": data.email});
+        this.$.document.saveValue(`/users/${res.uid}/`, 'content');
       }
 
       sendSignInCredentials(credentials) {

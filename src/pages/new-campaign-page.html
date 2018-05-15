@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
@@ -40,9 +41,6 @@
         --app-form-header-color: var(--default-primary-color);
         @apply --default-font-medium;
       }
-      paper-button.block {
-        margin-top: 15px;
-      }
       paper-stepper {
         position: fixed;
         bottom: 0;
@@ -59,20 +57,13 @@
       .step h1 {
         color: var(--secondary-text-color);
       }
-      .file-upload {
-        position: relative;
-      }
-      .file-upload input,
-      .upload-button input {
+      #step2 paper-fab {
+        display: inline-block;
         position: absolute;
-        opacity: 0;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .file-upload iron-icon {
-        --iron-icon-fill-color: var(--dark-primary-color);
+        right: 10%;
+        top: 13%;
+        background: var(--accent-color);
+        color: var(--default-primary-color);
       }
       .input-file {
         background: var(--divider-color);
@@ -146,6 +137,7 @@
         margin-top: 0;
       }
       .about span {
+        overflow: hidden;
         display: block;
         border-radius: 50%;
         position: absolute;
@@ -156,6 +148,26 @@
         width: 120px;
         background-color: var(--default-primary-color);
         border: 2px solid var(--accent-color);
+      }
+      .about span input {
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        left: 50%;
+        transform: translate(-50%);
+        width: 100%;
+        height: 100%;
+      }
+      .about span iron-image {
+        width: 100%;
+        height: 100%;
+      }
+      .about span iron-icon {
+        position: absolute;
+        bottom: 0;
+        right: 50%;
+        transform: translate(50%);
+        --iron-icon-fill-color: var(--secondary-text-color);
       }
       .candidate {
         margin-top: 80px;
@@ -199,7 +211,6 @@
       path="/campaigns/[[campaignId]]"
       files="[[fileArray]]"
       upload-tasks="{{uploadTasks}}"
-      log="true"
       id="storage">
     </firebase-storage-multiupload>
     
@@ -212,6 +223,66 @@
       <div class="fill">
         <iron-pages selected="[[selection]]">
           <div class="step" id="step1">
+            <div class="about">
+              <h1>Sobre o candidato</h1>
+              <span>
+                <iron-image sizing="cover" id="candidateImage"></iron-image>
+                <iron-icon icon="app:add"></iron-icon>
+                <input id="candidatePhoto" type="file" on-change="getCandidatePhoto" accept=".jpg, .jpeg, .png" value="{{campaign.candidateImage}}">
+              </span>
+            </div>
+            <div class="candidate">
+              <paper-input label="Nome do candidato" placeholder="Nome do candidato" value="{{campaign.candidateName}}"></paper-input>
+              <paper-dropdown-menu label="Cargo que irá disputar" value="{{campaign.role}}">
+                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                  <paper-item>Presidente</paper-item>
+                  <paper-item>Governador</paper-item>
+                  <paper-item>Senador</paper-item>
+                  <paper-item>Deputado Federal</paper-item>
+                  <paper-item>Deputado Estadual</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <div class="region">
+                <paper-dropdown-menu label="Estado" value="{{campaign.state}}">
+                  <paper-listbox slot="dropdown-content" class="dropdown-content">
+                    <paper-item>Estado 1</paper-item>
+                    <paper-item>Estado 2</paper-item>
+                    <paper-item>Estado 3</paper-item>
+                    <paper-item>Estado 4</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu>
+                <paper-dropdown-menu label="Cidade" value="{{campaign.city}}">
+                  <paper-listbox slot="dropdown-content" class="dropdown-content">
+                    <paper-item>Cidade 1</paper-item>
+                    <paper-item>Cidade 2</paper-item>
+                    <paper-item>Cidade 3</paper-item>
+                    <paper-item>Cidade 4</paper-item>
+                  </paper-listbox>
+                </paper-dropdown-menu>
+              </div>
+              <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX" value="{{campaign.voter}}"></paper-input>
+              <paper-dropdown-menu label="Escolha o partido" value="{{campaign.party}}">
+                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                  <paper-item>Rede</paper-item>
+                  <paper-item>Partido 2</paper-item>
+                  <paper-item>Partido 3</paper-item>
+                  <paper-item>Partido 4</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX" value="{{campaign.membership}}"></paper-input>
+            </div>
+          </div>
+          <div class="step" id="step2">
+            <h1>Propostas
+              <paper-fab mini icon="app:add" on-tap="open"></paper-fab>
+            </h1>
+            <template is="dom-repeat" items="{{proposalData}}">
+              <paper-card>
+                <div class="card-title">{{item.content.title}}</div>
+              </paper-card>
+            </template>
+          </div>
+          <div class="step" id="step3">
             <h1>Dados da campanha</h1>
             <div class="fields">
               <paper-input value="{{campaign.name}}" label="Titulo" placeholder="Nome da campanha"></paper-input>
@@ -251,61 +322,6 @@
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
-          <div class="step" id="step2">
-            <h1>Propostas
-              <paper-button on-tap="open">Nova Proposta</paper-button>
-            </h1>
-            <template is="dom-repeat" items="{{proposalData}}">
-              <paper-card>
-                <div class="card-title">{{item.content.title}}</div>
-              </paper-card>
-            </template>
-          </div>
-          <div class="step" id="step3">
-            <div class="about">
-              <h1>Sobre o candidato</h1>
-              <span></span>
-            </div>
-            <div class="candidate">
-              <paper-input label="Nome do candidato" placeholder="Nome do candidato" value="{{campaign.candidateName}}"></paper-input>
-              <paper-dropdown-menu label="Cargo que irá disputar" value="{{campaign.role}}">
-                <paper-listbox slot="dropdown-content" class="dropdown-content">
-                  <paper-item>Cargo 1</paper-item>
-                  <paper-item>Cargo 2</paper-item>
-                  <paper-item>Cargo 3</paper-item>
-                  <paper-item>Cargo 4</paper-item>
-                </paper-listbox>
-              </paper-dropdown-menu>
-              <div class="region">
-                <paper-dropdown-menu label="Estado" value="{{campaign.state}}">
-                  <paper-listbox slot="dropdown-content" class="dropdown-content">
-                    <paper-item>Estado 1</paper-item>
-                    <paper-item>Estado 2</paper-item>
-                    <paper-item>Estado 3</paper-item>
-                    <paper-item>Estado 4</paper-item>
-                  </paper-listbox>
-                </paper-dropdown-menu>
-                <paper-dropdown-menu label="Cidade" value="{{campaign.city}}">
-                  <paper-listbox slot="dropdown-content" class="dropdown-content">
-                    <paper-item>Cidade 1</paper-item>
-                    <paper-item>Cidade 2</paper-item>
-                    <paper-item>Cidade 3</paper-item>
-                    <paper-item>Cidade 4</paper-item>
-                  </paper-listbox>
-                </paper-dropdown-menu>
-              </div>
-              <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX" value="{{campaign.voter}}"></paper-input>
-              <paper-dropdown-menu label="Partido" value="{{campaign.party}}">
-                <paper-listbox slot="dropdown-content" class="dropdown-content">
-                  <paper-item>Partido 1</paper-item>
-                  <paper-item>Partido 2</paper-item>
-                  <paper-item>Partido 3</paper-item>
-                  <paper-item>Partido 4</paper-item>
-                </paper-listbox>
-              </paper-dropdown-menu>
-              <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX" value="{{campaign.membership}}"></paper-input>
             </div>
           </div>
           <div></div>
@@ -392,6 +408,18 @@
         input.value = filename;
       }
 
+      getCandidatePhoto(e) {
+        let photo = e.target.files[0];
+        if(photo) {
+          let reader = new FileReader();
+          const img = this.$.candidateImage;
+          reader.onload = function (e) {
+            img.src = e.target.result;
+          }
+          reader.readAsDataURL(photo);
+        }
+      }
+
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
         console.log(this.campaign);
@@ -406,11 +434,10 @@
             this.campaignId = this.$.document.path.match(/\/.*\/(.*)/)[1];
           }.bind(this));
         }
-        //upload image
-        if(this.$.coverImage.files[0]) {
-          this.fileArray.push(this.$.coverImage.files[0]);
-          this.$.storage.upload();
-        } 
+        //upload images
+        if(this.$.coverImage.files[0]) this.fileArray.push(this.$.coverImage.files[0]);
+        if(this.$.candidatePhoto.files[0]) this.fileArray.push(this.$.candidatePhoto.files[0]);
+        this.$.storage.upload();
       }
       
       _saveProposal(e) {
@@ -425,7 +452,6 @@
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
           this.$.confirm.present();
-          
         } else {
           this.nextLabel = 'Próximo';
         }
@@ -437,11 +463,11 @@
           this.selection = 0;
           this.campaign = {};
           this.campaignId = undefined;
+          this.fileArray= [];
         }
       }
 
       _handleProposals() {
-        console.log(this.proposals);
       }
 
     }

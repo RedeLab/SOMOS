@@ -20,12 +20,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       
       .card {
-        margin: 15px 5px;
+        margin: 15px 0;
         padding: 16px;
         color: #757575;
-        border-radius: 5px;
         background-color: #fff;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
       }
 
       a:focus,
@@ -76,6 +74,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       h1 {
         font-size: 22px;
         line-height: 26px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         @apply --default-title-font;
       } 
 
@@ -104,6 +105,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --paper-icon-button-ink-color: var(--secondary-text-color);
       }
 
+      app-drawer-layout:-webkit-full-screen-ancestor app-header,
+      app-header-layout:-webkit-full-screen-ancestor app-header,
+      app-drawer-layout:-webkit-full-screen-ancestor app-drawer {
+        z-index: -1 !important;
+      }
+
       paper-button.accent,
       paper-fab {
         @apply --accent-gradient;
@@ -122,6 +129,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         color: var(--secondary-text-color);
       }
 
+      .file-upload {
+        position: relative;
+      }
+      .file-upload input,
+      .upload-button input {
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      .file-upload iron-icon {
+        --iron-icon-fill-color: var(--dark-primary-color);
+      }
+
+      @media screen and (min-width: 641px) {
+        app-header [drawer-toggle] {
+          display: none;
+        }
+      }
 
     </style>
   </template>

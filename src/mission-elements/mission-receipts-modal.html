@@ -1,0 +1,61 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="mission-receipts-modal">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .receipt-item {
+        display: flex;
+      }
+
+      .supporter-name {
+        margin-top: 15px;
+        margin-left: 12px;
+      }
+
+    </style>
+
+    <template is="dom-repeat" items="{{receipts}}">
+      <div class="receipt-item">
+        <div class="supporter-img">
+          <iron-image  src="images/favicon.ico"></iron-image>
+        </div>
+        <div class="supporter-name">
+          <span> {{item.userName}} </span>
+        </div>
+      </div>
+    </template>
+  </template>
+  <script>
+    class MissionReceiptsModal extends Polymer.Element {
+      static get is() { return 'mission-receipts-modal'; }
+
+      static get properties() {
+        return { 
+          supporter: {
+            type: Object
+          },
+          receipts: {
+            type: Array
+          }
+        };
+      }
+
+      constructor() {
+        super();
+      }
+    }
+customElements.define(MissionReceiptsModal.is, MissionReceiptsModal);
+</script>
+</dom-module>

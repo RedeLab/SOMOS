@@ -121,9 +121,10 @@
       }
 
       _sendFile() {
+        console.log(this.user.displayName);
         if(this.input.files.length > 0){
-          this.set('missionReceipt', [{"uid": this.user.uid, "receiptFileName": this.fileName}]);
-          this.$.document.saveValue("/missions/".concat(this.missionId).concat("/content"),  "receipts");
+          this.set('missionReceipt', [{"userName": this.user.displayName, "receiptFileName": this.fileName, "userEmail": this.user.email, "uid": this.user.uid}]);
+          this.$.document.saveValue(`/missions/${this.missionId}/content`, 'receipts');
           this.fileArray.push(this.file);
           this.$.storage.upload();
         } else {

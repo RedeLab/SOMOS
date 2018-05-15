@@ -1,0 +1,115 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+
+<link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="campaign-card">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        width: 85%;
+        display: inline-block;
+        background: var(--secondary-background-color);
+        @apply --default-font;
+      }
+      .card {
+        margin: 0 10px 0 0;
+        border-radius: unset;
+        box-shadow: unset;
+      }
+      .campaign-card paper-icon-button {
+        position: absolute;
+        right: 0;
+        top: -10px;
+      }
+      .campaign-card {
+        padding: 0px;
+      }
+      .campaign-card h1 {
+        margin: 0;
+      }
+      .campaign-card p {
+        white-space: normal;
+        margin: 0;
+        line-height: 1.1;
+        height: 70px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .campaign-card iron-image {
+        width: 100%;
+        height: 150px;
+        background-color: var(--dark-primary-color);
+      }
+      .card-content {
+        flex: 1;
+        padding: 0 10px;
+        position: relative;
+      }
+      .card-footer {
+        background-color: #F2F1F3;
+        display: flex;
+        margin-top: 5px;
+        padding: 5px 10px;
+      }
+      .card-footer span {
+        flex: 1;
+      }
+      .card-footer span,
+      .card-footer paper-toggle-button {
+        display: inline-block;
+      }
+      
+    </style>
+
+    <firebase-storage-ref 
+      path="/campaigns/[[key]]/[[campaign.coverImage]]"
+      metadata="{{metadata}}"
+      storage-uri="{{gsUri}}"
+      download-url="{{downloadUrl}}"
+      log="true" 
+      id="storage">
+    </firebase-storage-ref>
+    
+    <div class="card campaign-card">
+      <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
+      <div class="card-content">
+        <h1>
+          {{campaign.candidateName}}
+          <paper-icon-button class="go" on-tap="_goToMission" icon="app:arrow-forward"></paper-icon-button>
+        </h1>
+        <p>{{campaign.description}}</p>
+      </div>
+      <div class="card-footer">
+        <span>301 apoiadores | Brasília/DF</span>
+        <paper-toggle-button></paper-toggle-button>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    class CampaigCard extends Polymer.Element {
+      static get is() { return 'campaign-card'; }
+      static get properties() {
+        return {
+          campaign: {
+            type: Object,
+            value: function () {}
+          },
+          gsUri: String,
+          downloadUrl: {
+            type: String
+          },
+          key: String
+        };
+      }
+
+    }
+
+    window.customElements.define(CampaigCard.is, CampaigCard);
+  </script>
+</dom-module>

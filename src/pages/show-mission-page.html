@@ -23,6 +23,7 @@
 <link rel="import" href="../mission-elements/finish-mission-modal.html">
 <link rel="import" href="../mission-elements/mission-receipt.html">
 <link rel="import" href="../mixin-elements/mission-duration-mixin.html">
+<link rel="import" href="../mission-elements/mission-receipts-modal.html">
 
 <dom-module id="show-mission-page">
   <template>
@@ -149,22 +150,15 @@
       data="{{receipts}}">
     </firebase-query>
 
-
     <firebase-query
       id="accepted"
       path="/users/{{user.uid}}/accepted/{{data.key}}"
       data="{{acceptedMission}}">
     </firebase-query>
 
-    <firebase-storage-ref
-      download-url="{{imageUrl}}"
-      id="storage">
-    </firebase-storage-ref>
-
-    <firebase-storage-ref
-      download-url="{{audioUrl}}"
-      id="audio">
-    </firebase-storage-ref>
+    <app-dialog id="finishedDialog" opened="{{finishedModal}}">
+      <finish-mission-modal  user="[[user]]" mission-id="{{data.key}}"></finish-mission-modal>
+    </app-dialog>
 
     <app-dialog id="finishedDialog" opened="{{finishedModal}}">
       <finish-mission-modal  user="[[user]]" mission-id="{{data.key}}"></finish-mission-modal>
@@ -178,6 +172,9 @@
       <reject-mission-modal></reject-mission-modal>
     </app-dialog>
 
+    <app-dialog id="receiptsDialog">
+      <mission-receipts-modal receipts="{{mission.content.receipts}}"></mission-receipts-modal>
+    </app-dialog>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
@@ -194,10 +191,13 @@
               <span>{{remainingTime}}</span>
             </div>
           </h1>
-          <mission-player id="player" media-type="{{mediaType}}" media-url="{{mediaUrl}}"></mission-player>
+          <mission-player id="player" mission-image="{{missionImage}}"
+            mission="{{mission.content}}" mission-key="{{data.key}}">
+          </mission-player>
           <div class="actions">
             <paper-icon-button icon="app:chat-bubble-outline"></paper-icon-button>
             <paper-icon-button icon="app:thumb-up"></paper-icon-button>
+            <paper-icon-button icon="app:assessment" on-tap="missionReceipts"></paper-icon-button>
           </div>
         </app-toolbar>
       </app-header>
@@ -208,10 +208,6 @@
             <p>{{mission.content.description}}</p>
             <h2>Recompensa</h2>
             <p>{{mission.content.reward}}</p>
-
-            <template is="dom-repeat" items="{{receipts}}">
-              <mission-receipt mission-id="{{data.key}}" receipt="{{item}}"></mission-receipt>
-            </template>
 
             <div class="comments">
               <h2>Comentários</h2>
@@ -275,7 +271,6 @@
   <script>
     class ShowMissionPage extends MissionDurationMixin(Polymer.Element) {
       static get is() { return 'show-mission-page'; }
-      static get observers() { return ['_setMissionLayer(imageUrl, audioUrl, mission)']; }
       static get properties() {
         return {
           missionAction: {
@@ -302,13 +297,13 @@
             type: String,
             computed: 'calcMissionDate(mission.content)'
           },
-          imageUrl: {
+          missionImage: {
             type: String,
+            observer: '_setLayerImage'
           },
           data: Object,
           receipts: {
             type: Array,
-            value: []
           }
         };
       }
@@ -317,6 +312,8 @@
         if(!selected) {
           this.$.player.stop();
           this.updateStyles({ '--layer-image': 'linear-gradient(to top, grey, grey)' });
+        } else {
+          this._setLayerImage(this.missionImage);
         }
       }
 
@@ -326,6 +323,11 @@
 
       _observeFinishedModal() {
         if (!this.finishedModal)
+          this._returnToInbox();
+      }
+
+      _observeRejectedModal() {
+        if (!this.rejectedModal)
           this._returnToInbox();
       }
 
@@ -353,6 +355,7 @@
         }
         if(mission.content.imageTitle) image = this.imageUrl;
         if(image) this.updateStyles({ '--layer-image': `url(${image})` });
+        this.set('receipts',  mission.content.receipts);
         this.hideFabs();
       }
 
@@ -389,6 +392,13 @@
         this.hideFabs();
       }
 
+      _setLayerImage(missionImage) {
+        if(missionImage && this.mission.content) {
+          this.updateStyles({ '--layer-image': `url(${missionImage})` });
+          this.hideFabs();
+        }
+      }
+
       _finishMission(e) {
         this.$.finishedDialog.present();
         this.hideFabs();
@@ -419,10 +429,19 @@
             this.$.storage.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.imageTitle);
           if (mission.content.audioTitle)
             this.$.audio.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.audioTitle);
+        } else {
+          this.$.close.style.display = 'none';
+          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'none';
+          this.$.accept.style.display = 'block';
+          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
         }
       }
-    }
 
+      missionReceipts() {
+        this.$.receiptsDialog.present();
+      }
+
+    }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
 </dom-module>

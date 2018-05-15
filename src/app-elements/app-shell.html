@@ -32,8 +32,43 @@
         display: block;
       }
 
-      app-drawer-layout:not([narrow]) [drawer-toggle] {
-        display: none;
+      app-drawer-layout:-webkit-full-screen-ancestor app-header,
+      app-header-layout:-webkit-full-screen-ancestor app-header,
+      app-drawer-layout:-webkit-full-screen-ancestor app-drawer {
+        z-index: -1 !important;
+      }
+
+      app-toolbar.tall {
+        background: var(--dark-primary-color);
+        height: 148px;
+      }
+
+      .tall iron-image {
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+        background: var(--secondary-text-color);
+      }
+
+      .tall .username,
+      .tall .email {
+        color: var(--light-text-color); 
+        font-size: 0.6em;
+        line-height: 1;
+        font-weight: 100;
+      }
+      .tall .username {
+        font-size: 0.8em;
+        font-weight: 400;
+      }
+      .tall [bottom-item] {
+        padding: 10px;
+      }
+      .tall [bottom-item] paper-icon-button {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        color: var(--light-text-color);
       }
 
       .drawer-list {
@@ -77,10 +112,22 @@
     <app-drawer-layout fullbleed narrow="{{narrow}}">
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-        <app-toolbar>Menu</app-toolbar>
+        <app-toolbar class="tall">
+          <div bottom-item>
+            <iron-image src="{{user.profile.photo}}">  
+            </iron-image>
+            <div class="username">
+              {{user.displayName}}
+            </div>
+            <div class="email">
+              {{user.email}}
+            </div>
+            <paper-icon-button icon="app:expand-more"></paper-icon-button>
+          </div>
+        </app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="inbox" href="[[rootPath]]inbox">Caixa de Entrada</a>
-          <a name="campaign" href="[[rootPath]]new-campaign">Campanhas</a>
+          <a name="campaign" href="[[rootPath]]campaigns">Campanhas</a>
           <a name="login" href="[[rootPath]]login" on-tap="signOut">Sair</a>
         </iron-selector>
       </app-drawer>
@@ -94,7 +141,8 @@
           on-selected-item-changed="_selectedPageChanged"
           role="main">
           <inbox-page name="inbox" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></inbox-page>
-          <campaign-page name="campaign"></campaign-page>
+          <campaigns-page name="campaigns" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></campaigns-page>
+          <show-campaign-page name="show-campaign" user="[[user]]" route="{{route}}"></show-campaign-page>
           <new-campaign-page route="{{route}}" user="[[user]]" name="new-campaign"></new-campaign-page>
           <mission-page name="mission" user="[[user]]" route="{{route}}"></mission-page>
           <show-mission-page name="show-mission" user="[[user]]" route="{{route}}" ></show-mission-page>

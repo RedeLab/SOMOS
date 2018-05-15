@@ -40,6 +40,17 @@
       }
 
     </style>
+
+    <firebase-storage-ref
+      download-url="{{imageUrl}}"
+      id="storage">
+    </firebase-storage-ref>
+
+    <firebase-storage-ref
+      download-url="{{audioUrl}}"
+      id="audioStorage">
+    </firebase-storage-ref>
+
     <dom-if if="{{mediaUrl}}">
       <template>
         <paper-icon-button class="play" id="play" icon="app:play-circle-outline"
@@ -77,15 +88,45 @@
             type: String,
             observer: 'setupMedia'
           },
+          audioUrl: String,
+          imageUrl: String,
+          missionKey: String,
+          mission: Object,
           allowedTypes: {
             type: Array,
             value() {
               return ['audio', 'video'];
             }
           },
+          missionImage: {
+            type: String,
+            notify: true
+          },
           playing: Boolean
         }
       }
+      static get observers() { return ['_setMissionLayer(imageUrl, audioUrl, mission)']; }
+
+      _setMissionLayer(imageUrl, audioUrl, mission) {
+        let image = '';
+        if(!mission) return;
+        this._setFirebasePaths(mission);
+        if(mission.video) {
+          image = `https://img.youtube.com/vi/${mission.video}/0.jpg`;
+          this.mediaUrl = mission.video;
+          this.mediaType = 'video';
+        } else if(mission.audioTitle) {
+          image = `/images/audiowave.png`;
+          this.mediaUrl = this.audioUrl;
+          this.mediaType = 'audio';
+        } else {
+          this.mediaUrl = undefined;
+          this.mediaType = undefined;
+        }
+        if(mission.imageTitle) image = this.imageUrl;
+        this.missionImage = image;
+      }
+
       setupMedia(mediaType) {
         this.allowedTypes.forEach(function(mt) {
           this.$[mt].style.display = (mt === mediaType) ? 'block' : 'none';
@@ -124,6 +165,19 @@
         }
       }
 
+      _setFirebasePaths(mission) {
+        if(mission) {
+          if (mission.imageTitle)
+            this.$.storage.path = `/missions/${this.missionKey}/${mission.imageTitle}`;
+          if (mission.audioTitle)
+            this.$.audioStorage.path = `/missions/${this.missionKey}/${mission.audioTitle}`;
+        } else {
+          this.$.close.style.display = 'none';
+          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'none';
+          this.$.accept.style.display = 'block';
+          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
+        }
+      }
     }
 customElements.define(MissionPlayer.is, MissionPlayer);
 </script>

@@ -30,9 +30,12 @@
         </paper-listbox>
       </paper-dropdown-menu>
       <paper-textarea label="Descrição" placeholder="Uma descrição da proposta" char-counter maxlength="1000" value="{{proposal.description}}"></paper-textarea>
-      <paper-input label="Imagem de capa" disabled value="Selecione uma imagem">
-        <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
-      </paper-input>
+      <div class="file-upload">
+        <paper-input label="Imagem ilustrativa" placeholder="Selecione uma imagem" value="{{proposal.image}}">
+          <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
+        </paper-input>
+        <input id="coverImage" type="file" on-change="getFileName" accept=".jpg, .jpeg, .png">
+      </div>
       <div class="submit">
         <paper-button class="plain" on-tap="_saveProposal">Criar Proposta</paper-button>
       </div>
@@ -60,6 +63,13 @@
         this.dispatchEvent(new CustomEvent('create-proposal', { detail: { proposal }}));
         this.proposal = {};
       }
+
+      getFileName(e) {
+        let filename = e.target.files[0].name;
+        const input = this.shadowRoot.querySelector('.file-upload paper-input');
+        input.value = filename;
+      }
+
       
     }
     window.customElements.define(ProposalDialog.is, ProposalDialog);
