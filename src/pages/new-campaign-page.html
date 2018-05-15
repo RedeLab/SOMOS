@@ -41,9 +41,6 @@
         --app-form-header-color: var(--default-primary-color);
         @apply --default-font-medium;
       }
-      paper-button.block {
-        margin-top: 15px;
-      }
       paper-stepper {
         position: fixed;
         bottom: 0;
@@ -437,7 +434,6 @@
           }.bind(this));
         }
         //upload images
-        if(!this.$.coverImage.files[0] || !this.$.candidatePhoto.files[0]) return;
         if(this.$.coverImage.files[0]) this.fileArray.push(this.$.coverImage.files[0]);
         if(this.$.candidatePhoto.files[0]) this.fileArray.push(this.$.candidatePhoto.files[0]);
         this.$.storage.upload();
@@ -455,7 +451,6 @@
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
           this.$.confirm.present();
-          
         } else {
           this.nextLabel = 'Próximo';
         }
@@ -467,6 +462,7 @@
           this.selection = 0;
           this.campaign = {};
           this.campaignId = undefined;
+          this.fileArray= [];
         }
       }
 

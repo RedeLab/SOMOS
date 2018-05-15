@@ -1,0 +1,84 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="../campaign-elements/campaign-card.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="campaigns-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        background: var(--secondary-background-color);
+        height: 100vh;
+        @apply --default-font;
+      }
+      app-header {
+        color: var(--default-primary-color);
+        background: var(--accent-color);
+        --app-form-header-background: var(--accent-color);
+        --app-form-header-color: var(--default-primary-color);
+        @apply --default-font-medium;
+      }
+      div[main-title] {
+        margin-left: 20px;
+      }
+      .fill {
+        flex: 1;
+        padding: 0 20px;
+      }
+      .fill h1 {
+        color: var(--secondary-text-color);
+      }
+    </style>
+
+    <firebase-query 
+      id="query"
+      path="/campaigns" 
+      data="{{campaigns}}"
+      log="true">
+    </firebase-query>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed condenses effects="waterfall blend-background parallax-background">
+        <app-toolbar>
+          <paper-icon-button icon="app:menu" on-tap="openDrawer"></paper-icon-button>
+          <div main-title>Encontar Campanha</div>
+          <paper-icon-button icon="app:search"></paper-icon-button>
+          <paper-icon-button icon="app:filter"></paper-icon-button>
+        </app-toolbar>
+      </app-header>
+      <div class="fill">
+        <h1>Campanhas em destaque</h1>
+        <template id="campaignsList" is="dom-repeat" items="{{campaigns}}" as="campaign">
+          <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}"></campaign-card>
+        </template>
+      </div>
+    </app-header-layout>
+
+  </template>
+  <script>
+    class CampaignsPage extends Polymer.Element {
+        static get is() { return 'campaigns-page'; }
+        static get properties() {
+          return {
+            selected: {
+              observer: '_selectedChanged'
+            },
+            campaigns: {
+              type: Array
+            }
+          };
+        }
+
+        _selectedChanged(selected) {}
+
+        openDrawer() {
+          this.dispatchEvent(new CustomEvent('open-drawer'));
+        }
+      }
+
+      window.customElements.define(CampaignsPage.is, CampaignsPage);
+  </script>
+</dom-module>

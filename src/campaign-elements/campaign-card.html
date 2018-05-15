@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+
+<link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="campaign-card">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        background: var(--secondary-background-color);
+        @apply --default-font;
+      }
+      
+      .header paper-icon-button {
+        position: absolute;
+        right: 0;
+        top: 23px;
+      }
+    </style>
+
+    <firebase-storage-ref 
+      path="/campaigns/[[key]]/[[campaign.coverImage]]"
+      metadata="{{metadata}}"
+      storage-uri="{{gsUri}}"
+      download-url="{{downloadUrl}}"
+      log="true" 
+      id="storage">
+    </firebase-storage-ref>
+    
+    <div class="fill">
+      <paper-card image="{{downloadUrl}}">
+        <div class="card-content">
+          <div class="header">
+            <h1>
+              {{campaign.candidateName}}
+              <paper-icon-button class="go" on-tap="_goToMission" icon="app:arrow-forward"></paper-icon-button>
+            </h1>
+          </div>
+          <div class="description">
+            {{campaign.description}}
+          </div>
+          <div class="card-footer">
+            <span>301 apoiadores | Brasília/DF</span>
+            <paper-toggle-button></paper-toggle-button>
+          </div>
+        </div>
+      </paper-card>
+    </div>
+
+  </template>
+  <script>
+    class CampaigCard extends Polymer.Element {
+      static get is() { return 'campaign-card'; }
+      static get properties() {
+        return {
+          campaign: {
+            type: Object,
+            value: function () {}
+          },
+          gsUri: String,
+          downloadUrl: {
+            type: String
+          },
+          key: String
+        };
+      }
+
+    }
+
+    window.customElements.define(CampaigCard.is, CampaigCard);
+  </script>
+</dom-module>

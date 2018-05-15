@@ -94,6 +94,7 @@
           on-selected-item-changed="_selectedPageChanged"
           role="main">
           <inbox-page name="inbox" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></inbox-page>
+          <campaigns-page name="campaigns" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></campaigns-page>
           <show-campaign-page name="show-campaign" user="[[user]]" route="{{route}}"></show-campaign-page>
           <new-campaign-page route="{{route}}" user="[[user]]" name="new-campaign"></new-campaign-page>
           <mission-page name="mission" user="[[user]]" route="{{route}}"></mission-page>
