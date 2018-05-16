@@ -79,7 +79,7 @@
         <div class="scrollable">
           <div class="scroll-content">
             <template id="campaignsList" is="dom-repeat" items="{{campaigns}}" as="campaign">
-              <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}"></campaign-card>
+              <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}" on-show-campaign="_goToCampaign"></campaign-card>
             </template>
           </div>
         </div>
@@ -87,7 +87,7 @@
         <div class="scrollable">
           <div class="scroll-content">
             <template id="campaignsList" is="dom-repeat" items="{{campaigns}}" as="campaign">
-              <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}"></campaign-card>
+              <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}" on-show-campaign="_goToCampaign"></campaign-card>
             </template>
           </div>
         </div>
@@ -95,7 +95,7 @@
         <div class="scrollable">
           <div class="scroll-content">
             <template id="campaignsList" is="dom-repeat" items="{{campaigns}}" as="campaign">
-              <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}"></campaign-card>
+              <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}" on-show-campaign="_goToCampaign"></campaign-card>
             </template>
           </div>
         </div>
@@ -147,6 +147,11 @@
 
         _openCampaignForm() {
           this.set('route.path', '/new-campaign');
+        }
+
+        _goToCampaign(e) {
+          let key = e.detail.campaignKey;
+          this.set('route.path', `/show-campaign/${key}`);
         }
       }
 

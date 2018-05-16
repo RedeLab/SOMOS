@@ -82,7 +82,7 @@
       <div class="card-content">
         <h1>
           {{campaign.candidateName}}
-          <paper-icon-button class="go" on-tap="_goToMission" icon="app:arrow-forward"></paper-icon-button>
+          <paper-icon-button class="go" on-tap="_goToCampaign" icon="app:arrow-forward"></paper-icon-button>
         </h1>
         <p>{{campaign.description}}</p>
       </div>
@@ -108,6 +108,10 @@
           },
           key: String
         };
+      }
+
+      _goToCampaign() {
+        this.dispatchEvent(new CustomEvent('show-campaign', { detail: { campaignKey: this.key } }))
       }
 
     }
