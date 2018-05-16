@@ -344,6 +344,9 @@
             type: Object,
             notify: true
           },
+          selected: {
+            observer: '_selectedChanged'
+          },
           campaign: {
             type: Object,
             value: function () { return {}; }
@@ -380,6 +383,11 @@
             observer: '_handleProposals'
           }
         };
+      }
+
+      _selectedChanged(selected) {
+        if (!selected) return;
+        this.fileArray = [];
       }
 
       _returnToInbox() {
