@@ -47,8 +47,9 @@
     </style>
 
     <firebase-document
+      path="/missions/[[missionId]]/content/receipts"
       id="document"
-      data="{{missionReceipt}}">
+      data="{{missionReceipts}}">
     </firebase-document>
 
     <firebase-storage-multiupload
@@ -95,8 +96,9 @@
             type: Object
           },
           missionId: String,
-          missionReceipt: {
-            type: Object
+          missionReceipts: {
+            type: Array,
+            value: []
           },
           fileArray: {
             type: Array,
@@ -121,10 +123,9 @@
       }
 
       _sendFile() {
-        console.log(this.user.displayName);
+        console.log(this.missionReceipt);
         if(this.input.files.length > 0){
-          this.set('missionReceipt', [{"userName": this.user.displayName, "receiptFileName": this.fileName, "userEmail": this.user.email, "uid": this.user.uid}]);
-          this.$.document.saveValue(`/missions/${this.missionId}/content`, 'receipts');
+          this.push("missionReceipts", {"userName": this.user.displayName, "receiptFileName": this.fileName, "userEmail": this.user.email, "uid": this.user.uid});
           this.fileArray.push(this.file);
           this.$.storage.upload();
         } else {
