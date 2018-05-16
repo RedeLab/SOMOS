@@ -96,6 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       paper-tabs {
         width: calc(100% + 14px);
         margin: 0 -7px;
+        max-width: 500px;
       }
       paper-tab {
         width: calc(50% - 32px);
@@ -148,6 +149,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       @media screen and (min-width: 641px) {
         app-header [drawer-toggle] {
           display: none;
+        }
+        paper-tabs {
+          width: 100%;
+          margin: 0 auto;
         }
       }
 
