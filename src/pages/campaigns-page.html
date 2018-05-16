@@ -2,6 +2,8 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <link rel="import" href="../campaign-elements/campaign-card.html">
 <link rel="import" href="../app-elements/app-actions.html">
@@ -26,6 +28,17 @@
       }
       h1[main-title] {
         margin-left: 20px;
+      }
+      app-drawer .content {
+        text-align: left;
+        padding: 0 10px;
+      }
+      app-drawer .header {
+        text-align: center;
+      }
+      paper-input paper-button {
+        color: var(--accent-color);
+        border: none;
       }
       .fill {
         flex: 1;
@@ -58,7 +71,7 @@
           <paper-icon-button icon="app:menu" on-tap="openDrawer"></paper-icon-button>
           <h1 main-title>Encontrar Campanha</h1>
           <paper-icon-button icon="app:search"></paper-icon-button>
-          <paper-icon-button icon="app:filter"></paper-icon-button>
+          <paper-icon-button icon="app:filter" on-tap="_openFilter"></paper-icon-button>
         </app-toolbar>
       </app-header>
       <div class="fill">
@@ -93,6 +106,20 @@
       </app-actions>
     </app-header-layout>
 
+    <app-drawer id="filter" slot="drawer" align="right">
+      <div class="content">
+        <div class="header">
+          <h1>Filtros</h1>
+        </div>
+        <paper-input label="Buscar por local" placeholder="Digite a localidade">
+          <paper-button slot="suffix">Buscar</paper-button>
+        </paper-input>
+        <paper-input label="Buscar por cargo" placeholder="Presidente">
+          <paper-button slot="suffix">Buscar</paper-button>
+        </paper-input>
+      </div>
+    </app-drawer>
+
   </template>
   <script>
     class CampaignsPage extends Polymer.Element {
@@ -112,6 +139,10 @@
 
         openDrawer() {
           this.dispatchEvent(new CustomEvent('open-drawer'));
+        }
+
+        _openFilter() {
+          this.$.filter.toggle();
         }
 
         _openCampaignForm() {
