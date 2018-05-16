@@ -6,6 +6,7 @@
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../mission-elements/mission-receipt.html">
 
 <dom-module id="mission-receipts-modal">
   <template>
@@ -26,13 +27,18 @@
 
     </style>
 
+    
+    <app-dialog id="missionReceipt">
+      <mission-receipt user="[[userData]]"></mission-receipt>
+    </app-dialog>
+
     <template is="dom-repeat" items="{{receipts}}">
       <div class="receipt-item">
         <div class="supporter-img">
           <iron-image  src="images/favicon.ico"></iron-image>
         </div>
         <div class="supporter-name">
-          <span> {{item.userName}} </span>
+          <a on-tap="_openUserReceipt"><span>{{item.userName}}</span></a>
         </div>
       </div>
     </template>
@@ -48,12 +54,20 @@
           },
           receipts: {
             type: Array
+          },
+          userData: {
+            type: Object
           }
         };
       }
 
       constructor() {
         super();
+      }
+
+      _openUserReceipt(e) {
+        this.set('userData', e.model.get('item'));
+        this.$.missionReceipt.present();
       }
     }
 customElements.define(MissionReceiptsModal.is, MissionReceiptsModal);

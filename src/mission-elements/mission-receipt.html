@@ -23,7 +23,6 @@
     </style>
 
     <firebase-storage-ref
-      path="/missions/[[missionId]]/[[receipt.receiptFileName]]"
       metadata="{{metadata}}"
       storage-uri="{{gsUri}}"
       download-url="{{downloadUrl}}"
@@ -33,7 +32,7 @@
 
     <div class="card">
       <div class="card-content">
-        <span> Apoiador: David Carlos </span>
+        <span> Apoiador: {{user.userName}} </span>
         <div class="receipt">
           <span> <a href="{{downloadUrl}}">Comprovante</a></span>
         </div>
@@ -46,10 +45,7 @@
 
       static get properties() {
         return {
-          supporter: {
-            type: Object
-          },
-          receipt: {
+          user: {
             type: Object
           },
           downloadUrl: String,
