@@ -437,6 +437,14 @@
         this.$.receiptsDialog.present();
       }
 
+      ready() {
+        super.ready();
+        this.shadowRoot.querySelector('mission-receipts-modal').addEventListener('close-receipts', this._dismissReceiptsModal.bind(this));
+      }
+
+      _dismissReceiptsModal() {
+        this.$.receiptsDialog.dismiss();
+      }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
