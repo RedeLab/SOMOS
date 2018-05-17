@@ -16,26 +16,30 @@
         display: block;
       }
 
-      .confirmation-icon, .confirmation-text {
-        margin: auto;
-        text-align: center;
+      .confirmation-text {
+        text-align: left;
+        line-height: 1.6;
       }
 
-      .confirmation-icon { width: 50%; }
+      #icon-bg {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        background: linear-gradient(to left, var(--light-accent-color), var(--accent-color));
+      }
 
-      .confirmation-text { width: 80%; }
+      #icon-bg div {
+        margin: 4px 4px 4px 5px;
+      }
 
-      .modal-header { width: 100%; }
+      paper-icon-button {
+        color: white;
+      }
 
+      .icon-bg paper-icon-button { margin-top: 3px; }
 
-    iron-icon {
-        --iron-icon-width: 50%;
-        --iron-icon-height: 50%;
-    }
-
-    .input-file-container {
-      display: flex;
-    }
+    .input-file-container { display: flex; }
 
     #file-name {
       overflow: hidden;
@@ -44,6 +48,15 @@
       font-size: 0.9em;
     }
 
+    .btn-text, .description {
+      margin-left: 10px;
+      margin-bottom: 20px;
+    }
+
+    .btn-text h3, .btn-text h4 {
+      margin: unset;
+      margin-top: 2px;
+    }
     </style>
 
     <firebase-document
@@ -60,24 +73,34 @@
       id="storage">
     </firebase-storage-multiupload>
 
-      <div class="modal-header">
-        <div class="confirmation-icon">
-          <iron-icon icon="app:done-all"></iron-icon>
-          <h2> Obrigado! </h2>
-        </div>
+      <h2 class="message"> Obrigado! </h2>
+
       <div class="confirmation-text">
-        <p>Agora é hora de pedir para o comitê de campanha validar sua missão e oferecer a sua recompensa. Pra isso basta enviar a comprovação solicitada na missão clicando no botão abaixo.</p>
+        <p>Agora é hora de pedir para o comitê de campanha validar sua missão e oferecer a sua recompensa. Pra isso basta enviar a comprovação solicitada na missão fazendo o upload ou descrevendo
+          a sua solução.</p>
       <div class="buttons">
 
         <div class="input-file-container">
-          <paper-icon-button slot="suffix" icon="app:cloud-upload" on-tap="_openInput"><paper-input id="input" type="file"></paper-input></paper-icon-button>
-          <h3 id="file-name">
-            {{fileName}}
-          </h3>
+          <div id="icon-bg">
+            <div>
+              <paper-icon-button class="accent block" slot="suffix" icon="app:cloud-upload" on-tap="_openInput"><paper-input id="input" type="file"></paper-input></paper-icon-button>
+            </div>
+          </div>
+          <div class="btn-text">
+            <h3>Enviar arquivo</h3>
+            
+            <h4 id="file-name">
+              {{fileName}}
+            </h4>
+          </div>
         </div>
+        <div class="description">
+          <paper-textarea label="descrição" char-counter maxLength="1000" value="{{description}}"></paper-textarea>
+        </div>
+
         <paper-button toggles raised class="accent block" on-tap="_sendFile">enviar</paper-button>
       </div>
-      </div>
+
       </div>
   </template>
   <script>
