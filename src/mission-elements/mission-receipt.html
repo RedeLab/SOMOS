@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
@@ -19,6 +20,13 @@
 
       #modal-header h2 { color: var(--accent-color); }
 
+      .actions #accept, .actions #reject {
+        margin-bottom: 20px;
+        margin-top: 20px;
+      }
+      .actions #accept {float: left;}
+      .actions #reject {float: right;}
+
     </style>
 
     <firebase-storage-ref
@@ -29,8 +37,15 @@
       id="storage">
     </firebase-storage-ref>
 
+    <firebase-document
+      path="/missions/{{rcptData.missionId}}/content/receipts"
+      id="document"
+      data="{{receipts}}">
+    </firebase-document>
+
+
         <div id="modal-header">
-          <h2><span> {{data.userName}} </span></h2>
+          <h2><span> {{rcptData.userName}} </span></h2>
           <span> Enviou evidências de que concluiu essa missão </span>
         </div>
 
@@ -38,8 +53,13 @@
             <iron-image id="#receipt-upload" style="width: 100%; height: 200px;" sizing="contain" src="{{downloadUrl}}"></iron-image>
 
           <div class="receipt-text">
-            <span> <a href="{{data.description}}">Comprovante</a></span>
+            <span> {{rcptData.description}} </span>
           </div>
+        </div>
+
+        <div class="actions">
+          <paper-button id="reject" on-tap="_rejectMission">rejeitar</paper-button>
+          <paper-button id="accept" on-tap="_acceptMission">aceitar</paper-button>
         </div>
   </template>
   <script>
@@ -48,8 +68,12 @@
 
       static get properties() {
         return {
-          data: {
+          rcptData: {
             type: Object
+          },
+          receipts: {
+            type: Array,
+            value: []
           },
           downloadUrl: String
         };
@@ -60,13 +84,25 @@
       }
 
       setRcptData(data) {
-        this.set('data', data);
+        this.set('rcptData', data);
         this._setFirebasePaths();
       }
+
       _setFirebasePaths() {
-        if(this.data.receiptFileName) {
-          this.$.storage.path = `/missions/${this.data.missionId}/${this.data.receiptFileName}`;
+        if(this.rcptData.receiptFileName) {
+          this.$.storage.path = `/missions/${this.rcptData.missionId}/${this.rcptData.receiptFileName}`;
         }
+      }
+
+      _acceptMission(e) {
+        const _receipts = this.receipts;
+        const currentReceiptIdx = _receipts.findIndex( element => element.uid === this.rcptData.uid );
+        _receipts[currentReceiptIdx]["status"] = "realized";
+        this.set('receipts',  _receipts);
+        this.$.document.saveValue(`/missions/${this.rcptData.missionId}/content`, "receipts");
+      }
+
+      _rejectMission(e) {
       }
     }
 customElements.define(MissionReceipt.is, MissionReceipt);
