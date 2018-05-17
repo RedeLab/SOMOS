@@ -17,9 +17,8 @@
         display: block;
       }
 
-      .receipt {
-        display: block;
-      }
+      #modal-header h2 { color: var(--accent-color); }
+
     </style>
 
     <firebase-storage-ref
@@ -30,14 +29,18 @@
       id="storage">
     </firebase-storage-ref>
 
-    <div class="card">
-      <div class="card-content">
-        <span> Apoiador: {{user.userName}} </span>
-        <div class="receipt">
-          <span> <a href="{{downloadUrl}}">Comprovante</a></span>
+        <div id="modal-header">
+          <h2><span> {{data.userName}} </span></h2>
+          <span> Enviou evidências de que concluiu essa missão </span>
         </div>
-      </div>
-    </div>
+
+        <div class="receipts">
+            <iron-image id="#receipt-upload" style="width: 100%; height: 200px;" sizing="contain" src="{{downloadUrl}}"></iron-image>
+
+          <div class="receipt-text">
+            <span> <a href="{{data.description}}">Comprovante</a></span>
+          </div>
+        </div>
   </template>
   <script>
     class MissionReceipt extends Polymer.Element {
@@ -45,11 +48,10 @@
 
       static get properties() {
         return {
-          user: {
+          data: {
             type: Object
           },
-          downloadUrl: String,
-          missionId: String
+          downloadUrl: String
         };
       }
 
@@ -57,6 +59,15 @@
         super();
       }
 
+      setRcptData(data) {
+        this.set('data', data);
+        this._setFirebasePaths();
+      }
+      _setFirebasePaths() {
+        if(this.data.receiptFileName) {
+          this.$.storage.path = `/missions/${this.data.missionId}/${this.data.receiptFileName}`;
+        }
+      }
     }
 customElements.define(MissionReceipt.is, MissionReceipt);
 </script>

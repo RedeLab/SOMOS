@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../mission-elements/mission-receipt.html">
 
@@ -39,13 +40,12 @@
       margin-bottom: 10px;
       margin-top: 20px;
     }
-
     </style>
 
 
-    <app-dialog id="missionReceipt">
-      <mission-receipt user="[[userData]]"></mission-receipt>
-    </app-dialog>
+    <app-scrollable-dialog id="missionReceipt">
+      <mission-receipt></mission-receipt>
+    </app-scrollable-dialog>
 
     <div id="modal-header">
       <h2> <span>{{receipts.length}}</span> pessoas concluiram</h2>
@@ -82,7 +82,8 @@
           },
           userData: {
             type: Object
-          }
+          },
+          missionId: String
         };
       }
 
@@ -91,7 +92,9 @@
       }
 
       _openUserReceipt(e) {
-        this.set('userData', e.model.get('item'));
+        const data = e.model.get('item');
+        data["missionId"] = this.missionId;
+        this.shadowRoot.querySelector('mission-receipt').setRcptData(data);
         this.$.missionReceipt.present();
       }
 
