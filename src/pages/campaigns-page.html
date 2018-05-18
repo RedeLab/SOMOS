@@ -4,6 +4,10 @@
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 
 <link rel="import" href="../campaign-elements/campaign-card.html">
 <link rel="import" href="../app-elements/app-actions.html">
@@ -112,11 +116,17 @@
           <h1>Filtros</h1>
         </div>
         <paper-input label="Buscar por local" placeholder="Digite a localidade">
-          <paper-button slot="suffix">Buscar</paper-button>
+          <paper-button slot="suffix" on-tap="filterCampaigns">Buscar</paper-button>
         </paper-input>
-        <paper-input label="Buscar por cargo" placeholder="Presidente">
-          <paper-button slot="suffix">Buscar</paper-button>
-        </paper-input>
+        <paper-dropdown-menu label="Cargo que irá disputar" value="{{campaign.role}}">
+          <paper-listbox slot="dropdown-content" class="dropdown-content">
+            <paper-item>Presidente</paper-item>
+            <paper-item>Governador</paper-item>
+            <paper-item>Senador</paper-item>
+            <paper-item>Deputado Federal</paper-item>
+            <paper-item>Deputado Estadual</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
       </div>
     </app-drawer>
 
@@ -152,6 +162,14 @@
         _goToCampaign(e) {
           let key = e.detail.campaignKey;
           this.set('route.path', `/show-campaign/${key}`);
+        }
+
+        filterCampaigns() {
+          let filter = this.$.query.ref.orderByChild("content/party").equalTo("Rede").once("value").then(function (snapshot) {
+            this.campaigns = Object.values(snapshot.val());
+          }.bind(this));
+          // this.set('campaigns', filter);
+          // console.log(this.campaigns);
         }
       }
 

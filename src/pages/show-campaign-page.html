@@ -33,11 +33,34 @@
       .candidate-info h1 {
         margin-bottom: 0;
       }
+      .candidate-info .main span {
+        font-weight: bold;
+        color: var(--accent-color);
+        font-size: 20px;
+        line-height: 0.9;
+      }
+      .row .col span:first-child {
+        font-weight: bold;
+        color: var(--dark-primary-color);
+      }
+      .row .col span:not(:first-child) {
+        font-size: 14px;
+         color: var(--dark-primary-color);
+         font-weight: bold;
+      }
       h6 {
         margin: 0;
       }
+      hr {
+        color: var(--secondary-background-color);
+        background-color: var(--secondary-background-color);
+        border: none;
+        height: 1px;
+      }
       .main {
-        text-align: center
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--secondary-text-color);
       }
       .details {
         display: inline-block;
@@ -54,13 +77,19 @@
       .row .col {
         flex: 1;
         text-align: center;
-        line-height: 1
+        line-height: 1;
+        margin-right: 5px;
       }
       .col span:first-child {
         font-size: 28px;
       }
       .description {
         background-color: var(--secondary-background-color);
+        padding: 10px 20px;
+        color: var(--secondary-text-color);
+      }
+      .description h1 {
+        color: var(--dark-primary-color);
       }
 
     </style>
@@ -78,7 +107,7 @@
     </firebase-document>
 
     <firebase-storage-ref 
-      path="/missions/[[key]]/[[mission.imageTitle]]" 
+      path="/campaigns/[[key]]/[[campaign.coverImage]]" 
       download-url="{{coverImage}}"
       id="storage">
     </firebase-storage-ref>
@@ -135,12 +164,10 @@
         <hr>
         <h6>Administradores</h6>
         <div></div>
-        <div class="description">
-          <h1>Descrição</h1>
-          <p>{{campaign.content.description}}</p>
-        </div>
-          <!-- {{campaign.content.description}}
-          {{campaign.content.party}} -->
+      </div>
+      <div class="description">
+        <h1>Descrição</h1>
+        <p>{{campaign.content.description}}</p>
       </div>
     </app-header-layout>
 
