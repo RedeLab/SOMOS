@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
@@ -17,13 +18,18 @@
         display: block;
       }
 
-      .receipt {
-        display: block;
+      #modal-header h2 { color: var(--accent-color); }
+
+      .actions #accept, .actions #reject {
+        margin-bottom: 20px;
+        margin-top: 20px;
       }
+      .actions #accept {float: right;}
+      .actions #reject {float: left;}
+
     </style>
 
     <firebase-storage-ref
-      path="/missions/[[missionId]]/[[receipt.receiptFileName]]"
       metadata="{{metadata}}"
       storage-uri="{{gsUri}}"
       download-url="{{downloadUrl}}"
@@ -31,14 +37,30 @@
       id="storage">
     </firebase-storage-ref>
 
-    <div class="card">
-      <div class="card-content">
-        <span> Apoiador: David Carlos </span>
-        <div class="receipt">
-          <span> <a href="{{downloadUrl}}">Comprovante</a></span>
+    <firebase-document
+      path="/missions/{{rcptData.missionId}}/content/receipts"
+      id="document"
+      data="{{receipts}}">
+    </firebase-document>
+
+
+        <div id="modal-header">
+          <h2><span> {{rcptData.userName}} </span></h2>
+          <span> Enviou evidências de que concluiu essa missão </span>
         </div>
-      </div>
-    </div>
+
+        <div class="receipts">
+            <iron-image id="#receipt-upload" style="width: 100%; height: 200px;" sizing="contain" src="{{downloadUrl}}"></iron-image>
+
+          <div class="receipt-text">
+            <span> {{rcptData.description}} </span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <paper-button id="reject" on-tap="_rejectMission">rejeitar</paper-button>
+          <paper-button id="accept" on-tap="_acceptMission">aceitar</paper-button>
+        </div>
   </template>
   <script>
     class MissionReceipt extends Polymer.Element {
@@ -46,14 +68,14 @@
 
       static get properties() {
         return {
-          supporter: {
+          rcptData: {
             type: Object
           },
-          receipt: {
-            type: Object
+          receipts: {
+            type: Array,
+            value: []
           },
-          downloadUrl: String,
-          missionId: String
+          downloadUrl: String
         };
       }
 
@@ -61,6 +83,32 @@
         super();
       }
 
+      setRcptData(data) {
+        this.set('rcptData', data);
+        this._setFirebasePaths();
+      }
+
+      _setFirebasePaths() {
+        if(this.rcptData.receiptFileName) {
+          this.$.storage.path = `/missions/${this.rcptData.missionId}/${this.rcptData.receiptFileName}`;
+        }
+      }
+
+      _setMissionStatus(status) {
+        const _receipts = this.receipts;
+        const currentReceiptIdx = _receipts.findIndex( element => element.uid === this.rcptData.uid );
+        _receipts[currentReceiptIdx]["status"] = status;
+        this.set('receipts',  _receipts);
+        this.$.document.saveValue(`/missions/${this.rcptData.missionId}/content`, "receipts");
+      }
+
+      _acceptMission(e) {
+        this._setMissionStatus("realized");
+      }
+
+      _rejectMission(e) {
+        this._setMissionStatus("rejected");
+      }
     }
 customElements.define(MissionReceipt.is, MissionReceipt);
 </script>

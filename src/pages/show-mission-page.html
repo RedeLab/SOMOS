@@ -12,6 +12,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -160,10 +161,6 @@
       <finish-mission-modal  user="[[user]]" mission-id="{{data.key}}"></finish-mission-modal>
     </app-dialog>
 
-    <app-dialog id="finishedDialog" opened="{{finishedModal}}">
-      <finish-mission-modal  user="[[user]]" mission-id="{{data.key}}"></finish-mission-modal>
-    </app-dialog>
-
     <app-dialog id="acceptedDialog">
       <accept-mission-modal></accept-mission-modal>
     </app-dialog>
@@ -172,9 +169,9 @@
       <reject-mission-modal></reject-mission-modal>
     </app-dialog>
 
-    <app-dialog id="receiptsDialog">
-      <mission-receipts-modal receipts="{{mission.content.receipts}}"></mission-receipts-modal>
-    </app-dialog>
+    <app-scrollable-dialog id="receiptsDialog">
+      <mission-receipts-modal mission-id="{{data.key}}" receipts="{{mission.content.receipts}}"></mission-receipts-modal>
+    </app-scrollable-dialog>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
@@ -441,6 +438,20 @@
         this.$.receiptsDialog.present();
       }
 
+      ready() {
+        super.ready();
+        this.shadowRoot.querySelector('mission-receipts-modal').addEventListener('close-modal', this._dismissReceiptsModal.bind(this));
+        this.shadowRoot.querySelector('finish-mission-modal').shadowRoot.querySelector('finish-confirmation-modal').addEventListener('close-modal', this._dismissFinishModal.bind(this));
+      }
+
+      _dismissReceiptsModal() {
+        this.$.receiptsDialog.dismiss();
+      }
+
+      _dismissFinishModal() {
+        document.querySelector('#finishConfirmation').dismiss();
+        this.$.finishedDialog.dismiss();
+      }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
