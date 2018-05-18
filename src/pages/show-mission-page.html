@@ -439,11 +439,17 @@
 
       ready() {
         super.ready();
-        this.shadowRoot.querySelector('mission-receipts-modal').addEventListener('close-receipts', this._dismissReceiptsModal.bind(this));
+        this.shadowRoot.querySelector('mission-receipts-modal').addEventListener('close-modal', this._dismissReceiptsModal.bind(this));
+        this.shadowRoot.querySelector('finish-mission-modal').shadowRoot.querySelector('finish-confirmation-modal').addEventListener('close-modal', this._dismissFinishModal.bind(this));
       }
 
       _dismissReceiptsModal() {
         this.$.receiptsDialog.dismiss();
+      }
+
+      _dismissFinishModal() {
+        document.querySelector('#finishConfirmation').dismiss();
+        this.$.finishedDialog.dismiss();
       }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);

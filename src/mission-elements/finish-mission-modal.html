@@ -1,12 +1,14 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/app-dialog.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../mission-elements/finish-confirmation-modal.html">
 
 <dom-module id="finish-mission-modal">
   <template>
@@ -39,7 +41,16 @@
 
       .icon-bg paper-icon-button { margin-top: 3px; }
 
-    .input-file-container { display: flex; }
+      .input-file-container { display: flex; }
+
+      paper-button {
+        float: left;
+        margin-bottom: 20px;
+        margin-top: 10px;
+        border: none;
+        box-shadow: none;
+        color: var(--accent-color);
+      }
 
     #file-name {
       overflow: hidden;
@@ -48,16 +59,25 @@
       font-size: 0.9em;
     }
 
-    .btn-text, .description {
+    .btn-text {
       margin-left: 10px;
-      margin-bottom: 20px;
     }
 
     .btn-text h3, .btn-text h4 {
       margin: unset;
       margin-top: 2px;
     }
+
+    .description { margin-bottom: 20px; }
+
+    paper-button {
+      float: right;
+    }
     </style>
+
+    <app-dialog id="finishConfirmation">
+      <finish-confirmation-modal ></finish-confirmation-modal>
+    </app-dialog>
 
     <firebase-document
       path="/missions/[[missionId]]/content/receipts"
@@ -88,17 +108,17 @@
           </div>
           <div class="btn-text">
             <h3>Enviar arquivo</h3>
-            
+
             <h4 id="file-name">
               {{fileName}}
             </h4>
           </div>
         </div>
         <div class="description">
-          <paper-textarea label="descrição" char-counter maxLength="1000" value="{{description}}"></paper-textarea>
+          <paper-textarea value="{{description}}" max-rows='4' maxlength="1000" char-counter label="descrição"></paper-textarea>
         </div>
 
-        <paper-button toggles raised class="accent block" on-tap="_sendFile">enviar</paper-button>
+        <paper-button toggles raised on-tap="_sendFile">enviar</paper-button>
       </div>
 
       </div>
@@ -117,6 +137,9 @@
           },
           file: {
             type: Object
+          },
+          description: {
+            type: String
           },
           missionId: String,
           missionReceipts: {
@@ -146,11 +169,17 @@
       }
 
       _sendFile() {
-        console.log(this.missionReceipt);
-        if(this.input.files.length > 0){
-          this.push("missionReceipts", {"userName": this.user.displayName, "receiptFileName": this.fileName, "userEmail": this.user.email, "uid": this.user.uid});
+        if(this.input && this.input.files.length > 0) {
+          this.push("missionReceipts", 
+            { "userName": this.user.displayName, 
+              "receiptFileName": this.fileName, 
+              "userEmail": this.user.email, 
+              "uid": this.user.uid, "description": this.description });
           this.fileArray.push(this.file);
           this.$.storage.upload();
+          this.set('description', undefined);
+          this.set('file', undefined);
+          this.$.finishConfirmation.present();
         } else {
           console.log("sem arquivos");
         }
