@@ -2,6 +2,7 @@
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-confirmation-icon.html">
 
 
 <dom-module id="finish-confirmation-modal">
@@ -31,39 +32,10 @@
       }
 
 
-      iron-icon {
-        color: #96DA4B;
-        --iron-icon-width: 70%;
-        --iron-icon-height: 100%;
-      }
-
-      .icon-bg {
-        background-color: #96DA4B;
-        border-radius: 50%;
-        border-width: 20px;
-        width: 100%;
-      }
-
-      .white-bg {
-        background-color: white;
-        border-color: #96DA4B;
-        border-style: solid;
-        border-radius: 50%;
-        width: 125px;
-        height: 125px;
-        margin: auto;
-        border-width: 6px;
-      }
-
     </style>
 
     <div class="modal-header">
-      <div class="confirmation-icon">
-        <div class="white-bg">
-          <iron-icon icon="app:check"></iron-icon>
-        </div>
-        <h2>Enviado</h2>
-      </div>
+      <app-confirmation-icon>Enviado</app-confirmation-icon>
       <div class="confirmation-text">
         <p>Agora é só aguardar a avaliação.</p>
         <p>Você receberá um e-mail e uma notificação no painel inicial.</p>
