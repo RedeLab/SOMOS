@@ -72,7 +72,7 @@
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall">
         <app-toolbar>
-          <paper-icon-button icon="app:menu" on-tap="openDrawer"></paper-icon-button>
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
           <h1 main-title>Encontrar Campanha</h1>
           <paper-icon-button icon="app:search"></paper-icon-button>
           <paper-icon-button icon="app:filter" on-tap="_openFilter"></paper-icon-button>
@@ -87,18 +87,18 @@
             </template>
           </div>
         </div>
-        <h1>Proporcionais</h1>
+        <h1>Majoritárias</h1>
         <div class="scrollable">
           <div class="scroll-content">
-            <template id="campaignsList" is="dom-repeat" items="{{campaigns}}" as="campaign">
+            <template id="campaignsList" is="dom-repeat" items="{{majorityCampaigns}}" as="campaign">
               <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}" on-show-campaign="_goToCampaign"></campaign-card>
             </template>
           </div>
         </div>
-        <h1>Majoritárias</h1>
+        <h1>Proporcionais</h1>
         <div class="scrollable">
           <div class="scroll-content">
-            <template id="campaignsList" is="dom-repeat" items="{{campaigns}}" as="campaign">
+            <template id="campaignsList" is="dom-repeat" items="{{proportionalCampaigns}}" as="campaign">
               <campaign-card campaign="{{campaign.content}}" key="{{campaign.$key}}" on-show-campaign="_goToCampaign"></campaign-card>
             </template>
           </div>
@@ -124,7 +124,7 @@
             <paper-item>Governador</paper-item>
             <paper-item>Senador</paper-item>
             <paper-item>Deputado Federal</paper-item>
-            <paper-item>Deputado Estadual</paper-item>
+            <paper-item>Deputado Estadual/Distrital</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
@@ -140,12 +140,27 @@
               observer: '_selectedChanged'
             },
             campaigns: {
+              type: Array,
+              observer: '_sortCampaigns'
+            },
+            majorityCampaigns: {
+              type: Array
+            },
+            proportionalCampaigns: {
               type: Array
             }
           };
         }
 
+        ready() {
+          super.ready();
+        }
+
         _selectedChanged(selected) {}
+        
+        _returnToInbox() {
+          this.set('route.path', '/');
+        }
 
         openDrawer() {
           this.dispatchEvent(new CustomEvent('open-drawer'));
@@ -162,6 +177,18 @@
         _goToCampaign(e) {
           let key = e.detail.campaignKey;
           this.set('route.path', `/show-campaign/${key}`);
+        }
+
+        _sortCampaigns(campaigns) {
+          this.majorityCampaigns = [];
+          this.proportionalCampaigns = [];
+          this.campaigns.forEach( campaign => {
+            if(campaign.content.role === "Presidente" || campaign.content.role === "Governador" || campaign.content.role === "Senador") {
+              this.majorityCampaigns.push(campaign);
+            } else {
+              this.proportionalCampaigns.push(campaign);
+            }
+          });
         }
 
         filterCampaigns() {
