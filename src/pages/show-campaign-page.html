@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
@@ -107,10 +108,15 @@
     </firebase-document>
 
     <firebase-storage-ref 
-      path="/campaigns/[[key]]/[[campaign.coverImage]]" 
       download-url="{{coverImage}}"
       id="storage">
     </firebase-storage-ref>
+
+    <firebase-query 
+      id="follow"
+      path="/users/{{user.uid}}/campaigns/{{data.key}}"
+      data="{{follow}}">
+    </firebase-query>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
@@ -159,7 +165,7 @@
         <div class="row">
           <paper-icon-button class="go" on-tap="_goToMission" icon="app:comment"></paper-icon-button>
           <div class="col"></div>
-          <paper-toggle-button></paper-toggle-button>
+          <paper-toggle-button on-change="_followCampaign"></paper-toggle-button>
         </div>
         <hr>
         <h6>Administradores</h6>
@@ -182,15 +188,49 @@
             observer: '_selectedChanged'
           },
           data: Object,
-          campaign: Object
+          campaign: {
+            type: Object,
+            observer: '_setCampaign'
+          },
+          follow: {
+            type: Array
+          }
         };
       }
 
       _selectedChanged(selected) {
       }
 
+      _setCampaign(campaign) {
+        //recover cover image just when exists
+        if(!this.campaign || !this.campaign.content) return;
+        if(this.campaign.content.coverImage) {
+          this.$.storage.path = `campaigns/${this.data.key}/${this.campaign.content.coverImage}`
+        }
+        if(this.campaign.content.usersFollow.includes(this.user.uid)) {
+          const toggle = this.shadowRoot.querySelector('app-header-layout').querySelector('paper-toggle-button');
+          toggle.checked = true;
+        }
+      }
+
       openDrawer() {
         this.dispatchEvent(new CustomEvent('open-drawer'));
+      }
+
+      _followCampaign(e) {
+        const follow = e.target.checked;
+        if(follow) {
+          const campaign = JSON.parse(JSON.stringify(this.campaign));
+          delete campaign.content.usersFollow;
+          this.$.follow.ref.set(campaign);
+          const usersFollow = new Set(this.campaign.content.usersFollow);
+          usersFollow.add(this.user.uid);
+          this.campaign.content.usersFollow = Array.from(usersFollow);
+          this.$.document.ref.set(this.campaign);
+          console.log("seguiu");
+        } else {
+
+        }
       }
     }
 
