@@ -12,6 +12,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -168,9 +169,9 @@
       <reject-mission-modal></reject-mission-modal>
     </app-dialog>
 
-    <app-dialog id="receiptsDialog">
+    <app-scrollable-dialog id="receiptsDialog">
       <mission-receipts-modal mission-id="{{data.key}}" receipts="{{mission.content.receipts}}"></mission-receipts-modal>
-    </app-dialog>
+    </app-scrollable-dialog>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
