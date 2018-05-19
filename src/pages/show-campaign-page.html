@@ -203,7 +203,7 @@
 
       _setCampaign(campaign) {
         //recover cover image just when exists
-        if(!this.campaign || !this.campaign.content) return;
+        if(!this.campaign || !this.campaign.content || !this.campaign.content.usersFollow) return;
         if(this.campaign.content.coverImage) {
           this.$.storage.path = `campaigns/${this.data.key}/${this.campaign.content.coverImage}`
         }
@@ -218,6 +218,7 @@
       }
 
       _followCampaign(e) {
+        // get toogle statte
         const follow = e.target.checked;
         if(follow) {
           const campaign = JSON.parse(JSON.stringify(this.campaign));
@@ -229,8 +230,17 @@
           this.$.document.ref.set(this.campaign);
           console.log("seguiu");
         } else {
-
+          this._unfollowCampaign();
         }
+      }
+
+      _unfollowCampaign(e) {
+        this.$.follow.ref.remove();
+        const usersFollow = new Set(this.campaign.content.usersFollow);
+        usersFollow.delete(this.user.uid);
+        this.campaign.content.usersFollow = Array.from(usersFollow);
+        this.$.document.ref.set(this.campaign);
+        console.log("nao apoia");
       }
     }
 
