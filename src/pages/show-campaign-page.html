@@ -3,6 +3,8 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -23,22 +25,18 @@
       }
       .fill {
         padding: 0 20px;
+        color: var(--secondary-text-color);
       }
       .row:nth-child(5) {
         margin: 10px 0;
       }
-      .candidate-info span,
       .row span {
         display: block;
       }
-      .candidate-info h1 {
-        margin-bottom: 0;
-      }
-      .candidate-info .main span {
-        font-weight: bold;
-        color: var(--accent-color);
-        font-size: 20px;
-        line-height: 0.9;
+      .candidate-info  {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
       }
       .row .col span:first-child {
         font-weight: bold;
@@ -46,8 +44,8 @@
       }
       .row .col span:not(:first-child) {
         font-size: 14px;
-         color: var(--dark-primary-color);
-         font-weight: bold;
+        color: var(--dark-primary-color);
+        font-weight: bold;
       }
       h6 {
         margin: 0;
@@ -61,14 +59,19 @@
       .main {
         text-align: center;
         margin-bottom: 20px;
-        color: var(--secondary-text-color);
       }
       .details {
-        display: inline-block;
-        font-size: 14px;
+        flex: 1;
+        line-height: 1;
+        margin: 10px 0;
       }
-      .details:nth-of-type(2) {
-        width: 50%;
+      .details span {
+        display: block;
+      }
+      .support {
+        display: inherit;
+      }
+      .support span {
         margin-right: 5px;
       }
       .row {
@@ -85,12 +88,20 @@
         font-size: 28px;
       }
       .description {
+        margin-bottom: 35px;
+      }
+      .social,
+      .calendar {
+        margin-bottom: 5px;
         background-color: var(--secondary-background-color);
-        padding: 10px 20px;
+        padding: 20px;
         color: var(--secondary-text-color);
       }
-      .description h1 {
-        color: var(--dark-primary-color);
+      .social paper-button {
+        border-radius: 25px;
+        text-transform: none;
+        font-size: 14px;
+        margin-top: -35px;
       }
 
     </style>
@@ -121,7 +132,7 @@
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
         <app-toolbar class="tall">
-          <paper-icon-button icon="app:menu" on-tap="openDrawer"></paper-icon-button>
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToCampaigns"></paper-icon-button>
           <paper-icon-button icon="app:more-vert"></paper-icon-button>
           <iron-image class="cover-image" sizing="cover" preload fade src="{{coverImage}}"></iron-image>
           <iron-image class="candidate-photo" sizing="cover" preload fade src="{{candidatePhoto}}"></iron-image>
@@ -129,24 +140,21 @@
       </app-header>
       <div class="fill">
         <div class="candidate-info">
-          <div class="main">
-            <h1>{{campaign.content.candidateName}}</h1>
-            <span>18</span>
-          </div>
           <div class="details">
             <span>Brasília/DF</span>
             <span>Começou em: 05/06/18</span>
-          </div>
-          <div class="details">
-            <span>Cargo: {{campaign.content.role}}</span>
             <span>Partido: {{campaign.content.party}}</span>
+          </div>
+          <div class="support">
+            <span>Apoiando</span>
+            <paper-toggle-button on-change="_followCampaign"></paper-toggle-button>
           </div>
         </div>
         <hr>
         <div class="row">
           <div class="col">
-            <span>321</span>
-            <span>apoiadores</span>
+            <span>{{campaign.content.usersFollow.length}}</span>
+            <span>total de apoiadores</span>
           </div>
           <div class="col">
             <span>321</span>
@@ -162,18 +170,33 @@
           </div>
         </div>
         <hr>
-        <div class="row">
-          <paper-icon-button class="go" on-tap="_goToMission" icon="app:comment"></paper-icon-button>
-          <div class="col"></div>
-          <paper-toggle-button on-change="_followCampaign"></paper-toggle-button>
+        <div class="description">
+          <p>{{campaign.content.description}}</p>
         </div>
-        <hr>
-        <h6>Administradores</h6>
-        <div></div>
       </div>
-      <div class="description">
-        <h1>Descrição</h1>
-        <p>{{campaign.content.description}}</p>
+      <div class="social">
+        <paper-button class="accent block" on-tap="">Biografia e propostas</paper-button>
+        <div class="row">
+          <div class="col">
+           <paper-icon-button icon="app:share"></paper-icon-button>
+           <span>facebook</span>
+          </div>
+          <div class="col">
+            <paper-icon-button icon="app:share"></paper-icon-button>
+            <span>twitter</span>
+          </div>
+          <div class="col">
+            <paper-icon-button icon="app:share"></paper-icon-button>
+            <span>instagram</span>
+          </div>
+          <div class="col">
+            <paper-icon-button icon="app:language"></paper-icon-button>
+            <span>website</span>
+          </div>
+        </div>
+      </div>
+      <div class="calendar">
+
       </div>
     </app-header-layout>
 
@@ -199,6 +222,11 @@
       }
 
       _selectedChanged(selected) {
+        this._checkToggle();
+      }
+
+      _returnToCampaigns() {
+        this.set('route.path', '/campaigns');
       }
 
       _setCampaign(campaign) {
@@ -207,9 +235,17 @@
         if(this.campaign.content.coverImage) {
           this.$.storage.path = `campaigns/${this.data.key}/${this.campaign.content.coverImage}`
         }
+        //set toggle if user is following the campaign
+        this._checkToggle();
+      }
+
+      _checkToggle() {
+        const toggle = this.shadowRoot.querySelector('app-header-layout').querySelector('paper-toggle-button');
+        if(!this.campaign.content) return;
         if(this.campaign.content.usersFollow.includes(this.user.uid)) {
-          const toggle = this.shadowRoot.querySelector('app-header-layout').querySelector('paper-toggle-button');
           toggle.checked = true;
+        } else {
+          toggle.checked = false;
         }
       }
 
