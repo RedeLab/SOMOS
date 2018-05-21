@@ -50,6 +50,9 @@
       h6 {
         margin: 0;
       }
+      h4 {
+        color: var(--dark-primary-color);
+      }
       hr {
         color: var(--secondary-background-color);
         background-color: var(--secondary-background-color);
@@ -91,7 +94,9 @@
         margin-bottom: 35px;
       }
       .social,
-      .calendar {
+      .calendar,
+      .ratings,
+      .administrators {
         margin-bottom: 5px;
         background-color: var(--secondary-background-color);
         padding: 20px;
@@ -102,6 +107,15 @@
         text-transform: none;
         font-size: 14px;
         margin-top: -35px;
+      }
+      .social .row .col span:not(:first-child) {
+        color: var(--secondary-text-color);
+      }
+      .calendar,
+      .ratings,
+      .attachments,
+      .administrators {
+        padding: 0 20px;
       }
 
     </style>
@@ -178,25 +192,42 @@
         <paper-button class="accent block" on-tap="">Biografia e propostas</paper-button>
         <div class="row">
           <div class="col">
-           <paper-icon-button icon="app:share"></paper-icon-button>
+            <a href="{{campaign.content.facebook}}" tabindex="-1" target="_blank">
+              <paper-icon-button icon="app:share"></paper-icon-button>
+            </a>
            <span>facebook</span>
           </div>
           <div class="col">
-            <paper-icon-button icon="app:share"></paper-icon-button>
+            <a href="{{campaign.content.twitter}}" tabindex="-1" target="_blank">
+              <paper-icon-button icon="app:share"></paper-icon-button>
+            </a>
             <span>twitter</span>
           </div>
           <div class="col">
-            <paper-icon-button icon="app:share"></paper-icon-button>
+            <a href="{{campaign.content.instagram}}" tabindex="-1" target="_blank">
+              <paper-icon-button icon="app:share"></paper-icon-button>
+            </a>
             <span>instagram</span>
           </div>
           <div class="col">
-            <paper-icon-button icon="app:language"></paper-icon-button>
+            <a href="{{campaign.content.website}}" tabindex="-1" target="_blank">
+              <paper-icon-button icon="app:language"></paper-icon-button>
+            </a>
             <span>website</span>
           </div>
         </div>
       </div>
       <div class="calendar">
-
+        <h4>Próximos Eventos</h4>
+      </div>
+      <div class="ratings">
+        <h4>Avaliações</h4>
+      </div>
+      <div class="attachments">
+        <h4>Anexos</h4>
+      </div>
+      <div class="administrators">
+        <h4>Administradores</h4>
       </div>
     </app-header-layout>
 

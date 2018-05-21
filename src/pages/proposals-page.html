@@ -1,0 +1,36 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="proposals-page">
+  <template>
+    <style>
+      :host {
+        display: block;
+        padding: 0 20px;
+      }
+    </style>
+
+    <app-route 
+      route="{{route}}" 
+      pattern="/show-campaign/:key/proposals" 
+      data="{{data}}">
+    </app-route>
+
+    PROPOSALS
+  </template>
+
+  <script>
+    class ProposalsPage extends Polymer.Element {
+      static get is() { return 'proposals-page'; }
+      static get properties() {
+        return {
+          route: {
+            type: Object,
+            notify: true
+          }
+        };
+      }
+    }
+
+    window.customElements.define(ProposalsPage.is, ProposalsPage);
+  </script>
+</dom-module>
