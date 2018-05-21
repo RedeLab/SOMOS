@@ -1,5 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
+<link rel="import" href="../app-elements/shared-styles.html">
+
 <dom-module id="proposals-page">
   <template>
     <style>
@@ -11,11 +13,13 @@
 
     <app-route 
       route="{{route}}" 
-      pattern="/show-campaign/:key/proposals" 
+      pattern="/show-campaign/:key/:proposals" 
       data="{{data}}">
     </app-route>
 
-    PROPOSALS
+    <div>
+      PROPOSALS
+    </div>
   </template>
 
   <script>
@@ -26,7 +30,8 @@
           route: {
             type: Object,
             notify: true
-          }
+          },
+          data: Object
         };
       }
     }

@@ -132,11 +132,11 @@
         margin: 0 -20px;
       }
       .about h1 {
-        padding: 10px;
+        padding: 10px 20px;;
         color: var(--default-primary-color);
         margin-top: 0;
       }
-      .about span {
+      .about .candidate-img {
         overflow: hidden;
         display: block;
         border-radius: 50%;
@@ -149,7 +149,7 @@
         background-color: var(--default-primary-color);
         border: 2px solid var(--accent-color);
       }
-      .about span input {
+      .about .candidate-img input {
         position: absolute;
         opacity: 0;
         top: 0;
@@ -158,28 +158,36 @@
         width: 100%;
         height: 100%;
       }
-      .about span iron-image {
+      .about .candidate-img iron-image,
+      .about iron-image {
         width: 100%;
         height: 100%;
       }
-      .about span iron-icon {
+      .about .candidate-img iron-icon {
         position: absolute;
         bottom: 0;
         right: 50%;
         transform: translate(50%);
         --iron-icon-fill-color: var(--secondary-text-color);
       }
+      .about .cover-img iron-icon {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+      }
+      .about .cover-img input {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 15%;
+        opacity: 0;
+        height: 30%;
+      }
       .candidate {
         margin-top: 80px;
       }
       .candidate paper-dropdown-menu {
         width: 100%;
-      }
-      .region paper-dropdown-menu {
-        width: calc(50% - 10px);
-      }
-      .region paper-dropdown-menu:nth-child(2) {
-        margin-left: 15px;
       }
 
     </style>
@@ -224,8 +232,13 @@
         <iron-pages selected="[[selection]]">
           <div class="step" id="step1">
             <div class="about">
+              <iron-image sizing="cover" id="coverImage"></iron-image>
               <h1>Sobre o candidato</h1>
-              <span>
+              <span class="cover-img">
+                <iron-icon icon="app:add"></iron-icon>
+                <input id="coverPhoto" type="file" on-change="getCoverPhoto" accept=".jpg, .jpeg, .png" value="{{campaign.coverImage}}">
+              </span>
+              <span class="candidate-img">
                 <iron-image sizing="cover" id="candidateImage"></iron-image>
                 <iron-icon icon="app:add"></iron-icon>
                 <input id="candidatePhoto" type="file" on-change="getCandidatePhoto" accept=".jpg, .jpeg, .png" value="{{campaign.candidateImage}}">
@@ -242,24 +255,15 @@
                   <paper-item>Deputado Estadual</paper-item>
                 </paper-listbox>
               </paper-dropdown-menu>
-              <div class="region">
-                <paper-dropdown-menu label="Estado" value="{{campaign.state}}">
-                  <paper-listbox slot="dropdown-content" class="dropdown-content">
-                    <paper-item>Estado 1</paper-item>
-                    <paper-item>Estado 2</paper-item>
-                    <paper-item>Estado 3</paper-item>
-                    <paper-item>Estado 4</paper-item>
-                  </paper-listbox>
-                </paper-dropdown-menu>
-                <paper-dropdown-menu label="Cidade" value="{{campaign.city}}">
-                  <paper-listbox slot="dropdown-content" class="dropdown-content">
-                    <paper-item>Cidade 1</paper-item>
-                    <paper-item>Cidade 2</paper-item>
-                    <paper-item>Cidade 3</paper-item>
-                    <paper-item>Cidade 4</paper-item>
-                  </paper-listbox>
-                </paper-dropdown-menu>
-              </div>
+              <paper-dropdown-menu label="Estado" value="{{campaign.state}}">
+                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                  <paper-item>Estado 1</paper-item>
+                  <paper-item>Estado 2</paper-item>
+                  <paper-item>Estado 3</paper-item>
+                  <paper-item>Estado 4</paper-item>
+                </paper-listbox>
+              </paper-dropdown-menu>
+              <paper-input label="Cidade" placeholder="Digite o nome da cidade" value="{{campaign.city}}"></paper-input>
               <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX" value="{{campaign.voter}}"></paper-input>
               <paper-dropdown-menu label="Escolha o partido" value="{{campaign.party}}">
                 <paper-listbox slot="dropdown-content" class="dropdown-content">
@@ -284,12 +288,6 @@
             <h1>Dados da campanha</h1>
             <div class="fields">
               <paper-input value="{{campaign.name}}" label="Titulo" placeholder="Nome da campanha"></paper-input>
-              <div class="file-upload">
-                <paper-input label="Imagem de capa" placeholder="Selecione uma imagem" value="{{campaign.coverImage}}">
-                  <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
-                </paper-input>
-                <input id="coverImage" type="file" on-change="getFileName" accept=".jpg, .jpeg, .png">
-              </div>
               <paper-textarea value="{{campaign.description}}" label="Descrição" placeholder="Uma breve descrição da campanha" char-counter
                 maxlength="500"></paper-textarea>
               <div class="input-file">
@@ -385,7 +383,6 @@
 
       _selectedChanged(selected) {
         if (!selected) return;
-        this.fileArray = [];
       }
 
       _returnToInbox() {
@@ -408,17 +405,23 @@
         this.$.social.dismiss();
       }
 
-      getFileName(e) {
-        let filename = e.target.files[0].name;
-        const input = this.shadowRoot.querySelector('.file-upload paper-input');
-        input.value = filename;
-      }
-
       getCandidatePhoto(e) {
         let photo = e.target.files[0];
         if(photo) {
           let reader = new FileReader();
           const img = this.$.candidateImage;
+          reader.onload = function (e) {
+            img.src = e.target.result;
+          }
+          reader.readAsDataURL(photo);
+        }
+      }
+        
+      getCoverPhoto(e) {
+        let photo = e.target.files[0];
+        if (photo) {
+          let reader = new FileReader();
+          const img = this.$.coverImage;
           reader.onload = function (e) {
             img.src = e.target.result;
           }
@@ -441,9 +444,21 @@
           }.bind(this));
         }
         //upload images
-        if(this.$.coverImage.files[0]) this.fileArray.push(this.$.coverImage.files[0]);
-        if(this.$.candidatePhoto.files[0]) this.fileArray.push(this.$.candidatePhoto.files[0]);
-        this.$.storage.upload();
+        this._uploadImages();
+      }
+
+      _uploadImages() {
+        if(this.$.coverPhoto.files[0]) {
+          this.campaign.coverImage = this.$.coverPhoto.files[0].name;
+          this.fileArray.push(this.$.coverPhoto.files[0]);
+        }
+        if(this.$.candidatePhoto.files[0]) {
+          this.campaign.candidateImage = this.$.candidatePhoto.files[0].name;
+          this.fileArray.push(this.$.candidatePhoto.files[0]);
+        }
+        if(this.campaignId) {
+          this.$.storage.upload();
+        }
       }
       
       _saveProposal(e) {
@@ -471,9 +486,6 @@
           this.campaignId = undefined;
           this.fileArray= [];
         }
-      }
-
-      _handleProposals() {
       }
 
     }
