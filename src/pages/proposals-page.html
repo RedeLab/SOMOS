@@ -1,0 +1,129 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="proposals-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        background: var(--secondary-background-color);
+        height: 100vh;
+        @apply --default-font;
+      }
+      .tall {
+        background-color: orange;
+        height: 150px;
+      }
+      .fill {
+        padding: 20px;
+        color: var(--secondary-text-color);
+      }
+      .description p {
+        margin: 0 0 10px 0;
+      }
+      hr {
+        margin: 5px 0;
+      }
+      h4 {
+        margin: 0;
+        color: var(--dark-primary-color);
+      }
+      .card {
+        position: relative;
+        padding: 5px 15px;
+        background-color: var(--primary-background-color);
+        margin: 5px 0 10px 0;
+      }
+      .card h4 {
+        color: var(--primary-text-color);
+      }
+      .card p {
+        margin: 10px 0;
+        line-height: 1;
+        height: 65px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .card span {
+        position: absolute;
+        bottom: -10px;
+        right: 10px;
+        font-size: 70px;
+        color: var(--accent-color);
+      }
+
+    </style>
+
+    <app-route 
+      route="{{route}}" 
+      pattern="/proposals/:key" 
+      data="{{data}}">
+    </app-route>
+
+    <firebase-query 
+      id="query" 
+      path="/proposals/{{data.key}}" 
+      data="{{proposals}}">
+    </firebase-query>
+
+    <firebase-document 
+      id="document" 
+      path="/campaigns/{{data.key}}" 
+      data="{{campaign}}">
+    </firebase-document>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
+        <app-toolbar class="tall">
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToCampaigns"></paper-icon-button>
+          <paper-icon-button icon="app:more-vert"></paper-icon-button>
+          <iron-image class="cover-image" sizing="cover" preload fade src="{{coverImage}}"></iron-image>
+          <iron-image class="candidate-photo" sizing="cover" preload fade src="{{candidatePhoto}}"></iron-image>
+        </app-toolbar>
+      </app-header>
+      <div class="fill">
+        <div class="description">
+          <p>{{campaign.content.description}}</p>
+        </div>
+        <h4>Propostas</h4>
+        <template id="proposalsList" is="dom-repeat" items="{{proposals}}" as="proposal">
+          <div class="card">
+            <h4>{{proposal.content.title}}</h4>
+            <hr>
+            <p>{{proposal.content.description}}</p>
+            <span>...</span>
+          </div>
+        </template>
+      </div>
+    </app-header-layout>
+
+  </template>
+
+  <script>
+    class ProposalsPage extends Polymer.Element {
+      static get is() { return 'proposals-page'; }
+      static get properties() {
+        return {
+          route: {
+            type: Object,
+            notify: true
+          },
+          data: Object,
+          proposals: {
+            type: Array
+          },
+          campaign: {
+            type: Object
+          }
+        };
+      }
+    }
+
+    window.customElements.define(ProposalsPage.is, ProposalsPage);
+  </script>
+</dom-module>

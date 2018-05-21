@@ -375,8 +375,7 @@
             type: String
           },
           proposals: {
-            type: Array,
-            observer: '_handleProposals'
+            type: Array
           }
         };
       }
@@ -468,7 +467,7 @@
 
       _setCreateCampaign(selection) {
         if(!selection) return;
-        this._saveCampaign();
+        // this._saveCampaign();
         if(selection === 2) {
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
