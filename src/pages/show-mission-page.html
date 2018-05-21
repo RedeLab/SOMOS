@@ -194,7 +194,7 @@
           <div class="actions">
             <paper-icon-button icon="app:chat-bubble-outline"></paper-icon-button>
             <paper-icon-button icon="app:thumb-up"></paper-icon-button>
-            <paper-icon-button icon="app:assessment" on-tap="missionReceipts"></paper-icon-button>
+            <paper-icon-button icon="app:assessment" on-tap="_openMissionReceipts"></paper-icon-button>
           </div>
         </app-toolbar>
       </app-header>
@@ -299,6 +299,10 @@
             observer: '_setLayerImage'
           },
           data: Object,
+          routeData: {
+            type: Object,
+            notify: true
+          },
           receipts: {
             type: Array,
           }
@@ -331,29 +335,6 @@
       _observeRejectedModal() {
         if (!this.rejectedModal)
           this._returnToInbox();
-      }
-
-
-      _setMissionLayer(imageUrl, audioUrl, mission) {
-        let image = '';
-        if(!mission || !mission.content) return;
-        this._setFirebasePaths(mission);
-        if(mission.content.video) {
-          image = `https://img.youtube.com/vi/${mission.content.video}/0.jpg`;
-          this.mediaUrl = mission.content.video;
-          this.mediaType = 'video';
-        } else if(mission.content.audioTitle) {
-          image = `/images/audiowave.png`;
-          this.mediaUrl = this.audioUrl;
-          this.mediaType = 'audio';
-        } else {
-          this.mediaUrl = undefined;
-          this.mediaType = undefined;
-        }
-        if(mission.content.imageTitle) image = this.imageUrl;
-        if(image) this.updateStyles({ '--layer-image': `url(${image})` });
-        this.set('receipts',  mission.content.receipts);
-        this.hideFabs();
       }
 
       addComment(e) {
@@ -434,8 +415,8 @@
         }
       }
 
-      missionReceipts() {
-        this.$.receiptsDialog.present();
+      _openMissionReceipts() {
+        this.set('route.path', `/mission-receipts/${this.data.key}`);
       }
 
       ready() {

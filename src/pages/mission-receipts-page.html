@@ -1,0 +1,148 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
+<link rel="import" href="../../bower_components/app-media/app-media.html">
+<link rel="import" href="../../bower_components/app-media/app-media-recorder.html">
+<link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+
+<link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
+<link rel="import" href="../mission-elements/mission-receipt.html">
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="mission-receipts-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+
+      :host {
+        display: block;
+      }
+
+      .receipt-item {
+        display: flex;
+      }
+
+      .supporter-name {
+        margin-top: 15px;
+        margin-left: 12px;
+        flex-grow: 2;
+      }
+
+      #modal-header span, .accepted-stats { color: var(--accent-color); }
+
+      .accepted-stats {
+        width: 35px;
+        height: 35px;
+        margin-top: 5px;
+      }
+
+      paper-button {
+      float: right;
+      margin-bottom: 10px;
+      margin-top: 20px;
+    }
+
+    .receipts { margin-top: 20px; }
+    </style>
+
+    <app-route route="{{route}}"
+      pattern="/mission-receipts/:key"
+      data="{{routeData}}">
+    </app-route>
+
+    <firebase-document
+      id="document"
+      path="/missions/{{routeData.key}}"
+      data="{{mission}}"
+      log="true">
+    </firebase-document>
+
+    <app-scrollable-dialog id="missionReceipt">
+      <mission-receipt></mission-receipt>
+    </app-scrollable-dialog>
+
+    <template is="dom-if" if="{{missionLoaded}}" restamp>
+      <app-header-layout>
+        <app-form-header shadow slot="header">
+            <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+            <span slot="main-title">{{mission.content.receipts.length}} pessoas concluiram</span>
+            <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
+        </app-form-header>
+      
+      <div class="receipts">
+        <template is="dom-repeat" items="{{mission.content.receipts}}">
+          <div class="receipt-item">
+            <div class="supporter-img">
+              <iron-image  src="images/favicon.ico"></iron-image>
+            </div>
+            <div class="supporter-name">
+              <a on-tap="_openUserReceipt"><span>{{item.userName}}</span></a>
+            </div>
+      
+            <div class="avaliation-stats">
+              <iron-icon class="accepted-stats" icon="app:check-circle"></iron-icon>
+            </div>
+          </div>
+        </template>
+      </div>
+      </app-header-layout>
+    </template>
+
+    </template>
+  <script>
+    class MissionReceiptsPage extends Polymer.Element {
+      static get is() { return 'mission-receipts-page'; }
+
+      static get properties() {
+        return {
+          supporter: {
+            type: Object
+          },
+          receipts: {
+            type: Array
+          },
+          userData: {
+            type: Object
+          },
+          mission: {
+            type: Object,
+            observer: '_missionChanged'
+          },
+          routeData: Object,
+          missionLoaded: {
+            type: Boolean,
+            value: false
+          }
+        }
+      }
+
+      constructor() {
+        super();
+      }
+
+      _openUserReceipt(e) {
+        const data = e.model.get('item');
+        data["missionId"] = this.routeData.key;
+        this.shadowRoot.querySelector('mission-receipt').setRcptData(data);
+        this.$.missionReceipt.present();
+      }
+
+      _returnToInbox() {
+        this.set('route.path', `/show-mission/${this.routeData.key}`);
+      }
+
+      _missionChanged() {
+        if (this.mission.content !== undefined && this.mission.content.receipts) {
+          this.set('missionLoaded', true);
+        }
+      }
+
+    }
+    customElements.define(MissionReceiptsPage.is, MissionReceiptsPage);
+</script>
+</dom-module>

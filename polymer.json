@@ -9,6 +9,7 @@
     "src/pages/new-campaign-page.html",
     "src/pages/show-campaign-page.html",
     "src/pages/campaigns-page.html",
+    "src/pages/mission-receipts-page.html",
     "src/pages/not-found-page.html"
   ],
   "sources": [

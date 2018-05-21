@@ -23,6 +23,7 @@
 <link rel="lazy-import" href="../pages/show-campaign-page.html">
 <link rel="lazy-import" href="../pages/mission-page.html">
 <link rel="lazy-import" href="../pages/show-mission-page.html">
+<link rel="lazy-import" href="../pages/mission-receipts-page.html">
 <link rel="lazy-import" href="../pages/not-found-page.html">
 
 <link rel="import" href="app-icons.html">
@@ -148,7 +149,8 @@
           <show-campaign-page name="show-campaign" user="[[user]]" route="{{route}}"></show-campaign-page>
           <new-campaign-page route="{{route}}" user="[[user]]" name="new-campaign"></new-campaign-page>
           <mission-page name="mission" user="[[user]]" route="{{route}}"></mission-page>
-          <show-mission-page name="show-mission" user="[[user]]" route="{{route}}" ></show-mission-page>
+          <show-mission-page name="show-mission" user="[[user]]" route-data="{{routeData}}" route="{{route}}" ></show-mission-page>
+          <mission-receipts-page name="mission-receipts" route-data="{{routeData}}" route="{{route}}"></mission-receipts-page>
           <not-found-page name="not-found"></not-found-page>
           <login-page name="login" id="login"
           user="{{user}}" route="{{route}}">
