@@ -4,6 +4,8 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
+<link rel="import" href="../campaign-elements/proposal-detail-dialog.html">
 
 <dom-module id="proposals-page">
   <template>
@@ -58,8 +60,19 @@
         padding: 0 10px;
         color: var(--accent-color);
       }
+      .card a {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
 
     </style>
+
+    <app-scrollable-dialog id="detail">
+      <proposal-detail-dialog proposal="{{proposal}}" on-close-dialog="_dismiss"></proposal-detail-dialog>
+    </app-scrollable-dialog>
 
     <app-route 
       route="{{route}}" 
@@ -95,6 +108,7 @@
         <h4>Propostas</h4>
         <template id="proposalsList" is="dom-repeat" items="{{proposals}}" as="proposal">
           <div class="card">
+            <a on-tap="openProposalDetail"></a>
             <h4>{{proposal.content.title}}</h4>
             <hr>
             <p>{{proposal.content.description}}</p>
@@ -119,10 +133,21 @@
           proposals: {
             type: Array
           },
+          proposal: Object,
           campaign: {
             type: Object
           }
         };
+      }
+
+      openProposalDetail(e) {
+        const data = e.model.get('proposal');
+        this.proposal = data;
+        this.$.detail.present();
+      }
+
+      _dismiss() {
+        this.$.detail.dismiss();
       }
     }
 

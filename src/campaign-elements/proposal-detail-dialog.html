@@ -1,0 +1,46 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+
+<dom-module id="proposal-detail-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+      .submit {
+        text-align: right;
+        margin: 15px 0;
+      }
+
+    </style>
+
+    <div class="content">
+      <h1>{{proposal.content.title}}</h1>
+      <p>{{proposal.content.description}}</p>
+      <div class="submit">
+        <paper-button class="plain" on-tap="_dismiss">fechar</paper-button>
+      </div>
+    </div>
+  </template>
+  <script>
+    class ProposalDetailDialog extends Polymer.Element {
+      static get is() { return 'proposal-detail-dialog'; }
+      static get properties() {
+        return {
+          proposal: {
+            type: Object
+          }
+        };
+      }
+
+      _dismiss(e) {
+        this.dispatchEvent(new CustomEvent('close-dialog'));
+      }
+
+    }
+    window.customElements.define(ProposalDetailDialog.is, ProposalDetailDialog);
+  </script>
+</dom-module>
