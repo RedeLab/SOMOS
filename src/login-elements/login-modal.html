@@ -51,7 +51,7 @@
     <div id="content">
       <div class="fill center">
         <div class="image">
-          <iron-image sizing="contain" src="/images/splash.png"></iron-image>
+          <iron-image sizing="contain" src="/images/splash.svg"></iron-image>
         </div>
         <p>SOMOS é uma plataforma para engajar eleitores e candidatos 
           a desempenharem suas melhores versões pela renovação da política.
@@ -98,18 +98,18 @@
 
       openRegister() {
         this.$.content.style.display = 'none';
-        this.$.register.style.display = 'block';
+        this.$.register.style.display = 'flex';
         this.$.login.style.display = 'none';
       }
 
       openLogin() {
         this.$.content.style.display = 'none';
         this.$.register.style.display = 'none';
-        this.$.login.style.display = 'block';
+        this.$.login.style.display = 'flex';
       }
 
       openSplash() {
-        this.$.content.style.display = 'block';
+        this.$.content.style.display = 'flex';
         this.$.register.style.display = 'none';
         this.$.login.style.display = 'none';
       }

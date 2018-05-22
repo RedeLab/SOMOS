@@ -10,32 +10,60 @@
     <style include="shared-styles">
       :host {
         display: flex;
-        background: var(--primary-background-color);
+        background: url(/images/frame-bg.svg);
+        background-size: cover;
+        background-position: center;
         flex-direction: column;
         min-height: 100vh;
       }
       .fill {
         flex: 1;
-        padding: 40px;
-      }
-      .space {
-        height: 8.5vh;
+        padding: 20px 60px;
       }
       paper-button {
         display: block;
         text-align: center;
-        margin: 20px 0;
+        margin: 20px 0 10px;
+        background: var(--default-primary-color);
+      }
+      paper-input {
+        --paper-input-container-color: var(--default-primary-color);
+        --paper-input-container-focus-color: var(--default-primary-color);
+        --paper-input-container-invalid-color: var(--default-primary-color);
+        --paper-input-container-input-color: var(--default-primary-color);
       }
       .facebook {
-        background: #1A467B;
+        color: #1A467B;
         border: none;
-        color: white;
+        background: white;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 10px;
+      }
+      .image {
+        height: 18vh;
+        margin: 6vh 10px 0;
+      }
+      .image iron-image {
+        width: 100%;
+        height: 100%;
+        max-width: 250px;
+        margin: auto;
+        display: block;
+      }
+      .social {
+        text-align: center;
+        margin: 30px;
+      }
+      .social-text {
+        font-weight: bold;
+        color: #99391f;
       }
     </style>
-
     <div class="fill">
-      <h1>Registro</h1>
-      <div class="space"></div>
+      <div class="image">
+        <iron-image sizing="contain" src="/images/logo-white.svg"></iron-image>
+      </div>
       <div class="fields">
         <paper-input label="nome" value="{{name}}" minlength="5" auto-validate
           error-message="O nome deve ter no mínimo 5 caracteres."></paper-input>
@@ -44,9 +72,14 @@
         <paper-input label="senha" type="password" minlength="8" value="{{password}}"
           auto-validate error-message="A senha deve ter no mínimo 8 caracteres."></paper-input>
       </div>
-      <paper-button class="accent" on-tap="submitCredentials">Registrar</paper-button>
-      <paper-button class="facebook" on-tap="signUpWithFacebook">Registrar com Facebook</paper-button>
-      <span class="bottom center">Já possui uma conta? <a href="" on-tap="openLogin">Entrar</a></span>
+      <paper-button class="plain" on-tap="submitCredentials">Registrar</paper-button>
+    </div>
+    <div class="social">
+      <div class="social-text">Você também pode usar</div> 
+      <div class="social-text">suas redes sociais.</div>
+      <paper-icon-button class="facebook" icon="app:facebook" on-tap="signUpWithFacebook"></paper-icon-button>
+      <paper-icon-button class="facebook" icon="app:google" on-tap="signUpWithGoogle"></paper-icon-button>
+      <div class="social-text" on-tap="openLogin">Já possuo cadastro</div>
     </div>
   </template>
 
@@ -78,6 +111,10 @@
 
       signUpWithFacebook(e) {
         this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'facebook' } }));
+      }
+
+      signUpWithGoogle(e) {
+        this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'google' } }));
       }
 
       openLogin(e) {
