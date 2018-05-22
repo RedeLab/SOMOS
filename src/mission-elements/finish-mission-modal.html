@@ -160,8 +160,7 @@
           },
           missionId: String,
           missionReceipts: {
-            type: Array,
-            value: []
+            type: Array
           },
           fileArray: {
             type: Array,
@@ -186,13 +185,15 @@
       }
 
       _sendFile() {
-        console.log(this.missionReceipts);
         if(this.input && this.input.files.length > 0) {
+          if (!Array.isArray(this.missionReceipts))
+            this.set('missionReceipts',  []);
           this.push("missionReceipts",
             { "userName": this.user.displayName,
               "receiptFileName": this.fileName,
               "userEmail": this.user.email,
-              "uid": this.user.uid, "description": this.description });
+              "uid": this.user.uid, "description": this.description,
+              "status": "pending" });
           this.fileArray.push(this.file);
           this.$.storage.upload();
           this.set('description', undefined);

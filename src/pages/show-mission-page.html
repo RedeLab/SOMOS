@@ -126,6 +126,44 @@
         opacity: 0.4;
       }
 
+    .mission-author {
+      display: flex;
+      background-color: var(--primary-background-color);
+      height: 60px;
+      padding: 5px 0 5px 10px;
+    }
+
+    .author-photo {
+      margin-top: 5px;
+    }
+    .author-name {
+      margin-left: 5px;
+      margin-top: 9px;
+    }
+
+    #author {
+      display: block;
+      margin-top: -10px;
+    }
+
+    .stats {
+      height: 25px;
+      background-color: #f1f1f1;
+      font-size: 0.9em;
+    }
+
+    .stats-content {
+      width: 80%;
+      margin: auto;
+      text-align: center;
+    }
+
+    .stats-content div {
+      margin-right: 5px;
+      display: inline;
+    }
+
+    .stats-value { color: var(--light-accent-color); }
     </style>
 
     <app-route route="{{route}}"
@@ -198,6 +236,28 @@
           </div>
         </app-toolbar>
       </app-header>
+      <div class="mission-author">
+        <div class="author-photo">
+          <iron-image  src="images/favicon.ico"></iron-image>
+        </div>
+        <div class="author-name">
+          <span >Criado por</span>
+          <span id="author">Marina Silva</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stats-content">
+          <div>
+            <span class="stats-value">{{acceptedMissionStats}}</span> <span>aceitaram</span>
+          </div>
+          <div>
+            <span class="stats-value">{{finishedMissionStats}}</span> <span>concluiram</span>
+          </div>
+          <div>
+            <a on-tap="_openMissionReceipts"><span class="stats-value">{{pendingMissionStats}}</span> <span>pendentes</span></a>
+          </div>
+        </div>
+      </div>
       <div class="content">
         <dom-if if="{{mission.content}}">
           <template>
@@ -289,7 +349,10 @@
             type: Boolean,
             observer: '_observeRejectedModal'
           },
-          mission: Object,
+          mission: {
+            type: Object,
+            observer: '_missionChanged'
+          },
           remainingTime: {
             type: String,
             computed: 'calcMissionDate(mission.content)'
@@ -305,7 +368,19 @@
           },
           receipts: {
             type: Array,
-          }
+          },
+          finishedMissionStats: {
+            type: Number,
+            value: 0
+          },
+          pendingMissionStats: {
+            type: Number,
+            value: 0
+          },
+          acceptedMissionStats: {
+            type: Number,
+            value: 0
+          },
         };
       }
 
@@ -401,20 +476,6 @@
         }
       }
 
-      _setFirebasePaths(mission) {
-        if(mission.content) {
-          if (mission.content.imageTitle)
-            this.$.storage.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.imageTitle);
-          if (mission.content.audioTitle)
-            this.$.audio.path = "/missions/".concat(this.data.key).concat('/').concat(mission.content.audioTitle);
-        } else {
-          this.$.close.style.display = 'none';
-          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'none';
-          this.$.accept.style.display = 'block';
-          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
-        }
-      }
-
       _openMissionReceipts() {
         this.set('route.path', `/mission-receipts/${this.data.key}`);
       }
@@ -432,6 +493,28 @@
       _dismissFinishModal() {
         document.querySelector('#finishConfirmation').dismiss();
         this.$.finishedDialog.dismiss();
+      }
+
+      _missionChanged() {
+        this._calcMissionStats();
+      }
+
+      _calcMissionStats() {
+        if (Object.keys(this.mission).length == 0) return;
+        if (!this.mission.content.usersAccepted) return;
+        this.set('acceptedMissionStats', this.mission.content.usersAccepted.length);
+        if (!this.mission.content.receipts) return;
+        const receipts = this.mission.content.receipts;
+        let finishedCounter = 0;
+        let pendingCounter = 0;
+        receipts.forEach(function(receipt) {
+          if (receipt.status === "realized")
+            finishedCounter += 1;
+          if (receipt.status === "pending")
+            pendingCounter += 1;
+        });
+        this.set('finishedMissionStats', finishedCounter);
+        this.set('pendingMissionStats', pendingCounter);
       }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
