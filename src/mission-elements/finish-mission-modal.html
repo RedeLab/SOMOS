@@ -57,6 +57,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       font-size: 0.9em;
+      width: 180px;
     }
 
     .btn-text {
@@ -72,6 +73,22 @@
 
     paper-button {
       float: right;
+    }
+
+    @media screen and (max-width: 350px) {
+      .btn-text {
+        font-size: 0.75em;
+      }
+    }
+
+    @media screen and (max-width: 310px) {
+      .input-file-container {
+        flex-direction: column;
+      }
+
+      .btn-text {
+        margin-top: 10px;
+      }
     }
     </style>
 
@@ -169,11 +186,12 @@
       }
 
       _sendFile() {
+        console.log(this.missionReceipts);
         if(this.input && this.input.files.length > 0) {
-          this.push("missionReceipts", 
-            { "userName": this.user.displayName, 
-              "receiptFileName": this.fileName, 
-              "userEmail": this.user.email, 
+          this.push("missionReceipts",
+            { "userName": this.user.displayName,
+              "receiptFileName": this.fileName,
+              "userEmail": this.user.email,
               "uid": this.user.uid, "description": this.description });
           this.fileArray.push(this.file);
           this.$.storage.upload();

@@ -26,6 +26,12 @@
         height: 100vh;
       }
 
+      .action paper-icon-button {
+          color: var(--secondary-text-color);
+          width: 45px;
+          height: 45px;
+      }
+
       .form {
         width: 90%;
         margin: auto;
@@ -45,9 +51,49 @@
         --iron-icon-fill-color: var(--dark-primary-color);
       }
 
-      audio {
-        display: none;
+      app-form-header {
+        color: var(--default-primary-color);
+        background: var(--accent-color);
+        --app-form-header-background: var(--accent-color);
+        --app-form-header-color: var(--default-primary-color);
+        @apply --default-font-medium;
       }
+
+      .sub-header {
+        background-color: var(--primary-background-color);
+        margin-top: -15px;
+        text-align: center;
+      }
+
+      .sub-header-actions {
+        padding-top: 10px;
+      }
+
+      .sub-header-title {
+        width: 80%;
+        margin: auto;
+        padding-top: 15px;
+        padding-bottom: 15px;
+        border-color: var(--primary-background-color) var(--primary-background-color) var(--divider-color) var(--primary-background-color);
+        border-style: solid;
+        border-width: 1px;
+      }
+      .sub-header-title h2 {
+        color: var(--dark-primary-color);
+      }
+
+      .sub-header-title span {
+        color: var(--secondary-text-color);
+        padding-bottom: 10px;
+      }
+
+      .action {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .action span { color: var(--secondary-text-color); }
+
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
@@ -74,30 +120,41 @@
           <span slot="main-title">Criar missão</span>
           <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
+      <div class="sub-header">
+        <div class="sub-header-title">
+          <h2> Convença seus seguidores </h2>
+          <span>
+            Use um dos recursos   multimedia de destaque para engajar seu publico
+            e convencer seus seguidores a aceitarem a missão.
+          </span>
+        </div>
+        <div class="sub-header-actions">
+          <div class="action">
+            <paper-icon-button label="Vídeo" icon="app:videocam" slot="suffix" on-tap="_openInput">
+              <paper-input id="missionVideo" type="file">
+            </paper-icon-button>
+            <span>{{videoName}}</span>
+          </div>
+          <div class="action">
+            <paper-icon-button label="Imagem" icon="app:insert-photo" slot="suffix" on-tap="_openInput">
+              <paper-input id="missionImage" type="file">
+            </paper-icon-button>
+            <span>{{fileName}}</span>
+          </div>
+          <div class="action">
+            <paper-icon-button label="Vídeo" icon="app:audiotrack" slot="suffix" on-tap="_openInput">
+              <paper-input id="uploadedAudio" type="file" label="Imagem de capa"  placeholder="Selecione uma imagem">
+            </paper-icon-button>
+            <span>{{audioName}}</span>
+          </div>
+        </div>
+      </div>
       <div class="form" id="form">
-        <paper-input id="missionTitle" required error-message="Titulo da missão está em branco" value="{{mission.title}}" label="Título" char-counter maxlength="30"></paper-input>
+        <paper-input id="missionTitle" required error-message="Chamada da missão está em branco" value="{{mission.title}}" label="Chamada" char-counter maxlength="30"></paper-input>
         <paper-input id="missionDate" required error-message="Duração da missão está em branco" type="date"  value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
         <paper-input id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
-        <div class="file-upload">
-          <paper-input id="missionImage" type="file" label="Imagem de capa"  placeholder="Selecione uma imagem">
-            <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
-          </paper-input>
-        </div>
 
-        <div class="file-upload">
-          <paper-input id="uploadedAudio" type="file" label="Audio da missão"  placeholder="Envie um audio">
-            <iron-icon icon="app:mic" slot="suffix"></iron-icon>
-          </paper-input>
-        </div>
-
-        <!-- <iron-label>
-          <paper-icon-button on-tap="_getAudio" icon="app:mic"></paper-icon-button>
-          Grave um audio com seu microfone.
-        </iron-label>
-
-        <audio id="micAudio" controls></audio> -->
-
-        <paper-input value="{{mission.reward}}" label="Recompensa" char-counter maxlength="250"></paper-input>
+        <paper-input value="{{mission.reward}}" label="Recompensa(opcional)" char-counter maxlength="250"></paper-input>
         <paper-input id="video" value="{{mission.video}}" label="Link do video explicativo" error-message="O link deve ser do youtube."></paper-input>
         <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
       </div>
@@ -142,6 +199,18 @@
           vidRegex: {
             type: Object,
             value() { return /https.*youtu.?be\/?(.*)/; }
+          },
+          videoName: {
+            type: String,
+            value: 'Nenhum arquivo de video selecionado'
+          },
+          fileName: {
+            type: String,
+            value: 'Nenhum arquivo de imagem selecionado'
+          },
+          audioName: {
+            type: String,
+            value: 'Nenhuma arquivo de audio selecionado'
           }
         }
       }
@@ -218,31 +287,19 @@
           this._returnToInbox();
       }
 
-      //TODO: I will improve this code later. Is not a priority right now.
-      _getAudio() {
-        Navigator.prototype.component = this;
-        navigator.mediaDevices.getUserMedia ( { audio: true })
-          .then( function(mediaStream) {
-            var chunks = [];
-            const recorder = new MediaRecorder(mediaStream)
-            recorder.ondataavailable = e => {
-              chunks.push(e.data);
-              if (recorder.state == 'inactive') {
-                const blob = new Blob(chunks, { type: 'audio/webm' });
-                navigator.component.$.audio.src = (URL.createObjectURL(blob));
-                navigator.component.mission.audio = blob;
-                navigator.component.$.audio.setAttribute("style", "display: block");
-              }
-            };
-            recorder.start(2000);
-            setTimeout(navigator.component._saveAudio, 4000, recorder);
-          }
-          )
-          .catch(function(error) { alert(error); });
+      _openInput() {
+        this.input = this.$.missionImage.inputElement.inputElement;
+        this.input.addEventListener('change', this._setFileName.bind(this));
+        this.input.click();
       }
 
-      _saveAudio(recorder) {
-        recorder.stop();
+      _setFileName() {
+        if(this.input.files.length === 0)
+          this.set('fileName',  'Nenhum arquivo selecionado');
+        else {
+          this.set('fileName',  this.input.files[0].name);
+          this.set('file',  this.input.files[0]);
+        }
       }
 
       ready() {
