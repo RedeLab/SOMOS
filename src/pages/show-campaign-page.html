@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../campaign-elements/campaign-player.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
 <dom-module id="show-campaign-page">
@@ -17,11 +18,44 @@
         display: block;
         background: var(--primary-background-color);
         height: 100vh;
+        --layer-image: '';
         @apply --default-font;
       }
+      app-header {
+        height: 222px;
+        color: var(--light-text-color);
+        /* https://bugs.chromium.org/p/chromium/issues/detail?id=637072 */
+        --app-header-background-front-layer: {
+          background-image: var(--layer-image);
+          background-position: center;
+          background-size: 125%;
+          background-color: grey;
+          filter: contrast(.7) brightness(.6);
+        };
+      }
+      campaign-player {
+        margin: auto;
+      }
+      app-header[shadow] {
+        color: black;
+      }
+      app-header[shadow] .tall {
+        background: unset;
+        width: 100px;
+      }
+      app-header[shadow] .tall .actions {
+        display: none;
+      }
       .tall {
-        background-color: orange;
-        height: 150px;
+        height: 158px;
+      }
+      .tall .actions {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+      }
+      h1.title[main-title] {
+        margin: 5px 20px;
       }
       .fill {
         padding: 0 20px;
@@ -53,7 +87,6 @@
       h4 {
         color: var(--dark-primary-color);
       }
-      
       .main {
         text-align: center;
         margin-bottom: 20px;
@@ -70,7 +103,10 @@
         display: inherit;
       }
       .support span {
-        margin-right: 5px;
+        margin-right: 15px;
+      }
+      .support paper-toggle-button {
+        transform: scale(1.5);
       }
       .row {
         display: flex;
@@ -140,11 +176,17 @@
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
-        <app-toolbar class="tall">
-          <paper-icon-button icon="app:arrow-back" on-tap="_returnToCampaigns"></paper-icon-button>
+        <app-toolbar>
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+          <h1 condensed-title class="dark title">{{campaign.content.candidateName}}</h1>
           <paper-icon-button icon="app:more-vert"></paper-icon-button>
-          <iron-image class="cover-image" sizing="cover" preload fade src="{{coverImage}}"></iron-image>
-          <iron-image class="candidate-photo" sizing="cover" preload fade src="{{candidatePhoto}}"></iron-image>
+        </app-toolbar>
+        <app-toolbar class="tall">
+          <h1 bottom-item main-title class="title">
+            {{campaign.content.candidateName}}
+          </h1>
+          <campaign-player id="player" campaign-image="{{campaignImage}}" campaign="{{campaign.content}}" campaign-key="{{data.key}}">
+          </campaign-player>
         </app-toolbar>
       </app-header>
       <div class="fill">
@@ -243,6 +285,10 @@
           },
           follow: {
             type: Array
+          },
+          campaignImage: {
+            type: String,
+            observer: '_setLayerImage'
           }
         };
       }
@@ -303,6 +349,12 @@
         this.campaign.content.usersFollow = Array.from(usersFollow);
         this.$.document.ref.set(this.campaign);
         console.log("nao apoia");
+      }
+
+      _setLayerImage(campaignImage) {
+        if (campaignImage && this.campaign.content) {
+          this.updateStyles({ '--layer-image': `url(${campaignImage})` });
+        }
       }
     }
 
