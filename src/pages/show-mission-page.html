@@ -14,7 +14,6 @@
 
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
-<link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../mission-elements/mission-comment.html">
@@ -164,6 +163,19 @@
     }
 
     .stats-value { color: var(--light-accent-color); }
+
+    #action {
+      text-align: center;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    #action paper-button {
+      border-top-left-radius: 27px;
+      border-bottom-left-radius: 27px;
+      border-top-right-radius: 27px;
+      border-bottom-right-radius: 27px;
+    }
     </style>
 
     <app-route route="{{route}}"
@@ -232,7 +244,6 @@
           <div class="actions">
             <paper-icon-button icon="app:chat-bubble-outline"></paper-icon-button>
             <paper-icon-button icon="app:thumb-up"></paper-icon-button>
-            <paper-icon-button icon="app:assessment" on-tap="_openMissionReceipts"></paper-icon-button>
           </div>
         </app-toolbar>
       </app-header>
@@ -258,6 +269,11 @@
           </div>
         </div>
       </div>
+
+      <div id="action">
+        <paper-button id="btnAction" toggles raised><span id="actionText">{{btnAction}}</span></paper-button>
+      </div>
+
       <div class="content">
         <dom-if if="{{mission.content}}">
           <template>
@@ -296,20 +312,6 @@
           </template>
         </dom-if>
       </div>
-      <app-actions id="actions" icon="app:more-vert" selected="{{selected}}">
-        <paper-fab class="hide" slot="actions" mini icon="app:assistant-photo"
-          id="accept" name="accept" on-tap="_acceptMission"></paper-fab>
-        <paper-tooltip slot="actions" for="accept">Aceitar</paper-tooltip>
-        <paper-fab class="hide" slot="actions" mini icon="app:remove-circle-outline"
-          id="close" name="close" on-tap="_rejectMission" style="display: none;"></paper-fab>
-        <paper-tooltip slot="actions" style="display: none;" for="close">Recusar</paper-tooltip>
-        <paper-fab class="hide" slot="actions" mini icon="app:check"
-          id="check" name="check" on-tap="_finishMission" style="display: none;"></paper-fab>
-        <paper-tooltip slot="actions" style="display: none;" for="check">Concluir</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:share" id="share"
-          on-tap="_shareMission" name="share"></paper-fab>
-        <paper-tooltip slot="actions" for="share">Compartilhar</paper-tooltip>
-      </app-actions>
     </app-header-layout>
 
     <dom-if if="{{!mission.content}}">
@@ -381,6 +383,11 @@
             type: Number,
             value: 0
           },
+          currentMissionStats: {
+            type: String,
+            value: 'new'
+          },
+          btnAction: String
         };
       }
 
@@ -394,6 +401,7 @@
       }
 
       _returnToInbox() {
+        this.set('currentMissionStats', 'new');
         this.set('route.path', '/');
       }
 
@@ -408,8 +416,9 @@
       }
 
       _observeRejectedModal() {
-        if (!this.rejectedModal)
+        if (!this.rejectedModal) {
           this._returnToInbox();
+        }
       }
 
       addComment(e) {
@@ -432,7 +441,6 @@
         this.mission.content.usersAccepted = Array.from(usersAccepted);
         this.$.document.ref.set(this.mission);
         this.$.acceptedDialog.present();
-        this.hideFabs();
       }
 
       _rejectMission(e) {
@@ -442,41 +450,21 @@
         this.mission.content.usersAccepted = Array.from(usersAccepted);
         this.$.document.ref.set(this.mission);
         this.$.rejectedDialog.present();
-        this.hideFabs();
       }
 
       _setLayerImage(missionImage) {
         if(missionImage && this.mission.content) {
           this.updateStyles({ '--layer-image': `url(${missionImage})` });
-          this.hideFabs();
         }
       }
 
       _finishMission(e) {
         this.$.finishedDialog.present();
-        this.hideFabs();
       }
 
-      hideFabs() {
-        const users = this.mission.content.usersAccepted;
-        if (users && users.includes(this.user.uid)) {
-          this.$.accept.style.display = 'none';
-          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'none';
-          this.$.close.style.display = 'block';
-          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'block';
-          this.$.check.style.display = 'block';
-          this.shadowRoot.querySelector('paper-tooltip[for="check"]').style.display = 'block';
-        } else {
-          this.$.close.style.display = 'none';
-          this.shadowRoot.querySelector('paper-tooltip[for="close"]').style.display = 'none';
-          this.$.check.style.display = 'none';
-          this.shadowRoot.querySelector('paper-tooltip[for="check"]').style.display = 'none';
-          this.$.accept.style.display = 'block';
-          this.shadowRoot.querySelector('paper-tooltip[for="accept"]').style.display = 'block';
-        }
-      }
 
       _openMissionReceipts() {
+        this.set('currentMissionStats', 'new');
         this.set('route.path', `/mission-receipts/${this.data.key}`);
       }
 
@@ -487,34 +475,75 @@
       }
 
       _dismissReceiptsModal() {
+        this.set('currentMissionStats', 'new');
         this.$.receiptsDialog.dismiss();
       }
 
       _dismissFinishModal() {
+        this.set('currentMissionStats', 'new');
         document.querySelector('#finishConfirmation').dismiss();
         this.$.finishedDialog.dismiss();
       }
 
       _missionChanged() {
+        if (Object.keys(this.mission).length == 0) return;
         this._calcMissionStats();
+        this._setActionBtn();
       }
 
       _calcMissionStats() {
-        if (Object.keys(this.mission).length == 0) return;
         if (!this.mission.content.usersAccepted) return;
         this.set('acceptedMissionStats', this.mission.content.usersAccepted.length);
+        let currentStats = '';
+        let currentUser = this.user.uid;
+        this.mission.content.usersAccepted.forEach(function(id) {
+          if (id === currentUser)
+            currentStats = "started";
+        });
+        if (currentStats) this.set('currentMissionStats', currentStats);
         if (!this.mission.content.receipts) return;
         const receipts = this.mission.content.receipts;
         let finishedCounter = 0;
         let pendingCounter = 0;
+        const currentUid = this.user.uid;
         receipts.forEach(function(receipt) {
           if (receipt.status === "realized")
             finishedCounter += 1;
           if (receipt.status === "pending")
             pendingCounter += 1;
+
+          if (receipt.uid === currentUid)
+            currentStats = receipt.status
         });
         this.set('finishedMissionStats', finishedCounter);
         this.set('pendingMissionStats', pendingCounter);
+
+        if (currentStats) this.set('currentMissionStats', currentStats);
+      }
+
+      _setActionBtn() {
+        const btn = this.$.btnAction;
+        const btnText = this.$.actionText;
+        console.log(this.currentMissionStats);
+        if (this.currentMissionStats === "realized") {
+          this.set('btnAction', 'Missão concluida');
+          btn.setAttribute("style", "background-color: #C1C6CA");
+          btnText.setAttribute("style", "color: #ffffff");
+        }
+
+        if (this.currentMissionStats === "new") {
+          this.set('btnAction', 'Aceitar missão');
+          btn.setAttribute("style", "background: linear-gradient(to left, var(--light-accent-color), var(--accent-color))");
+          btn.addEventListener('tap', this._acceptMission.bind(this));
+          btnText.setAttribute("style", "color: #ffffff");
+        }
+
+        if (this.currentMissionStats === "started") {
+          this.set('btnAction', 'Concluir missão');
+          btn.setAttribute("style", "background: linear-gradient(to left, #78BE38, #92D242)");
+          btn.addEventListener('tap', this._finishMission.bind(this));
+          btnText.setAttribute("style", "color: #ffffff");
+        }
       }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
