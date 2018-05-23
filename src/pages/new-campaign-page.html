@@ -20,6 +20,7 @@
 <link rel="import" href="../campaign-elements/social-dialog.html">
 <link rel="import" href="../campaign-elements/create-campaign-dialog.html">
 <link rel="import" href="../app-elements/app-dialog.html">
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -56,6 +57,9 @@
       }
       .step h1 {
         color: var(--secondary-text-color);
+      }
+      #step2 h1 {
+        line-height: 22px;
       }
       #step2 paper-fab {
         display: inline-block;
@@ -196,9 +200,14 @@
       <create-campaign-dialog></create-campaign-dialog>
     </app-dialog>
 
-    <app-dialog id="dialog">
-      <proposal-dialog on-create-proposal="_saveProposal" proposals="{{proposals}}"></proposal-dialog>
-    </app-dialog>
+    <app-scrollable-dialog id="dialog" modal>
+      <app-form-header slot="header" shadow>
+        <paper-icon-button slot="arrow-back" icon="app:close" on-tap="closeProposalDialog"></paper-icon-button>
+        <span slot="main-title">Nova Proposta</span>
+        <paper-icon-button slot="more-vert" icon="app:check" on-tap="_saveProposal"></paper-icon-button>
+      </app-form-header>
+      <proposal-dialog  id="proposalDialog" proposals="{{proposals}}"></proposal-dialog>
+    </app-scrollable-dialog>
 
     <app-dialog id="social">
       <social-dialog on-save-social="_saveSocialLink"></social-dialog>
@@ -220,6 +229,13 @@
       files="[[fileArray]]"
       upload-tasks="{{uploadTasks}}"
       id="storage">
+    </firebase-storage-multiupload>
+
+    <firebase-storage-multiupload 
+      path="/proposals/[[campaignId]]"
+      files="[[proposalArray]]"
+      upload-tasks="{{uploadTasks}}"
+      id="proposalStorage">
     </firebase-storage-multiupload>
     
     <app-header-layout has-scrolling-region>
@@ -367,6 +383,10 @@
             type: Array,
             value: []
           },
+          proposalArray: {
+            type: Array,
+            value: []
+          },
           uploadTasks: {
             type: Array,
             value: []
@@ -394,6 +414,10 @@
 
       open() {
         this.$.dialog.present();
+      }
+
+      closeProposalDialog() {
+        this.$.dialog.close();
       }
 
       openSocial(e) {
@@ -464,8 +488,16 @@
       }
       
       _saveProposal(e) {
-        const proposal = e.detail.proposal;
+        const proposal = this.$.proposalDialog.proposal;
         this.$.proposal.ref.push({ content: proposal });
+        //upload images
+        if(this.$.proposalDialog.shadowRoot.querySelector('#image').files[0]) {
+          this.proposalArray.push(this.$.proposalDialog.shadowRoot.querySelector('#image').files[0]);
+          this.$.proposalStorage.upload();
+        }
+        this.closeProposalDialog();
+        this.$.proposalDialog.proposal = {};
+        this.proposalArray = [];
       }
 
       _setCreateCampaign(selection) {
@@ -487,6 +519,7 @@
           this.campaign = {};
           this.campaignId = undefined;
           this.fileArray= [];
+          this.proposalArray= [];
         }
       }
 

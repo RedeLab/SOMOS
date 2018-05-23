@@ -12,34 +12,35 @@
   <template>
     <style include="shared-styles">
       :host {
-        display: flex;
+        display: block;
+        height: 100vh;
+      }
+      paper-dropdown-menu {
+        width: 100%;
       }
       .submit {
         text-align: right;
         margin-top: 15px;
       }
     </style>
-    <div>
       <paper-input label="Titulo" placeholder="Nome da proposta" value="{{proposal.title}}"></paper-input>
       <paper-dropdown-menu label="Categoria" value="{{proposal.category}}">
         <paper-listbox slot="dropdown-content" class="dropdown-content">
-          <paper-item>Categoria 1</paper-item>
-          <paper-item>Categoria 2</paper-item>
-          <paper-item>Categoria 3</paper-item>
-          <paper-item>Categoria 4</paper-item>
+          <template id="statesList" is="dom-repeat" items="{{categories}}" as="category">
+            <paper-item>{{category}}</paper-item>
+          </template>
         </paper-listbox>
       </paper-dropdown-menu>
-      <paper-textarea label="Descrição" placeholder="Uma descrição da proposta" char-counter maxlength="1000" value="{{proposal.description}}"></paper-textarea>
+      <paper-textarea label="Descrição" placeholder="Uma descrição da proposta que pode ser escrita aqui" char-counter rows="2" max-rows="2" maxlength="1000" value="{{proposal.description}}"></paper-textarea>
       <div class="file-upload">
         <paper-input label="Imagem ilustrativa" placeholder="Selecione uma imagem" value="{{proposal.image}}">
           <iron-icon icon="app:cloud-upload" slot="suffix"></iron-icon>
         </paper-input>
-        <input id="coverImage" type="file" on-change="getFileName" accept=".jpg, .jpeg, .png">
+        <input id="image" type="file" on-change="getFileName" accept=".jpg, .jpeg, .png">
       </div>
       <div class="submit">
         <paper-button class="plain" on-tap="_saveProposal">Criar Proposta</paper-button>
       </div>
-    </div>
   </template>
   <script>
     class ProposalDialog extends Polymer.Element {
@@ -54,6 +55,10 @@
             type: Array,
             value: [],
             notify: true
+          },
+          categories: {
+            type: Array,
+            value: ["Educação", "Gestão Pública e Economia", "Democracia de Alta Intensidade", "Infraestrutura", "Segurança Pública", "Pacto Federativo e Municipalismo", "Utilização dos recursos naturais", "Trabalho no campo a na cidade", "Esportes e cidades"]
           }
         };
       }
@@ -69,7 +74,6 @@
         const input = this.shadowRoot.querySelector('.file-upload paper-input');
         input.value = filename;
       }
-
       
     }
     window.customElements.define(ProposalDialog.is, ProposalDialog);

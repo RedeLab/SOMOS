@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../campaign-elements/proposal-detail-dialog.html">
 
@@ -17,17 +18,16 @@
         height: 100vh;
         @apply --default-font;
       }
-      .tall {
-        background-color: orange;
-        height: 150px;
+      app-form-header {
+        color: var(--default-primary-color);
+        background: var(--accent-color);
+        --app-form-header-background: var(--accent-color);
+        --app-form-header-color: var(--default-primary-color);
+        @apply --default-font-medium;
       }
       .fill {
         padding: 20px;
         color: var(--secondary-text-color);
-      }
-      .description p {
-        margin: 0 0 10px 0;
-        line-height: 1.2;
       }
       hr {
         margin: 5px 0;
@@ -93,19 +93,12 @@
     </firebase-document>
 
     <app-header-layout has-scrolling-region>
-      <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
-        <app-toolbar class="tall">
-          <paper-icon-button icon="app:arrow-back" on-tap="_returnToCampaigns"></paper-icon-button>
-          <paper-icon-button icon="app:more-vert"></paper-icon-button>
-          <iron-image class="cover-image" sizing="cover" preload fade src="{{coverImage}}"></iron-image>
-          <iron-image class="candidate-photo" sizing="cover" preload fade src="{{candidatePhoto}}"></iron-image>
-        </app-toolbar>
-      </app-header>
+      <app-form-header slot="header" shadow>
+        <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToCampaign"></paper-icon-button>
+        <span slot="main-title">Propostas</span>
+        <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
+      </app-form-header>
       <div class="fill">
-        <div class="description">
-          <p>{{campaign.content.description}}</p>
-        </div>
-        <h4>Propostas</h4>
         <template id="proposalsList" is="dom-repeat" items="{{proposals}}" as="proposal">
           <div class="card">
             <a on-tap="openProposalDetail"></a>
