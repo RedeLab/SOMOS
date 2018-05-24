@@ -76,6 +76,15 @@
           opacity: 0.3;
         }
       }
+      @media screen and (min-width: 961px) {
+        .toggle-actions {
+          right: calc(50% - 460px);
+        }
+        .record-form-actions,
+        .record-form-actions.fixed {
+          right: calc(50% - 455px);
+        }
+      }
     </style>
     <div class="backdrop" id="backdrop" style="display: none;" on-tap="_toggleActions"></div>
     <div class="record-form-actions" id="actions">

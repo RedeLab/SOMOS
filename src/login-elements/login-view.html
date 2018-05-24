@@ -114,6 +114,10 @@
         this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'facebook' } }));
       }
 
+      signInWithGoogle(e) {
+        this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'google' } }));
+      }
+
       openRegister(e) {
         this.dispatchEvent(new CustomEvent('open-register'));
       }

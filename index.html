@@ -98,6 +98,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         min-height: 100vh;
         background-color: #eeeeee;
       }
+      @media screen and (min-width: 961px) {
+        body {
+          max-width: 960px;
+          margin: 50px auto 0;
+          min-height: calc(100vh - 50px);
+          position: relative;
+          overflow: hidden;
+        }
+        html {
+          background: url(/images/frame-bg.svg) no-repeat center;
+          background-size: cover;
+        }
+      }
     </style>
   </head>
   <body>
