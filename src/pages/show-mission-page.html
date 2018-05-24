@@ -29,6 +29,7 @@
   <template>
     <style include="shared-styles"></style>
     <style>
+
       :host {
         display: block;
         background: var(--secondary-background-color);
@@ -37,9 +38,7 @@
         --layer-image: '';
       }
 
-      mission-player {
-        margin: auto;
-      }
+      mission-player { margin: auto; }
 
       app-header {
         height: 222px;
@@ -54,48 +53,39 @@
         };
       }
 
-      app-header[shadow] {
-        color: black;
-      }
+      app-header[shadow] { color: black; }
+
       app-header[shadow] .tall {
         background: unset;
         width: 100px;
       }
-      app-header[shadow] .tall .actions {
-        display: none;
-      }
-      .tall {
-        height: 158px;
-      }
+
+      app-header[shadow] .tall .actions { display: none; }
+
+      .tall { height: 158px; }
+
       .tall .actions {
         position: absolute;
         bottom: 5px;
         right: 5px;
       }
 
-      h1.title[main-title] {
-        margin: 5px 20px;
-      }
+      h1.title[main-title] { margin: 5px 20px; }
 
-      .dark {
-        color: black;
-      }
+      .dark { color: black; }
 
-      .timing {
-        font-size: 0.6em;
-      }
-      .timing iron-icon {
-        height: 15px;
-      }
+      .timing { font-size: 0.6em; }
+
+      .timing iron-icon { height: 15px; }
 
       .progress {
         position: absolute;
         top: 0; bottom: 0;
         left: 0; right: 0;
       }
-      .progress paper-progress {
-        width: 100%;
-      }
+
+      .progress paper-progress { width: 100%; }
+
       .progress .spinner {
         height: 125px;
         text-align: center;
@@ -106,76 +96,85 @@
         min-height: calc(100vh - 150px);
         padding: 0 20px 80px;;
       }
+
       .content p,
-      .content h2 {
-        margin: 10px 0;
-      }
+      .content h2 { margin: 10px 0; }
 
-      .comment .message {
+      .comment .message { display: flex; }
+
+      .comment .message paper-input { flex: 1; }
+
+      .comment .message paper-button { margin: auto 5px 5px; }
+
+      .hide[disabled] { opacity: 0.4; }
+
+      .mission-author {
         display: flex;
-      }
-      .comment .message paper-input {
-        flex: 1;
-      }
-      .comment .message paper-button {
-        margin: auto 5px 5px;
+        background-color: var(--primary-background-color);
+        height: 60px;
+        padding: 5px 0 5px 10px;
       }
 
-      .hide[disabled] {
-        opacity: 0.4;
+      .author-photo { margin-top: 5px; }
+
+      .author-name {
+        margin-left: 5px;
+        margin-top: 9px;
       }
 
-    .mission-author {
-      display: flex;
-      background-color: var(--primary-background-color);
-      height: 60px;
-      padding: 5px 0 5px 10px;
-    }
+      #author {
+        display: block;
+        margin-top: -10px;
+      }
 
-    .author-photo {
-      margin-top: 5px;
-    }
-    .author-name {
-      margin-left: 5px;
-      margin-top: 9px;
-    }
+      .stats {
+        height: 25px;
+        background-color: #f1f1f1;
+        font-size: 0.9em;
+      }
 
-    #author {
-      display: block;
-      margin-top: -10px;
-    }
+      .stats-content {
+        width: 80%;
+        margin: auto;
+        text-align: center;
+      }
 
-    .stats {
-      height: 25px;
-      background-color: #f1f1f1;
-      font-size: 0.9em;
-    }
+      .stats-content div {
+        margin-right: 5px;
+        display: inline;
+      }
 
-    .stats-content {
-      width: 80%;
-      margin: auto;
-      text-align: center;
-    }
+      .stats-value { color: var(--light-accent-color); }
 
-    .stats-content div {
-      margin-right: 5px;
-      display: inline;
-    }
+      #action {
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+      }
 
-    .stats-value { color: var(--light-accent-color); }
+      #action paper-button {
+        border-top-left-radius: 27px;
+        border-bottom-left-radius: 27px;
+        border-top-right-radius: 27px;
+        border-bottom-right-radius: 27px;
+      }
 
-    #action {
-      text-align: center;
-      margin-top: 10px;
-      margin-bottom: 10px;
-    }
+      .btn-realized-mission { background-color: #C1C6CA; }
 
-    #action paper-button {
-      border-top-left-radius: 27px;
-      border-bottom-left-radius: 27px;
-      border-top-right-radius: 27px;
-      border-bottom-right-radius: 27px;
-    }
+      .btn-started-mission { background: linear-gradient(to left, #79BE38, #92D242); }
+
+      .btn-new-mission { background: linear-gradient(to left, var(--light-accent-color), var(--accent-color)); }
+
+      .btn-text-mission {
+        color: #ffffff;
+        text-transform: initial;
+        font-size: 0.8em;
+      }
+
+      #action iron-icon {
+        color: #ffffff;
+        margin-right: 5px;
+      }
     </style>
 
     <app-route route="{{route}}"
@@ -271,7 +270,10 @@
       </div>
 
       <div id="action">
-        <paper-button id="btnAction" toggles raised><span id="actionText">{{btnAction}}</span></paper-button>
+        <paper-button id="btnAction" toggles raised>
+          <iron-icon icon="app:check"></iron-icon>
+          <span id="actionText">{{btnAction}}</span>
+        </paper-button>
       </div>
 
       <div class="content">
@@ -326,7 +328,6 @@
     </dom-if>
 
   </template>
-
   <script>
     class ShowMissionPage extends MissionDurationMixin(Polymer.Element) {
       static get is() { return 'show-mission-page'; }
@@ -441,6 +442,8 @@
         this.mission.content.usersAccepted = Array.from(usersAccepted);
         this.$.document.ref.set(this.mission);
         this.$.acceptedDialog.present();
+        this._calcMissionStats();
+        this._setActionBtn();
       }
 
       _rejectMission(e) {
@@ -460,6 +463,8 @@
 
       _finishMission(e) {
         this.$.finishedDialog.present();
+        this._calcMissionStats();
+        this._setActionBtn();
       }
 
 
@@ -524,28 +529,33 @@
       _setActionBtn() {
         const btn = this.$.btnAction;
         const btnText = this.$.actionText;
-        console.log(this.currentMissionStats);
+        btn.classList = [];
+        btn.removeEventListener('tap', this._acceptMission.bind(this));
+        btn.removeEventListener('tap', this._finishMission.bind(this));
+        btnText.classList.add("btn-text-mission");
+
         if (this.currentMissionStats === "realized") {
           this.set('btnAction', 'Missão concluida');
-          btn.setAttribute("style", "background-color: #C1C6CA");
-          btnText.setAttribute("style", "color: #ffffff");
+          btn.classList.add("btn-realized-mission");
         }
 
         if (this.currentMissionStats === "new") {
+          console.log("eai");
+          console.log(this.currentMissionStats);
           this.set('btnAction', 'Aceitar missão');
-          btn.setAttribute("style", "background: linear-gradient(to left, var(--light-accent-color), var(--accent-color))");
+          btn.classList.add("btn-new-mission");
           btn.addEventListener('tap', this._acceptMission.bind(this));
-          btnText.setAttribute("style", "color: #ffffff");
         }
 
         if (this.currentMissionStats === "started") {
           this.set('btnAction', 'Concluir missão');
-          btn.setAttribute("style", "background: linear-gradient(to left, #78BE38, #92D242)");
+          btn.classList.add("btn-started-mission");
           btn.addEventListener('tap', this._finishMission.bind(this));
-          btnText.setAttribute("style", "color: #ffffff");
         }
       }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
 </dom-module>
+
+foo
