@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -11,19 +12,28 @@
         display: block;
         height: 100vh;
       }
-      .submit {
-        text-align: right;
-        margin: 15px 0;
+      iron-image{
+        width: 120%;
+        height: 200px;
+        margin: 0 -25px;
+      }
+      p {
+        margin-bottom: 20px;
       }
 
     </style>
 
+    <firebase-storage-ref 
+      metadata="{{metadata}}"
+      storage-uri="{{gsUri}}" 
+      download-url="{{downloadUrl}}" 
+      id="storage">
+    </firebase-storage-ref>
+
+    <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
     <div class="content">
       <h1>{{proposal.content.title}}</h1>
       <p>{{proposal.content.description}}</p>
-      <div class="submit">
-        <paper-button class="plain" on-tap="_dismiss">fechar</paper-button>
-      </div>
     </div>
   </template>
   <script>
@@ -32,9 +42,17 @@
       static get properties() {
         return {
           proposal: {
-            type: Object
-          }
+            type: Object,
+            observer: '_setProposal'
+          },
+          data: Object
         };
+      }
+
+      _setProposal() {
+        if(this.proposal.content.image) {
+          this.$.storage.path = `proposals/${this.data.key}/${this.proposal.content.image}`;
+        }
       }
 
       _dismiss(e) {

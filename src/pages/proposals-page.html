@@ -41,16 +41,23 @@
         padding: 5px 15px;
         background-color: var(--primary-background-color);
         margin: 5px 0 10px 0;
+        color: var(--secondary-text-color);
       }
       .card h4 {
         color: var(--primary-text-color);
       }
+      .card span {
+        display: block;
+        line-height: 0.7;
+        font-size: 14px;
+      }
       .card p {
         margin: 10px 0;
-        line-height: 1;
+        line-height: 1.2;
         height: 65px;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-size: 14px;
       }
       .card iron-icon {
         position: absolute;
@@ -71,7 +78,11 @@
     </style>
 
     <app-scrollable-dialog id="detail" modal>
-      <proposal-detail-dialog proposal="{{proposal}}" on-close-dialog="_dismiss"></proposal-detail-dialog>
+      <app-form-header slot="header" shadow>
+        <paper-icon-button slot="arrow-back" icon="app:close" on-tap="closeProposalDialog"></paper-icon-button>
+        <span slot="main-title">{{proposal.content.title}}</span>
+      </app-form-header>
+      <proposal-detail-dialog proposal="{{proposal}}" data="{{data}}" on-close-dialog="_dismiss"></proposal-detail-dialog>
     </app-scrollable-dialog>
 
     <app-route 
@@ -103,6 +114,7 @@
           <div class="card">
             <a on-tap="openProposalDetail"></a>
             <h4>{{proposal.content.title}}</h4>
+            <span>{{proposal.content.category}}</span>
             <hr>
             <p>{{proposal.content.description}}</p>
             <iron-icon icon="app:more-horiz"></iron-icon>
@@ -142,6 +154,11 @@
       _dismiss() {
         this.$.detail.dismiss();
       }
+
+      closeProposalDialog() {
+        this.$.detail.close();
+      }
+
     }
 
     window.customElements.define(ProposalsPage.is, ProposalsPage);
