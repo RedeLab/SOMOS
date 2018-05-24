@@ -4,6 +4,8 @@
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
@@ -36,10 +38,56 @@
       }
       .fill {
         flex: 1;
-        padding: 0 0 20px 20px;
       }
-      .fill h1 {
-        color: var(--secondary-text-color);
+      .cover {
+        height: 84px;
+        background: var(--accent-color);
+      }
+      .cover .image, 
+      .cover iron-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: block;
+        margin: auto;
+        overflow: hidden; 
+        background: var(--divider-color);
+      }
+      .cover paper-icon-button {
+        display: block;
+        margin: -40px auto;
+        color: white;
+        background: rgba(0,0,0,0.4);
+        width: 100%;
+      }
+      .image paper-spinner {
+        margin: -50px 60px 35px;
+      }
+      .username,
+      .notify,
+      .email {
+        max-width: 340px;
+        margin: auto;
+        padding: 80px 20px 0;
+      }
+      .email {
+        padding-top: 0;
+      }
+      .notify {
+        display: flex;
+        padding-top: 20px;
+      }
+      .notify span {
+        flex: 1;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      paper-button {
+        max-width: 340px;
+        margin: 40px auto;
+        display: block;
+        text-align: center;
+        border-radius: 20px;
       }
     </style>
 
@@ -58,7 +106,33 @@
         </app-toolbar>
       </app-header>
       <div class="fill">
-        asdaskdjalsdjalsdkasldkj
+        <div class="cover">
+          <div class="image">
+            <iron-image src="{{user.photoURL}}" sizing="cover">  
+            </iron-image>
+            <paper-icon-button icon="app:create" on-tap="editImage"></paper-icon-button>
+            <dom-if if="{{!user}}">
+              <template>
+                <paper-spinner active></paper-spinner>
+              </template>
+            </dom-if>
+          </div>
+        </div>
+        <div class="username">
+          <paper-input label="nome" value="{{user.displayName}}"></paper-input>
+        </div>
+        <div class="email">
+          <paper-input label="email" type="email" value="{{user.email}}"></paper-input>
+        </div>
+        <div class="email">
+          <paper-input label="senha" type="password" value="{{user.displayName}}"></paper-input>
+          <paper-input label="confirmação de senha" type="password" value="{{user.displayName}}"></paper-input>
+        </div>
+        <hr>
+        <div class="notify">
+          <span>Receber notificações</span> <paper-toggle-button checked></paper-toggle-button>
+        </div>
+        <paper-button class="accent">Salvar</paper-button>
       </div>
     </app-header-layout>
 
