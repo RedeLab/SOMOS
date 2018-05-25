@@ -131,7 +131,7 @@
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <app-toolbar class="tall">
           <div bottom-item on-tap="gotoProfile">
-            <iron-image src="{{user.photoURL}}" sizing="cover">  
+            <iron-image src="{{user.photoURL}}" sizing="cover"> 
             </iron-image>
             <div class="username">
               {{user.displayName}}
@@ -158,7 +158,7 @@
           fallback-selection="not-found"
           on-selected-item-changed="_selectedPageChanged"
           role="main">
-          <profile-page name="profile" route="{{route}}" user="[[user]]"></profile-page>
+          <profile-page name="profile" route="{{route}}" user="{{user}}"></profile-page>
           <inbox-page name="inbox" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></inbox-page>
           <campaigns-page name="campaigns" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></campaigns-page>
           <show-campaign-page name="show-campaign" user="[[user]]" route="{{route}}"></show-campaign-page>

@@ -2,7 +2,6 @@
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
-<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="./register-view.html">
@@ -43,10 +42,6 @@
         max-width: 250px;
       }
     </style>
-    <firebase-document
-      id="document"
-      data="{{newUser}}">
-    </firebase-document>
 
     <div id="content">
       <div class="fill center">
@@ -118,15 +113,8 @@
         this.$.auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
             // use app-notify to display success message
-            this._saveUserData(res);
           }.bind(this))
           .catch((err) => console.error(err));
-      }
-
-      _saveUserData(res) {
-        const data = this.signUpData;
-        this.set('newUser', {"name": data.displayName, "email": data.email});
-        this.$.document.saveValue(`/users/${res.uid}/`, 'content');
       }
 
       sendSignInCredentials(credentials) {
@@ -138,7 +126,11 @@
       }
 
       authWithProvider(e) {
-        this.$.auth.signInWithPopup(e.detail.provider);
+        this.$.auth.signInWithPopup(e.detail.provider)
+          .then(function(res) {
+            // use app-notify to display success message
+          }.bind(this))
+          .catch((err) => console.error(err));
       }
 
       userChanged(user) {
@@ -146,7 +138,6 @@
           user.updateProfile({ displayName: this.signUpData.displayName });
       }
     }
-
     window.customElements.define(LoginModal.is, LoginModal);
   </script>
 </dom-module>
