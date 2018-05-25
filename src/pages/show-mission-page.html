@@ -270,7 +270,7 @@
 
       <div id="action">
         <paper-button id="btnAction" toggles raised>
-          <iron-icon icon="app:check"></iron-icon>
+          <iron-icon icon="{{actionIcon}}"></iron-icon>
           <span id="actionText">{{btnAction}}</span>
         </paper-button>
       </div>
@@ -388,6 +388,10 @@
             value: 'new'
           },
           btnAction: String,
+          actionIcon: {
+            type: String,
+            value: "app:check"
+          },
           acceptMissionFunc: Function,
           finishMissionFunc: Function
         };
@@ -559,6 +563,12 @@
           this.set('btnAction', 'Concluir missão');
           btn.classList.add("btn-started-mission");
           btn.addEventListener('tap', this.finishMissionFunc);
+        }
+
+        if (this.currentMissionStats == "pending") {
+          this.set("btnAction", "Missão concluída");
+          this.set("actionIcon", "app:report");
+          btn.classList.add("btn-realized-mission");
         }
       }
 
