@@ -60,11 +60,12 @@
       }
       #step2 h1 {
         line-height: 22px;
+        margin-bottom: 25px;
       }
       #step2 paper-fab {
         display: inline-block;
         position: absolute;
-        right: 10%;
+        right: 5%;
         top: 13%;
         background: var(--accent-color);
         color: var(--default-primary-color);
@@ -126,6 +127,17 @@
       }
       .card-title {
         padding: 10px;
+        display: flex;
+      }
+      .card-title span {
+        display: inline-block;
+        line-height: 2.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .card-title .space {
+        flex: 1;
       }
       .about {
         background-color: var(--accent-color);
@@ -296,7 +308,11 @@
             </h1>
             <template is="dom-repeat" items="{{proposalData}}">
               <paper-card>
-                <div class="card-title">{{item.content.title}}</div>
+                <div class="card-title">
+                  <span>{{item.content.title}}</span>
+                  <div class="space"></div>
+                  <paper-icon-button icon="app:close" on-tap="removeProposal"></paper-icon-button>
+                </div>
               </paper-card>
             </template>
           </div>
@@ -498,6 +514,16 @@
         this.closeProposalDialog();
         this.$.proposalDialog.proposal = {};
         this.proposalArray = [];
+      }
+
+      removeProposal(e) {
+        console.log(e.model.get('item'));
+        const data = e.model.get('item');
+        const key = data.$key;
+        if(data.content.image) {
+          this.$.proposalStorage.ref.child(data.content.image).delete();
+        }
+        this.$.proposal.ref.child(key).remove();
       }
 
       _setCreateCampaign(selection) {
