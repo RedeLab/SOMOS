@@ -161,13 +161,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return ['_filterMissions(missions, acceptedMissions, rejectedMissions)'];
       }
 
-      ready() {
-        super.ready();
-        if(screen.width > 960) {
-          this.shadowRoot.querySelector('app-header').condenses = false;
-        }
-      }
-
       _selectedChanged(selected) {
         if(!selected) return;
         this._filterMissions(this.missions, this.acceptedMissions, this.rejectedMissions);
