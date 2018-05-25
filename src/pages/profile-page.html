@@ -101,7 +101,7 @@
     </style>
 
     <app-dialog id="dialog">
-      <password-dialog on-confirm-password="_updatePassword"></password-dialog>
+      <password-dialog id="passDialog" on-confirm-password="_updatePassword"></password-dialog>
     </app-dialog>
 
     <firebase-auth id="auth" user="{{user}}" on-error="handleError" status-known="{{statusKnown}}">
@@ -142,8 +142,11 @@
         </div>
         <div class="email">
           <paper-input label="senha" type="password" value="{{data.password}}" minlength="8"
-          auto-validate error-message="A senha deve ter no mínimo 8 caracteres."></paper-input>
-          <paper-input label="confirmação de senha" type="password" value="{{data.confirmpass}}"></paper-input>
+            auto-validate error-message="A senha deve ter no mínimo 8 caracteres." disabled="{{!passProvider}}">
+          </paper-input>
+          <paper-input label="confirmação de senha" type="password"
+            value="{{data.confirmpass}}" disabled="{{!passProvider}}">
+          </paper-input>
         </div>
         <hr>
         <div class="notify">
@@ -200,6 +203,7 @@
           password: 'samplepass',
           confirmpass: 'samplepass'
         };
+        this.passProvider = this.user.providerData[0].providerId === 'password';
       }
       _selectedChanged(selected) {}
       
@@ -219,11 +223,12 @@
             this.notifyPath('user.displayName');
             this.notifyPath('user.photoURL');
           }.bind(this), 1000));
-          if(data.password !== 'samplepass') {
+          if(data.password !== 'samplepass' && this.passProvider) {
             this.$.dialog.present();
           }
         }
       }
+
       _updatePassword(e) {
         const password = e.detail.password;
         this.$.auth.signInWithEmailAndPassword(this.user.email, password)
@@ -232,7 +237,9 @@
             this.user.updatePassword(this.data.password);
             this.$.dialog.dismiss();
           }.bind(this))
-          .catch((err) => console.error(err));
+          .catch(function(err) {
+            this.$.passDialog.passInvalid = true;
+          }.bind(this));
       }
       _validateInputs(data) {
         let valid = true;
