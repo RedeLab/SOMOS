@@ -511,6 +511,7 @@
         this.set("acceptedMissionStats", 0);
         this.set("finishedMissionStats", 0);
         this.set("pendingMissionStats", 0);
+        this.set("actionIcon", "app:check");
         if (!this.mission.content.usersAccepted) return;
         this.set("acceptedMissionStats", this.mission.content.usersAccepted.length);
         let currentStats = '';
