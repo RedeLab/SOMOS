@@ -393,6 +393,12 @@
         };
       }
 
+      static get observers() {
+        return [
+          'routePathChanged(route.path)'
+        ]
+      }
+
       _selectedChanged(selected) {
         if(!selected) {
           this.$.player.stop();
@@ -496,15 +502,13 @@
         this.$.finishedDialog.dismiss();
       }
 
-      _missionChanged() {
-        if (Object.keys(this.mission).length == 0) return;
-        this._calcMissionStats();
-        this._setActionBtn();
-      }
-
       _calcMissionStats() {
+        this.set("currentMissionStats", "new");
+        this.set("acceptedMissionStats", 0);
+        this.set("finishedMissionStats", 0);
+        this.set("pendingMissionStats", 0);
         if (!this.mission.content.usersAccepted) return;
-        this.set('acceptedMissionStats', this.mission.content.usersAccepted.length);
+        this.set("acceptedMissionStats", this.mission.content.usersAccepted.length);
         let currentStats = '';
         let currentUser = this.user.uid;
         this.mission.content.usersAccepted.forEach(function(id) {
@@ -557,6 +561,20 @@
           btn.addEventListener('tap', this.finishMissionFunc);
         }
       }
+
+      /* every time that route is show-mission, we reload the mission */
+      routePathChanged(path) {
+        this.$.document.path = '';
+        this.$.document.path = `/missions/${this.data.key}`;
+        setTimeout(this._missionChanged.bind(this), 100);
+      }
+
+      _missionChanged() {
+        if (Object.keys(this.mission).length == 0) return;
+        this._calcMissionStats();
+        this._setActionBtn();
+      }
+
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
