@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -97,6 +99,17 @@
       id="storage">
     </firebase-storage-ref>
 
+    <firebase-query 
+      id="follow" 
+      path="/users/{{user.uid}}/campaigns/{{key}}" 
+      data="{{follow}}">
+    </firebase-query>
+
+    <firebase-document 
+      id="document" 
+      path="/campaigns/{{key}}">
+    </firebase-document>
+
     <div class="card campaign-card">
       <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
       <div class="card-content">
@@ -116,7 +129,7 @@
           <span>apoiadores | Brasília/DF</span>
         </div>
           <span class="support-status">Apoiando</span>
-          <paper-toggle-button></paper-toggle-button>
+          <paper-toggle-button on-change="_followCampaign"></paper-toggle-button>
       </div>
     </div>
 
@@ -128,22 +141,58 @@
         return {
           campaign: {
             type: Object,
-            value: function () {}
+            observer: '_setCampaign'
           },
           gsUri: String,
           downloadUrl: {
             type: String
           },
           key: String,
-          path: String
+          path: String,
+          user: Object
         };
       }
 
-      ready() {
-        super.ready();
+      _setCampaign() {
         if(this.campaign.coverImage) {
           this.$.storage.path = `campaigns/${this.key}/${this.campaign.coverImage}`;
         }
+        //set toogle
+        this._checkToggle();
+      }
+
+      _checkToggle() {
+        const toggle = this.shadowRoot.querySelector('paper-toggle-button');
+        if(!this.campaign) return;
+        if(this.campaign.usersFollow && this.campaign.usersFollow.includes(this.user.uid)) {
+          toggle.checked = true;
+        } else {
+          toggle.checked = false;
+        }
+      }
+
+      _followCampaign(e) {
+        // get toogle state
+        const follow = e.target.checked;
+        if(follow) {
+          const campaign = JSON.parse(JSON.stringify(this.campaign));
+          delete campaign.usersFollow;
+          this.$.follow.ref.set({content: campaign});
+          const usersFollow = new Set(this.campaign.usersFollow);
+          usersFollow.add(this.user.uid);
+          this.campaign.usersFollow = Array.from(usersFollow);
+          this.$.document.ref.set({content: this.campaign});
+        } else {
+          this._unfollowCampaign();
+        }
+      }
+
+      _unfollowCampaign(e) {
+        this.$.follow.ref.remove();
+        const usersFollow = new Set(this.campaign.usersFollow);
+        usersFollow.delete(this.user.uid);
+        this.campaign.usersFollow = Array.from(usersFollow);
+        this.$.document.ref.set({content: this.campaign});
       }
 
       _goToCampaign() {

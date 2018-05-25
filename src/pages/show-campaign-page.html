@@ -177,7 +177,7 @@
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
         <app-toolbar>
-          <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToCampaigns"></paper-icon-button>
           <h1 condensed-title class="dark title">{{campaign.content.candidateName}}</h1>
           <paper-icon-button icon="app:more-vert"></paper-icon-button>
         </app-toolbar>
@@ -326,7 +326,7 @@
       }
 
       _followCampaign(e) {
-        // get toogle statte
+        // get toogle state
         const follow = e.target.checked;
         if(follow) {
           const campaign = JSON.parse(JSON.stringify(this.campaign));
@@ -336,7 +336,6 @@
           usersFollow.add(this.user.uid);
           this.campaign.content.usersFollow = Array.from(usersFollow);
           this.$.document.ref.set(this.campaign);
-          console.log("seguiu");
         } else {
           this._unfollowCampaign();
         }
@@ -348,7 +347,6 @@
         usersFollow.delete(this.user.uid);
         this.campaign.content.usersFollow = Array.from(usersFollow);
         this.$.document.ref.set(this.campaign);
-        console.log("nao apoia");
       }
 
       _setLayerImage(campaignImage) {
