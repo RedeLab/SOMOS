@@ -387,7 +387,9 @@
             type: String,
             value: 'new'
           },
-          btnAction: String
+          btnAction: String,
+          acceptMissionFunc: Function,
+          finishMissionFunc: Function
         };
       }
 
@@ -476,6 +478,8 @@
         super.ready();
         this.shadowRoot.querySelector('mission-receipts-modal').addEventListener('close-modal', this._dismissReceiptsModal.bind(this));
         this.shadowRoot.querySelector('finish-mission-modal').shadowRoot.querySelector('finish-confirmation-modal').addEventListener('close-modal', this._dismissFinishModal.bind(this));
+        this.acceptMissionFunc = this._acceptMission.bind(this);
+        this.finishMissionFunc = this._finishMission.bind(this);
       }
 
       _dismissReceiptsModal() {
@@ -529,27 +533,25 @@
         const btn = this.$.btnAction;
         const btnText = this.$.actionText;
         btn.classList = [];
-        btn.removeEventListener('tap', this._acceptMission.bind(this));
-        btn.removeEventListener('tap', this._finishMission.bind(this));
+        btn.removeEventListener("tap", this.acceptMissionFunc, false);
+        btn.removeEventListener("tap", this.finishMissionFunc, false);
         btnText.classList.add("btn-text-mission");
 
-        if (this.currentMissionStats === "realized") {
+        if (this.currentMissionStats == "realized") {
           this.set('btnAction', 'Missão concluida');
           btn.classList.add("btn-realized-mission");
         }
 
-        if (this.currentMissionStats === "new") {
-          console.log("eai");
-          console.log(this.currentMissionStats);
+        if (this.currentMissionStats == "new") {
           this.set('btnAction', 'Aceitar missão');
           btn.classList.add("btn-new-mission");
-          btn.addEventListener('tap', this._acceptMission.bind(this));
+          btn.addEventListener('tap', this.acceptMissionFunc);
         }
 
-        if (this.currentMissionStats === "started") {
+        if (this.currentMissionStats == "started") {
           this.set('btnAction', 'Concluir missão');
           btn.classList.add("btn-started-mission");
-          btn.addEventListener('tap', this._finishMission.bind(this));
+          btn.addEventListener('tap', this.finishMissionFunc);
         }
       }
     }
