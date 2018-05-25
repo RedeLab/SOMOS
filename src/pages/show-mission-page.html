@@ -404,6 +404,9 @@
 
       _returnToInbox() {
         this.set('currentMissionStats', 'new');
+        this.set('acceptedMissionStats', 0);
+        this.set('finishedMissionStats', 0);
+        this.set('pendingMissionStats', 0);
         this.set('route.path', '/');
       }
 
