@@ -14,7 +14,7 @@
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
-<dom-module id="mission-receipts-page">
+<dom-module id="mission-accepted-page">
   <template>
     <style include="shared-styles"></style>
     <style>
@@ -53,7 +53,7 @@
     </style>
 
     <app-route route="{{route}}"
-      pattern="/mission-receipts/:key"
+      pattern="/mission-accepted/:key"
       data="{{routeData}}">
     </app-route>
 
@@ -64,58 +64,38 @@
       log="true">
     </firebase-document>
 
-    <app-scrollable-dialog id="missionReceipt">
-      <mission-receipt></mission-receipt>
-    </app-scrollable-dialog>
-
       <app-header-layout>
         <app-form-header shadow slot="header">
             <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-            <span slot="main-title">{{mission.content.receipts.length}} pessoas concluiram</span>
+            <span slot="main-title">{{mission.content.usersAccepted.length}} pessoas aceitaram</span>
             <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
       
     <template is="dom-if" if="{{missionLoaded}}" restamp>
       <div class="receipts">
-        <template is="dom-repeat" items="{{mission.content.receipts}}">
+        <template is="dom-repeat" items="{{mission.content.usersAccepted}}">
           <div class="receipt-item">
             <div class="supporter-img">
               <iron-image  src="images/favicon.ico"></iron-image>
             </div>
-            <div class="supporter-name">
-              <a on-tap="_openUserReceipt"><span>{{item.userName}}</span></a>
-            </div>
-      
-            <div class="avaliation-stats">
-              <iron-icon class="accepted-stats" icon="app:check-circle"></iron-icon>
-            </div>
+            <div class="supporter-name"> <span>{{item.userName}}</span> </div>
           </div>
         </template>
       </div>
-      </template>
-      </app-header-layout>
+    </template>
+    </app-header-layout>
 
     </template>
   <script>
-    class MissionReceiptsPage extends Polymer.Element {
-      static get is() { return 'mission-receipts-page'; }
+    class MissionAcceptedPage extends Polymer.Element {
+      static get is() { return 'mission-accepted-page'; }
 
       static get properties() {
         return {
-          supporter: {
-            type: Object
-          },
-          receipts: {
-            type: Array
-          },
-          userData: {
-            type: Object
-          },
           mission: {
             type: Object,
             observer: '_missionChanged'
           },
-          routeData: Object,
           missionLoaded: {
             type: Boolean,
             value: false
@@ -127,24 +107,16 @@
         super();
       }
 
-      _openUserReceipt(e) {
-        const data = e.model.get('item');
-        data["missionId"] = this.routeData.key;
-        this.shadowRoot.querySelector('mission-receipt').setRcptData(data);
-        this.$.missionReceipt.present();
-      }
-
       _returnToInbox() {
         this.set('route.path', `/show-mission/${this.routeData.key}`);
       }
 
       _missionChanged() {
-        if (this.mission.content !== undefined && this.mission.content.receipts) {
+        if (this.mission.content !== undefined && this.mission.content.usersAccepted) {
           this.set('missionLoaded', true);
         }
       }
-
     }
-    customElements.define(MissionReceiptsPage.is, MissionReceiptsPage);
+    customElements.define(MissionAcceptedPage.is, MissionAcceptedPage);
 </script>
 </dom-module>

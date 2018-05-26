@@ -199,12 +199,6 @@
       data="{{receipts}}">
     </firebase-query>
 
-    <firebase-query
-      id="accepted"
-      path="/users/{{user.uid}}/accepted/{{data.key}}"
-      data="{{acceptedMission}}">
-    </firebase-query>
-
     <app-dialog id="finishedDialog" opened="{{finishedModal}}">
       <finish-mission-modal  user="[[user]]" mission-id="{{data.key}}"></finish-mission-modal>
     </app-dialog>
@@ -257,10 +251,14 @@
       <div class="stats">
         <div class="stats-content">
           <div>
-            <span class="stats-value">{{acceptedMissionStats}}</span> <span>aceitaram</span>
+            <a on-tap="_openAcceptedMissionList">
+              <span class="stats-value">{{acceptedMissionStats}}</span> <span>aceitaram</span>
+            </a>
           </div>
           <div>
-            <span class="stats-value">{{finishedMissionStats}}</span> <span>concluiram</span>
+            <a on-tap="_openFinishedMissionList">
+              <span class="stats-value">{{finishedMissionStats}}</span> <span>concluiram</span>
+            </a>
           </div>
           <div>
             <a on-tap="_openMissionReceipts"><span class="stats-value">{{pendingMissionStats}}</span> <span>pendentes</span></a>
@@ -450,9 +448,8 @@
       _acceptMission(e) {
         const mission = JSON.parse(JSON.stringify(this.mission));
         delete mission.content.usersAccepted;
-        this.$.accepted.ref.set(mission);
         const usersAccepted = new Set(this.mission.content.usersAccepted);
-        usersAccepted.add(this.user.uid);
+        usersAccepted.add({"uid": this.user.uid, "userName": this.user.displayName});
         this.mission.content.usersAccepted = Array.from(usersAccepted);
         this.$.document.ref.set(this.mission);
         this.$.acceptedDialog.present();
@@ -483,9 +480,23 @@
 
 
       _openMissionReceipts() {
-        this.set('currentMissionStats', 'new');
-        this.set('route.path', `/mission-receipts/${this.data.key}`);
+        if (this.pendingMissionStats > 0 && this.mission.content.uid == this.user.uid) {
+          this.set('route.path', `/mission-receipts/${this.data.key}`);
+        }
       }
+
+      _openFinishedMissionList() {
+        if (this.finishedMissionStats > 0) {
+          this.set('route.path', `/mission-finished/${this.data.key}`);
+        }
+      }
+
+      _openAcceptedMissionList() {
+        if (this.acceptedMissionStats > 0) {
+          this.set('route.path', `/mission-accepted/${this.data.key}`);
+        }
+      }
+
 
       ready() {
         super.ready();
@@ -516,8 +527,8 @@
         this.set("acceptedMissionStats", this.mission.content.usersAccepted.length);
         let currentStats = '';
         let currentUser = this.user.uid;
-        this.mission.content.usersAccepted.forEach(function(id) {
-          if (id === currentUser)
+        this.mission.content.usersAccepted.forEach(function(user) {
+          if (user.uid === currentUser)
             currentStats = "started";
         });
         if (currentStats) this.set('currentMissionStats', currentStats);
