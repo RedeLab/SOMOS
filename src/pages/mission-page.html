@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
 <link rel="import" href="../../bower_components/app-media/app-media.html">
 <link rel="import" href="../../bower_components/app-media/app-media-recorder.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../mission-elements/mission-modal.html">
@@ -94,6 +95,51 @@
 
       .action span { color: var(--secondary-text-color); }
 
+      .media-input { display: none; }
+
+      .media-input paper-input {
+        flex-grow: 2;
+        text-align: initial;
+      }
+
+      .media-input #icon-bg, #choose-media, #mission-required { margin-top: 20px; }
+
+      .media-input #icon-bg, #choose-media { margin-left: 10px; }
+
+      #icon-bg paper-icon-button {
+        color: white;
+        text-align: center;
+        margin-top: 5px;
+      }
+
+      #choose-media paper-button {
+        border-style: none;
+        color: var(--accent-color);
+        text-decoration: underline;
+      }
+
+
+      #save {
+        margin-top: 25px;
+        text-align: center;
+      }
+
+      #save paper-button {
+        border-top-left-radius: 27px;
+        border-bottom-left-radius: 27px;
+        border-top-right-radius: 27px;
+        border-bottom-right-radius: 27px;
+        padding: 20px 55px 20px 55px;
+      }
+
+      #icon-bg {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        text-align: center;
+        background: linear-gradient(to left, var(--light-accent-color), var(--accent-color));
+      }
+
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
@@ -124,28 +170,21 @@
         <div class="sub-header-title">
           <h2> Convença seus seguidores </h2>
           <span>
-            Use um dos recursos   multimedia de destaque para engajar seu publico
-            e convencer seus seguidores a aceitarem a missão.
+            Escolha entre fazer o upload de uma imagem, ou áudio ou simplesmente cole a URL
+            de um vídeo do youtube e chame a atenção dos apoiadores.
           </span>
-        </div>
-        <div class="sub-header-actions">
-          <div class="action">
-            <paper-icon-button label="Vídeo" icon="app:videocam" slot="suffix" on-tap="_openInput">
-              <paper-input id="missionVideo" type="file">
-            </paper-icon-button>
-            <span>{{videoName}}</span>
+
+          <div id="choose-media">
+            <paper-button on-tap="_showInput"> escolher arquivo </paper-button>
           </div>
-          <div class="action">
-            <paper-icon-button label="Imagem" icon="app:insert-photo" slot="suffix" on-tap="_openInput">
-              <paper-input id="missionImage" type="file">
-            </paper-icon-button>
-            <span>{{fileName}}</span>
-          </div>
-          <div class="action">
-            <paper-icon-button label="Vídeo" icon="app:audiotrack" slot="suffix" on-tap="_openInput">
-              <paper-input id="uploadedAudio" type="file" label="Imagem de capa"  placeholder="Selecione uma imagem">
-            </paper-icon-button>
-            <span>{{audioName}}</span>
+
+          <div class="media-input">
+            <paper-input error-message="formato da url invalida" id="genericInput" value="{{genericInputValue}}" label="Arquivo ou link" id="mediaInput"></paper-input>
+            <div id="icon-bg">
+              <paper-icon-button icon="app:cloud-upload" slot="prefix" on-tap="_openInput">
+                <paper-input type="file" id="mediaFile" ></paper-input>
+              </paper-icon-button>
+            </div>
           </div>
         </div>
       </div>
@@ -153,10 +192,13 @@
         <paper-input id="missionTitle" required error-message="Chamada da missão está em branco" value="{{mission.title}}" label="Chamada" char-counter maxlength="30"></paper-input>
         <paper-input id="missionDate" required error-message="Duração da missão está em branco" type="date"  value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
         <paper-input id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
+        <div id="mission-required">
+          <paper-toggle-button checked="{{mission.requiredReceipt}}">Comprovação obrigatória</paper-toggle-button>
+        </div>
 
-        <paper-input value="{{mission.reward}}" label="Recompensa(opcional)" char-counter maxlength="250"></paper-input>
-        <paper-input id="video" value="{{mission.video}}" label="Link do video explicativo" error-message="O link deve ser do youtube."></paper-input>
-        <paper-button toggles raised class="accent block" on-tap="_saveMission">salvar</paper-button>
+        <div id="save">
+          <paper-button toggles raised class="accent" on-tap="_saveMission">criar missão</paper-button>
+        </div>
       </div>
     </app-header-layout>
   </template>
@@ -176,7 +218,7 @@
           },
           mission: {
             type: Object,
-            value: function() { return {}; }
+            value: function() { return { requiredReceipt: true }; }
           },
           openedModal: {
             type: Boolean,
@@ -200,17 +242,13 @@
             type: Object,
             value() { return /https.*youtu.?be\/?(.*)/; }
           },
-          videoName: {
-            type: String,
-            value: 'Nenhum arquivo de video selecionado'
-          },
           fileName: {
             type: String,
             value: 'Nenhum arquivo de imagem selecionado'
           },
-          audioName: {
-            type: String,
-            value: 'Nenhuma arquivo de audio selecionado'
+          uploadedFile: {
+            type: Object,
+            value: {}
           }
         }
       }
@@ -225,31 +263,25 @@
       }
 
       _saveMission(e) {
-        if (this._validMission()) {
-          this.mission.uid = this.user.uid;
-            if (this.$.missionImage.inputElement.inputElement.files.length > 0) {
-            this.missionImage = this.$.missionImage.inputElement.inputElement.files[0];
-            this.mission.imageTitle = this.missionImage.name;
-          }
-          if (this.$.uploadedAudio.inputElement.inputElement.files.length > 0) {
-            this.uploadedAudio = this.$.uploadedAudio.inputElement.inputElement.files[0];
-            this.mission.audioTitle = this.uploadedAudio.name;
-          }
-          let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
-          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-          if (vid) this.mission.video = vid;
-          this.$.query.ref.push({ content: this.mission });
+       if (this._validMission()) {
+         this.mission.uid = this.user.uid;
+         let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
+         if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+         if (vid) this.mission.video = vid;
+         this.$.query.ref.push({ content: this.mission });
+         if (this.input && this.input.files.length > 0) {
+          this.set("uploadedFile",  this.input.files[0]);
           this._saveMissionStorage();
-          this.set('mission', {});
-          this.sharedMission = this.missionData[this.missionData.length - 1];
-          this.$.confirmation.present();
-        }
+         }
+         this.set('mission', {});
+         this.sharedMission = this.missionData[this.missionData.length - 1];
+         this.$.confirmation.present();
+       }
       }
 
-      _saveMissionStorage(missionImage, uploadedAudio) {
+      _saveMissionStorage() {
         this.missionId = this.missionData[this.missionData.length - 1].$key;
-        if (this.missionImage) this.fileArray.push(this.missionImage);
-        if (this.uploadedAudio) this.fileArray.push(this.uploadedAudio);
+        if (this.uploadedFile) this.fileArray.push(this.uploadedFile);
         this.$.storage.upload();
       }
 
@@ -270,11 +302,33 @@
           valid = false;
         }
 
-        if (!this._validVideo(this.mission.video)) {
-          this.$.video.invalid = true;
-          valid = false;
-        }
+        if (!(this.input === undefined) && this.input.files.length > 0) {
+          const imgFormats = ["png", "jpg"]
+          const audioFormats = ["mp3", "wav"]
+          const fileName = this.input.files[0].name;
+          const fileFormat = fileName.split('.').pop();
+          /* is a image */
+          if (imgFormats.includes(fileFormat)) {
+            this.mission.imageTitle = fileName;
+            valid = true;
+          }
 
+          else if (audioFormats.includes(fileFormat)) {
+            this.mission.audioTitle = fileName;
+            valid = true;
+          }
+          else {
+            this.$.genericInput.invalid = true;
+            valid = false;
+          }
+        }
+        else {
+          this.mission.video = this.genericInputValue;
+          if (!this._validVideo(this.mission.video)) {
+            this.$.genericInput.invalid = true;
+            valid = false;
+          }
+        }
         return valid;
       }
 
@@ -288,17 +342,21 @@
       }
 
       _openInput() {
-        this.input = this.$.missionImage.inputElement.inputElement;
+        this.input = this.$.mediaFile.inputElement.inputElement;
         this.input.addEventListener('change', this._setFileName.bind(this));
         this.input.click();
       }
 
+      _showInput() {
+        this.shadowRoot.querySelector(".media-input").setAttribute("style", "display: flex !important");
+      }
+
+
       _setFileName() {
         if(this.input.files.length === 0)
-          this.set('fileName',  'Nenhum arquivo selecionado');
+          this.$.mediaInput.value = 'Nenhum arquivo selecionado';
         else {
-          this.set('fileName',  this.input.files[0].name);
-          this.set('file',  this.input.files[0]);
+          this.$.genericInput.value = this.input.files[0].name;
         }
       }
 
