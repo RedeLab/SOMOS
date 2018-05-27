@@ -213,7 +213,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       hideLoading(e) {
         // the load is complete.
-        console.log(this.domChangeEventCount);
         if (this.domChangeEventCount == 1) {
           this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
         }

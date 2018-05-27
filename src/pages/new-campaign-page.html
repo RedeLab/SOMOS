@@ -473,8 +473,6 @@
 
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
-        console.log(this.campaign);
-        console.log(this.proposals);
         //save campaign
         if(this.campaignId) {
           this.$.document.path = `/campaigns/${this.campaignId}`;
@@ -517,7 +515,6 @@
       }
 
       removeProposal(e) {
-        console.log(e.model.get('item'));
         const data = e.model.get('item');
         const key = data.$key;
         if(data.content.image) {

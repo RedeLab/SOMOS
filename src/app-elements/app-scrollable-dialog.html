@@ -50,8 +50,6 @@
       }
 
       dismiss(e) {
-        console.log("foo");
-        console.log(this.opened);
         if(!this.opened) return;
         this.dispatchEvent(new CustomEvent('dismiss'));
         this._animateSlotted();
