@@ -93,17 +93,19 @@
       }
 
       .card-footer .stats {
-        padding: 10px;
+        padding: 20px 10px;
+        font-size: 0.9rem;
       }
       .card-footer .stats .stats-number {
         color: var(--accent-color);
         font-weight: bold;
       }
-      .card-footer .actions paper-button {
+      .card-footer .stats paper-button {
         border: none;
         text-transform: none;
         font-size: 0.9em;
-        margin: 10px;
+        float: right;
+        margin-top: -12px;
       }
       .card-footer .actions iron-icon {
         margin-right: 5px;
@@ -126,15 +128,9 @@
       <iron-image sizing="cover" preload fade src="{{missionImage}}"></iron-image>
       <div class="card-footer">
         <div class="stats">
-          <span><span class="stats-number">{{accepted}}</span> pessoas aceitaram | </span>
+          <span><span class="stats-number">{{accepted}}</span> aceitaram | </span>
           <span><span class="stats-number">{{concluded}}</span> concluiram</span>
-        </div>
-        <div class="actions">
-          <paper-button>
-            <iron-icon icon="app:thumb-up"></iron-icon>
-            Curtir
-          </paper-button>
-          <paper-button>
+          <paper-button on-tap="_goToMission">
             <iron-icon icon="app:chat-bubble-outline"></iron-icon>
             Comentar
           </paper-button>
@@ -182,7 +178,6 @@
       }
 
       setMissionData(mission) {
-        console.log(mission);
         this.set("accepted", mission.usersAccepted ? mission.usersAccepted.length : '0');
         this.set("concluded", mission.usersFinished ? mission.usersFinished.length: '0');
       }
