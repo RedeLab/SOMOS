@@ -21,6 +21,10 @@
 
       :host {
         display: block;
+        --app-form-header-background: #fff;
+        --app-form-header-color: #000;
+        background: var(--secondary-background-color);
+        height: 100vh;
       }
 
       .receipt-item {
@@ -47,9 +51,24 @@
       margin-top: 20px;
     }
 
-    .receipts { margin-top: 20px; }
+    .receipts {
+      width: 90%;
+      margin: auto;
+      margin-top: 20px;
+    }
 
+    app-form-header {
+      color: var(--default-primary-color);
+      background: var(--accent-color);
+      --app-form-header-background: var(--accent-color);
+      --app-form-header-color: var(--default-primary-color);
+      @apply --default-font-medium;
+    }
 
+    .avaliation-stats paper-icon-button {
+      width: 50px;
+      height: 50px;
+    }
     </style>
 
     <app-route route="{{route}}"
@@ -74,7 +93,7 @@
             <span slot="main-title">{{mission.content.receipts.length}} pessoas concluiram</span>
             <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
-      
+
     <template is="dom-if" if="{{missionLoaded}}" restamp>
       <div class="receipts">
         <template is="dom-repeat" items="{{mission.content.receipts}}">
@@ -85,9 +104,9 @@
             <div class="supporter-name">
               <a on-tap="_openUserReceipt"><span>{{item.userName}}</span></a>
             </div>
-      
+
             <div class="avaliation-stats">
-              <iron-icon class="accepted-stats" icon="app:check-circle"></iron-icon>
+              <paper-icon-button on-tap="_openUserReceipt" class="accepted-stats" icon="{{_setReceiptIcon(item)}}"></iron-icon>
             </div>
           </div>
         </template>
@@ -119,6 +138,14 @@
           missionLoaded: {
             type: Boolean,
             value: false
+          },
+          receiptModal: {
+            type: Boolean,
+            observer: '_closeModal'
+          },
+          receiptIcon: {
+            type: String,
+            value: "app:check"
           }
         }
       }
@@ -142,6 +169,23 @@
         if (this.mission.content !== undefined && this.mission.content.receipts) {
           this.set('missionLoaded', true);
         }
+      }
+
+      ready() {
+        super.ready();
+        this.$.missionReceipt.querySelector("mission-receipt").addEventListener('close-modal', this._closeReceiptModal.bind(this));
+      }
+
+      _closeReceiptModal() {
+        this.$.missionReceipt.dismiss();
+        this.$.document.path = '';
+        this.$.document.path = `/missions/${this.routeData.key}`;
+      }
+
+      _setReceiptIcon(_item) {
+        if (_item.status === "realized" || _item.status === "rejected")
+          return "app:radio-button-checked";
+        return "app:radio-button-unchecked";
       }
 
     }

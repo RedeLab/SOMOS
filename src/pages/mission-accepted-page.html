@@ -21,6 +21,10 @@
 
       :host {
         display: block;
+        --app-form-header-background: #fff;
+        --app-form-header-color: #000;
+        background: var(--secondary-background-color);
+        height: 100vh;
       }
 
       .receipt-item {
@@ -49,6 +53,14 @@
 
     .receipts { margin-top: 20px; }
 
+      app-form-header {
+        color: var(--default-primary-color);
+        background: var(--accent-color);
+        --app-form-header-background: var(--accent-color);
+        --app-form-header-color: var(--default-primary-color);
+        @apply --default-font-medium;
+      }
+
 
     </style>
 
@@ -65,7 +77,7 @@
     </firebase-document>
 
       <app-header-layout>
-        <app-form-header shadow slot="header">
+        <app-form-header shadow slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
             <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
             <span slot="main-title">{{mission.content.usersAccepted.length}} pessoas aceitaram</span>
             <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>

@@ -16,6 +16,8 @@
     <style>
       :host {
         display: block;
+        background: var(--secondary-background-color);
+        @apply --default-font;
       }
 
       #modal-header h2 { color: var(--accent-color); }
@@ -26,6 +28,24 @@
       }
       .actions #accept {float: right;}
       .actions #reject {float: left;}
+
+      span { font-size: 1.2em;  }
+
+      hr {
+        background-color: var(--divider-color);
+        margin-top: 25px;
+        margin-bottom: 25px;
+      }
+
+      .content {
+        width: 90%;
+        margin: auto;
+      }
+
+      paper-button {
+        border-style: none;
+        color: var(--accent-color);
+      }
 
     </style>
 
@@ -44,22 +64,29 @@
     </firebase-document>
 
 
-        <div id="modal-header">
-          <h2><span> {{rcptData.userName}} </span></h2>
-          <span> Enviou evidências de que concluiu essa missão </span>
-        </div>
-
-        <div class="receipts">
-            <iron-image id="#receipt-upload" style="width: 100%; height: 200px;" sizing="contain" src="{{downloadUrl}}"></iron-image>
-
-          <div class="receipt-text">
-            <span> {{rcptData.description}} </span>
+        <div class="content">
+          <div id="modal-header">
+            <h2><span> {{rcptData.userName}} </span></h2>
+            <span> Enviou evidências de que concluiu essa missão </span>
           </div>
-        </div>
 
-        <div class="actions">
-          <paper-button id="reject" on-tap="_rejectMission">rejeitar</paper-button>
-          <paper-button id="accept" on-tap="_acceptMission">aceitar</paper-button>
+          <hr>
+
+          <div class="receipts">
+
+            <div class="receipt-text">
+              <span> {{rcptData.description}} </span>
+            </div>
+
+            <a href="{{downloadUrl}}">Comprovante</a>
+
+          <hr>
+
+          <div class="actions">
+            <paper-button id="reject" on-tap="_rejectMission">rejeitar</paper-button>
+            <paper-button id="accept" on-tap="_acceptMission">aceitar</paper-button>
+          </div>
+          </div>
         </div>
   </template>
   <script>
@@ -104,10 +131,12 @@
 
       _acceptMission(e) {
         this._setMissionStatus("realized");
+        this.dispatchEvent(new CustomEvent('close-modal'));
       }
 
       _rejectMission(e) {
         this._setMissionStatus("rejected");
+        this.dispatchEvent(new CustomEvent('close-modal'));
       }
     }
 customElements.define(MissionReceipt.is, MissionReceipt);
