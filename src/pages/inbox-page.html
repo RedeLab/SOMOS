@@ -98,7 +98,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </template>
         </div>
         <div class="inbox">
-          <template is="dom-repeat" items="{{acceptedMissions}}" as="acceptedMissions">
+          <template is="dom-repeat" items="{{myMissions}}" as="acceptedMissions">
             <mission-card mission="{{acceptedMissions.content}}" key="{{acceptedMissions.$key}}" on-show-mission="_goToMission"></mission-card>
           </template>
         </div>
@@ -151,9 +151,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           filteredMissions: {
             type: Array
           },
+          myMissions: {
+            type: Array
+          },
+          missions: {
+            type: Array
+          },
           domChangeEventCount: {
             type: Number,
             value: 0
+          },
+          user: {
+            type: Object
           }
         }
       }
@@ -180,9 +189,26 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _filterMissions(missions, acceptedMissions, rejectedMissions) {
-        if(!acceptedMissions || !rejectedMissions) return;
+        if(!acceptedMissions || !rejectedMissions || !missions) return;
         const keys = [].concat.apply([], [acceptedMissions.map((m) => m.$key), rejectedMissions.map((m) => m.$key)]);
         this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
+        this._myMissions();
+      }
+
+      _myMissions() {
+        if (this.user == undefined) return;
+        let myMissions = [];
+        const currentUser = this.user.uid;
+        /* TODO: O ideal aqui é que o usersAccepted volte a ser apenas uma array, e sempre
+        que for necessário ter informações do usuário, requisitar em /users */
+        this.missions.forEach(mission => { 
+          if (!(mission.content.usersAccepted === undefined)) {
+            mission.content.usersAccepted.forEach( user => { 
+              if (user.uid == currentUser)
+                myMissions.push(mission);
+            });
+          }});
+        this.set("myMissions", myMissions);
       }
 
       hideLoading(e) {
@@ -193,6 +219,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
         this.domChangeEventCount += 1;
       }
+
+    ready() {
+      super.ready();
+    }
+
     }
 
     window.customElements.define(InboxPage.is, InboxPage);

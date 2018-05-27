@@ -67,13 +67,13 @@
       <app-header-layout>
         <app-form-header shadow slot="header">
             <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-            <span slot="main-title">{{missionFinishedCount}} pessoas concluiram</span>
+            <span slot="main-title">{{mission.content.usersFinished.length}} pessoas concluiram</span>
             <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
       
     <template is="dom-if" if="{{missionLoaded}}" restamp>
       <div class="receipts">
-        <template is="dom-repeat" items="{{missionFinishedList}}">
+        <template is="dom-repeat" items="{{mission.content.usersFinished}}">
           <div class="receipt-item">
             <div class="supporter-img">
               <iron-image  src="images/favicon.ico"></iron-image>
@@ -115,23 +115,8 @@
 
       _missionChanged() {
         if (this.mission.content !== undefined && this.mission.content.usersAccepted) {
-          this._countFinishedUsers();
           this.set('missionLoaded', true);
         }
-      }
-
-      _countFinishedUsers() {
-        const receipts = this.mission.content.receipts;
-        let counter = 0;
-        let list = [];
-        receipts.forEach((element) => {
-          if (element.status == "realized") {
-            counter += 1;
-            list.push(element);
-          }
-        });
-        this.set("missionFinishedCount", counter);
-        this.set("missionFinishedList", list);
       }
     }
     customElements.define(MissionFinishedPage.is, MissionFinishedPage);

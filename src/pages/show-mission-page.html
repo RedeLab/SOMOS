@@ -194,6 +194,12 @@
     </firebase-query>
 
     <firebase-query
+      id="accepted"
+      path="/users/{{user.uid}}/accepted/{{data.key}}"
+      data="{{acceptedMission}}">
+    </firebase-query>
+
+    <firebase-query
       id="receipts"
       path="/missions/[[data.key]]/content/receipts"
       data="{{receipts}}">
@@ -257,11 +263,11 @@
           </div>
           <div>
             <a on-tap="_openFinishedMissionList">
-              <span class="stats-value">{{finishedMissionStats}}</span> <span>concluiram</span>
+              <span class="stats-value">{{mission.content.usersFinished.length}}</span> <span>concluiram</span>
             </a>
           </div>
           <div>
-            <a on-tap="_openMissionReceipts"><span class="stats-value">{{pendingMissionStats}}</span> <span>pendentes</span></a>
+            <a on-tap="_openMissionReceipts"><span class="stats-value">{{mission.content.usersPending.length}}</span> <span>pendentes</span></a>
           </div>
         </div>
       </div>
@@ -369,14 +375,6 @@
           receipts: {
             type: Array,
           },
-          finishedMissionStats: {
-            type: Number,
-            value: 0
-          },
-          pendingMissionStats: {
-            type: Number,
-            value: 0
-          },
           acceptedMissionStats: {
             type: Number,
             value: 0
@@ -413,8 +411,8 @@
       _returnToInbox() {
         this.set('currentMissionStats', 'new');
         this.set('acceptedMissionStats', 0);
-        this.set('finishedMissionStats', 0);
-        this.set('pendingMissionStats', 0);
+        this.set('mission.content.usersFinished', []);
+        this.set('mission.content.usersPending', []);
         this.set('route.path', '/');
       }
 
@@ -448,6 +446,7 @@
       _acceptMission(e) {
         const mission = JSON.parse(JSON.stringify(this.mission));
         delete mission.content.usersAccepted;
+        this.$.accepted.ref.set(mission);
         const usersAccepted = new Set(this.mission.content.usersAccepted);
         usersAccepted.add({"uid": this.user.uid, "userName": this.user.displayName});
         this.mission.content.usersAccepted = Array.from(usersAccepted);
@@ -480,13 +479,13 @@
 
 
       _openMissionReceipts() {
-        if (this.pendingMissionStats > 0 && this.mission.content.uid == this.user.uid) {
+        if (this.mission.content.usersPending.length > 0 && this.mission.content.uid == this.user.uid) {
           this.set('route.path', `/mission-receipts/${this.data.key}`);
         }
       }
 
       _openFinishedMissionList() {
-        if (this.finishedMissionStats > 0) {
+        if (this.mission.content.usersFinished.length > 0) {
           this.set('route.path', `/mission-finished/${this.data.key}`);
         }
       }
@@ -520,8 +519,8 @@
       _calcMissionStats() {
         this.set("currentMissionStats", "new");
         this.set("acceptedMissionStats", 0);
-        this.set("finishedMissionStats", 0);
-        this.set("pendingMissionStats", 0);
+        this.set("mission.content.usersFinished", []);
+        this.set("mission.content.usersPending", []);
         this.set("actionIcon", "app:check");
         if (!this.mission.content.usersAccepted) return;
         this.set("acceptedMissionStats", this.mission.content.usersAccepted.length);
@@ -536,18 +535,20 @@
         const receipts = this.mission.content.receipts;
         let finishedCounter = 0;
         let pendingCounter = 0;
+        let usersFinishedList = []
+        let usersPendingList = []
         const currentUid = this.user.uid;
         receipts.forEach(function(receipt) {
           if (receipt.status === "realized")
-            finishedCounter += 1;
+            usersFinishedList.push(receipt);
           if (receipt.status === "pending")
-            pendingCounter += 1;
+            usersPendingList.push(receipt);
 
           if (receipt.uid === currentUid)
             currentStats = receipt.status
         });
-        this.set('finishedMissionStats', finishedCounter);
-        this.set('pendingMissionStats', pendingCounter);
+        this.set("mission.content.usersFinished", usersFinishedList);
+        this.set("mission.content.usersPending", usersPendingList);
 
         if (currentStats) this.set('currentMissionStats', currentStats);
       }

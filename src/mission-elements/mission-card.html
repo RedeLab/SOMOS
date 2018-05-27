@@ -182,8 +182,9 @@
       }
 
       setMissionData(mission) {
-        this.accepted = mission.usersAccepted ? mission.usersAccepted.length : '0';
-        this.concluded = mission.usersConcluded ? mission.usersConcluded.length : '0';
+        console.log(mission);
+        this.set("accepted", mission.usersAccepted ? mission.usersAccepted.length : '0');
+        this.set("concluded", mission.usersFinished ? mission.usersFinished.length: '0');
       }
 
     }
