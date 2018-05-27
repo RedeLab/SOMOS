@@ -7,6 +7,7 @@
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/app-dialog.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-confirmation-icon.html">
 
 <dom-module id="mission-modal">
   <template>
@@ -35,10 +36,7 @@
 
     </style>
       <div class="modal-header">
-        <div class="confirmation-icon">
-          <iron-icon icon="app:done-all"></iron-icon>
-          <h2> Missão criada com sucesso </h2>
-        </div>
+      <app-confirmation-icon>Missão criada com sucesso</app-confirmation-icon>
       <div class="confirmation-text">
         <p>Quanto mais pessoas souberem da sua missão maiores são as chances de alcançarmos nosso objetivo por isso não perca tempo e compartilhe em suas redes sociais </p>
       <div class="buttons">
