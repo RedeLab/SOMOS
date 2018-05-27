@@ -76,28 +76,27 @@
       log="true">
     </firebase-document>
 
-      <app-header-layout>
-        <app-form-header shadow slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
-            <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-            <span slot="main-title">{{mission.content.usersFinished.length}} pessoas concluiram</span>
-            <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
-        </app-form-header>
-      
-    <template is="dom-if" if="{{missionLoaded}}" restamp>
-      <div class="receipts">
-        <template is="dom-repeat" items="{{mission.content.usersFinished}}">
-          <div class="receipt-item">
-            <div class="supporter-img">
-              <iron-image  src="images/favicon.ico"></iron-image>
-            </div>
-            <div class="supporter-name"> <span>{{item.userName}}</span> </div>
-          </div>
-        </template>
-      </div>
-    </template>
-    </app-header-layout>
+    <app-header-layout has-scrolling-region>
+      <app-form-header shadow slot="header">
+        <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+        <span slot="main-title">{{mission.content.usersFinished.length}} pessoas concluiram</span>
+        <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
+      </app-form-header>
 
-    </template>
+      <template is="dom-if" if="{{missionLoaded}}" restamp>
+        <div class="receipts">
+          <template is="dom-repeat" items="{{mission.content.usersFinished}}">
+            <div class="receipt-item">
+              <div class="supporter-img">
+                <iron-image  src="images/favicon.ico"></iron-image>
+              </div>
+              <div class="supporter-name"> <span>{{item.userName}}</span> </div>
+            </div>
+          </template>
+        </div>
+      </template>
+    </app-header-layout>
+  </template>
   <script>
     class MissionFinishedPage extends Polymer.Element {
       static get is() { return 'mission-finished-page'; }

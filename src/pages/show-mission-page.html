@@ -426,12 +426,6 @@
           this._returnToInbox();
       }
 
-      _observeRejectedModal() {
-        if (!this.rejectedModal) {
-          this._returnToInbox();
-        }
-      }
-
       addComment(e) {
         const input = this.shadowRoot.querySelector('#commentInput');
         if(input.invalid || !input.value) return;
@@ -477,7 +471,6 @@
         this._setActionBtn();
       }
 
-
       _openMissionReceipts() {
         if (this.mission.content.usersPending.length > 0 && this.mission.content.uid == this.user.uid) {
           this.set('route.path', `/mission-receipts/${this.data.key}`);
@@ -495,7 +488,6 @@
           this.set('route.path', `/mission-accepted/${this.data.key}`);
         }
       }
-
 
       ready() {
         super.ready();
@@ -538,12 +530,11 @@
         let usersFinishedList = []
         let usersPendingList = []
         const currentUid = this.user.uid;
-        receipts.forEach(function(receipt) {
+        receipts.forEach((receipt) => {
           if (receipt.status === "realized")
             usersFinishedList.push(receipt);
           if (receipt.status === "pending")
             usersPendingList.push(receipt);
-
           if (receipt.uid === currentUid)
             currentStats = receipt.status
         });
@@ -579,7 +570,7 @@
         }
 
         if (this.currentMissionStats == "pending") {
-          this.set("btnAction", "Missão concluída");
+          this.set("btnAction", "Avaliação pendente");
           this.set("actionIcon", "app:report");
           btn.classList.add("btn-realized-mission");
         }
