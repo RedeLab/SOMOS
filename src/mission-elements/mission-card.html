@@ -111,16 +111,11 @@
         margin-right: 5px;
       }
       .message {
-        position: absolute;
-        left: 0;
-        top: 105px;
-        right: 0;
-        background: white;
         color: var(--accent-color);
         font-weight: bold;
         line-height: 1.5;
         height: 6em;
-        padding: 0 20px;
+        margin-top: 20px;
       }
     </style>
 
@@ -133,11 +128,25 @@
         </a>
         <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
       </div>
-      <div class="card-content">
-        <h1> {{mission.title}} </h1>
-        <p> {{mission.description}} </p>
-      </div>
-      <iron-image sizing="cover" preload fade src="{{missionImage}}"></iron-image>
+      <dom-if if="{{!hasMessage}}">
+        <template>
+          <div class="card-content">
+            <h1> {{mission.title}} </h1>
+            <p> {{mission.description}} </p>
+          </div>
+          <iron-image sizing="cover" preload fade src="{{missionImage}}"></iron-image>
+        </template>
+      </dom-if>
+      <dom-if if="{{hasMessage}}">
+        <template>
+        <div class="card-content">
+          <h1> {{mission.title}} </h1>
+          <div class="message">
+            {{message}}
+          </div>
+        </div>
+        </template>
+      </dom-if>
       <div class="card-footer">
         <div class="stats">
           <span><span class="stats-number">{{accepted}}</span> aceitaram | </span>
@@ -153,13 +162,6 @@
         mission="{{mission}}" mission-key="{{key}}">
       </mission-player>
 
-      <dom-if if="{{hasMessage}}">
-        <template>
-          <div class="message">
-            {{message}}
-          </div>
-        </template>
-      </dom-if>
     </div>
   </template>
   <script>

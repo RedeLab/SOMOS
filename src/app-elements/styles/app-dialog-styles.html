@@ -5,9 +5,16 @@
   <template>
   <style include="paper-dialog-shared-styles"></style>
   <style>
+      :host {
+        max-width: 400px;
+      }
       :host([modal]) {
         min-width: 60%;
+        max-width: unset; 
         background: transparent;
+      }
+      :host ::slotted(.buttons paper-button) {
+        margin: 0 auto;
       }
       :host([modal]) ::slotted(*),
       :host([modal]) > * {

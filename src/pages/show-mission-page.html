@@ -438,12 +438,11 @@
 
       _acceptMission(e) {
         const mission = JSON.parse(JSON.stringify(this.mission));
-        delete mission.content.usersAccepted;
-        this.$.accepted.ref.set(mission);
         const usersAccepted = new Set(this.mission.content.usersAccepted);
         usersAccepted.add({"uid": this.user.uid, "userName": this.user.displayName});
         this.mission.content.usersAccepted = Array.from(usersAccepted);
         this.$.document.ref.set(this.mission);
+        this.$.accepted.ref.set(this.mission);
         this.$.acceptedDialog.present();
         this._calcMissionStats();
         this._setActionBtn();
@@ -471,13 +470,16 @@
       }
 
       _openMissionReceipts() {
-        if (this.mission.content.usersPending.length > 0 && this.mission.content.uid == this.user.uid) {
+        if (this.mission.content.usersPending &&
+          this.mission.content.usersPending.length > 0 &&
+          this.mission.content.uid == this.user.uid) {
           this.set('route.path', `/mission-receipts/${this.data.key}`);
         }
       }
 
       _openFinishedMissionList() {
-        if (this.mission.content.usersFinished.length > 0) {
+        if (this.mission.content.usersFinished &&
+          this.mission.content.usersFinished.length > 0) {
           this.set('route.path', `/mission-finished/${this.data.key}`);
         }
       }

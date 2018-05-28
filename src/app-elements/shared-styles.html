@@ -67,7 +67,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /* block button */
       .block {
         display: block;
-        margin: 0;
+        margin: 0 auto;
         text-align: center;
       }
 
@@ -111,7 +111,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       app-header-layout {
         overflow: hidden;
-        height: calc(100% - 50px);
       }
 
       app-header paper-icon-button {
@@ -165,6 +164,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         paper-tabs {
           width: 100%;
           margin: 0 auto;
+        }
+      }
+      @media screen and (min-width: 961px) {
+        app-header-layout {
+          height: calc(100% - 50px);
         }
       }
 

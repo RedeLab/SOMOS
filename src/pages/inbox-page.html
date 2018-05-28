@@ -191,7 +191,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(!acceptedMissions || !missions) return;
         const keys = [].concat.apply([], [acceptedMissions.map((m) => m.$key)]);
         this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
-        this.set('myMissions', acceptedMissions);
+        this.myMissions = missions.filter((m) => keys.includes(m.$key));
       }
 
       hideLoading(e) {
