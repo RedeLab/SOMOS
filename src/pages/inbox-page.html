@@ -94,7 +94,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </div>
         <div class="inbox">
           <template is="dom-repeat" items="{{myMissions}}" as="acceptedMissions">
-            <mission-card mission="{{acceptedMissions.content}}" key="{{acceptedMissions.$key}}" on-show-mission="_goToMission"></mission-card>
+            <mission-card mission="{{acceptedMissions.content}}" key="{{acceptedMissions.$key}}"
+              on-show-mission="_goToMission" uid="{{user.uid}}">
+            </mission-card>
           </template>
         </div>
       </iron-pages>

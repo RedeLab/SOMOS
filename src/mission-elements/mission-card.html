@@ -110,6 +110,18 @@
       .card-footer .actions iron-icon {
         margin-right: 5px;
       }
+      .message {
+        position: absolute;
+        left: 0;
+        top: 105px;
+        right: 0;
+        background: white;
+        color: var(--accent-color);
+        font-weight: bold;
+        line-height: 1.5;
+        height: 6em;
+        padding: 0 20px;
+      }
     </style>
 
     <div class="card mission-card">
@@ -141,6 +153,13 @@
         mission="{{mission}}" mission-key="{{key}}">
       </mission-player>
 
+      <dom-if if="{{hasMessage}}">
+        <template>
+          <div class="message">
+            {{message}}
+          </div>
+        </template>
+      </dom-if>
     </div>
   </template>
   <script>
@@ -178,10 +197,15 @@
       }
 
       setMissionData(mission) {
-        this.set("accepted", mission.usersAccepted ? mission.usersAccepted.length : '0');
-        this.set("concluded", mission.usersFinished ? mission.usersFinished.length: '0');
+        this.set('accepted', mission.usersAccepted ? mission.usersAccepted.length : '0');
+        this.set('concluded', mission.usersFinished ? mission.usersFinished.length: '0');
+        this.set('hasMessage', mission.receipts ? mission.receipts.reduce(function (t, r) {
+          return t || (r.uid === this.uid && r.status === 'realized');
+        }.bind(this), false) : false);
+        if (this.hasMessage) {
+          this.set('message', 'Obrigado por colaborar conosco nessa missão! Com sua ajuda, somos mais fortes!');
+        }
       }
-
     }
     customElements.define(MissionCard.is, MissionCard);
   </script>

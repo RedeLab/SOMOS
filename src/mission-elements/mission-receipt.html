@@ -126,7 +126,9 @@
         const currentReceiptIdx = _receipts.findIndex( element => element.uid === this.rcptData.uid );
         _receipts[currentReceiptIdx]["status"] = status;
         this.set('receipts',  _receipts);
-        this.$.document.saveValue(`/missions/${this.rcptData.missionId}/content`, "receipts");
+        this.$.document.saveValue(`/missions/${this.rcptData.missionId}/content`, 'receipts').then(function() {
+          this.$.document.saveValue(`/users/${this.rcptData.uid}/accepted/${this.rcptData.missionId}/content`, 'receipts');
+        }.bind(this));
       }
 
       _acceptMission(e) {
