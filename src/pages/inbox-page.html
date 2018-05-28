@@ -64,6 +64,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <firebase-query
       id="accepted"
       path="/users/{{user.uid}}/accepted"
+      on-data-changed="_acceptedChanged"
       data="{{acceptedMissions}}">
     </firebase-query>
 
@@ -177,6 +178,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _goToMission(e) {
         let mission = e.detail.mission;
         this.set('route.path', `/show-mission/${mission}`);
+      }
+
+      _acceptedChanged(acceptedMissions) {
+        this.set('myMissions', []);
+        this.set('myMissions', this.acceptedMissions);
       }
 
       _filterMissions(missions, acceptedMissions) {
