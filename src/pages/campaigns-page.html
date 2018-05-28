@@ -33,6 +33,10 @@
       h1[main-title] {
         margin-left: 20px;
       }
+      app-drawer {
+        --app-drawer-content-container_-_background-color: var(--default-primary-color);
+        --app-drawer-content-container_-_background: var(--default-primary-color);
+      }
       app-drawer .content {
         text-align: left;
         padding: 0 10px;
@@ -115,16 +119,20 @@
         <div class="header">
           <h1>Filtros</h1>
         </div>
-        <paper-input label="Buscar por local" placeholder="Digite a localidade">
-          <paper-button slot="suffix" on-tap="filterCampaigns">Buscar</paper-button>
-        </paper-input>
-        <paper-dropdown-menu label="Cargo que irá disputar" value="{{campaign.role}}">
+        <paper-dropdown-menu label="Estado" on-value-changed="filterState">
+          <paper-listbox slot="dropdown-content" class="dropdown-content">
+            <template id="statesList" is="dom-repeat" items="{{states}}" as="state">
+              <paper-item>{{state}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu label="Cargo que irá disputar" on-value-changed="filterRole">
           <paper-listbox slot="dropdown-content" class="dropdown-content">
             <paper-item>Presidente</paper-item>
             <paper-item>Governador</paper-item>
             <paper-item>Senador</paper-item>
             <paper-item>Deputado Federal</paper-item>
-            <paper-item>Deputado Estadual/Distrital</paper-item>
+            <paper-item>Deputado Estadual</paper-item>
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
@@ -148,6 +156,10 @@
             },
             proportionalCampaigns: {
               type: Array
+            },
+            states: {
+              type: Array,
+              value: ["Acre", "Alagoas", "Amapá	", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"]
             }
           };
         }
@@ -187,12 +199,36 @@
           });
         }
 
-        filterCampaigns() {
-          let filter = this.$.query.ref.orderByChild("content/party").equalTo("Rede").once("value").then(function (snapshot) {
-            this.campaigns = Object.values(snapshot.val());
+        filterRole(e) {
+          const option = e.target.value;
+          let filter = this.$.query.ref.orderByChild("content/role").equalTo(option).once("value").then(function(filter) {
+            if(!filter.val()) return;
+            let campaigns = Object.values(filter.val());
+            let filtered = [];
+            campaigns.forEach((campaign, index) => {
+              let obj = {};
+              obj.$key = Object.keys(filter.val())[index];
+              Object.assign(obj, campaign);
+              filtered.push(obj);
+            });
+            this.campaigns = filtered;
           }.bind(this));
-          // this.set('campaigns', filter);
-          // console.log(this.campaigns);
+        }
+
+        filterState(e) {
+          const option = e.target.value;
+          let filter = this.$.query.ref.orderByChild("content/state").equalTo(option).once("value").then(function (filter) {
+            if (!filter.val()) return;
+            let campaigns = Object.values(filter.val());
+            let filtered = [];
+            campaigns.forEach((campaign, index) => {
+              let obj = {};
+              obj.$key = Object.keys(filter.val())[index];
+              Object.assign(obj, campaign);
+              filtered.push(obj);
+            });
+            this.campaigns = filtered;
+          }.bind(this));
         }
       }
 
