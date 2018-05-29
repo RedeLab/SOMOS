@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/app-media/app-media.html">
 <link rel="import" href="../../bower_components/app-media/app-media-recorder.html">
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
@@ -69,6 +70,29 @@
       width: 50px;
       height: 50px;
     }
+
+    paper-spinner {
+      width: 40px;
+      height: 40px;
+      padding: 5px;
+      background-color: var(--default-primary-color);
+      border-radius: 50%;
+    }
+
+    #inboxLoading {
+      position: absolute;
+      top: 50%;
+      right: 50%;
+      transform: translate(50%);
+    }
+
+    .supporter-img iron-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+
+
     </style>
 
     <app-route route="{{route}}"
@@ -80,6 +104,12 @@
       id="document"
       path="/missions/{{routeData.key}}"
       data="{{mission}}"
+      log="true">
+    </firebase-document>
+
+    <firebase-document
+      id="photoDoc"
+      data="{{appUser}}"
       log="true">
     </firebase-document>
 
@@ -96,10 +126,10 @@
 
       <template is="dom-if" if="{{missionLoaded}}" restamp>
         <div class="receipts">
-          <template is="dom-repeat" items="{{mission.content.receipts}}">
+          <template is="dom-repeat" items="{{mission.content.receipts}}" filter="setUserPhoto">
             <div class="receipt-item">
               <div class="supporter-img">
-                <iron-image  src="images/favicon.ico"></iron-image>
+                <iron-image  id="{{item.uid}}" sizing="cover></iron-image>
               </div>
               <div class="supporter-name">
                 <a on-tap="_openUserReceipt"><span>{{item.userName}}</span></a>
@@ -187,6 +217,18 @@
         return "app:radio-button-unchecked";
       }
 
+      setUserPhoto(_item) {
+        setTimeout(function() {
+          this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
+            this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+          }.bind(this));
+        }.bind(this), 10);
+        return true;
+      }
+
+      hideLoading(e) {
+        this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+      }
     }
     customElements.define(MissionReceiptsPage.is, MissionReceiptsPage);
 </script>
