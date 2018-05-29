@@ -3,10 +3,14 @@
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
 <link rel="import" href="../../bower_components/app-media/app-media.html">
 <link rel="import" href="../../bower_components/app-media/app-media-recorder.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../mission-elements/mission-modal.html">
@@ -121,6 +125,7 @@
 
       #save {
         margin-top: 25px;
+        margin-bottom: 25px;
         text-align: center;
       }
 
@@ -136,6 +141,10 @@
         background: linear-gradient(to left, var(--light-accent-color), var(--accent-color));
       }
 
+      paper-dropdown-menu {
+        margin-top: 10px;
+      }
+
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
@@ -147,6 +156,10 @@
       path="/missions"
       data="{{missionData}}">
     </firebase-query>
+
+    <firebase-document
+      id="document">
+    </firebase-document>
 
     <firebase-storage-multiupload
       path="/missions/[[missionId]]"
@@ -191,6 +204,14 @@
         <div id="mission-required">
           <paper-toggle-button checked="{{mission.requiredReceipt}}">Comprovação obrigatória</paper-toggle-button>
         </div>
+
+      <paper-dropdown-menu label="Campanha">
+        <paper-listbox slot="dropdown-content" selected="1">
+          <template is="dom-repeat" items="{{userCampaigns}}">
+            <paper-item>{{item.content.name}}</paper-item>
+          </template>
+        </paper-listbox>
+      </paper-dropdown-menu>
 
         <div id="save">
           <paper-button toggles raised class="accent" on-tap="_saveMission">criar missão</paper-button>
@@ -245,9 +266,24 @@
           uploadedFile: {
             type: Object,
             value: {}
+          },
+          userCampaigns: {
+            type: Array,
+            value: []
+          },
+          user: {
+            type: Object,
+            observer: '_onUserChanged'
           }
         }
       }
+
+      static get observers() {
+        return [
+          'routePathChanged(route.path)'
+        ]
+      }
+
 
       constructor() {
         super();
@@ -260,19 +296,31 @@
 
       _saveMission(e) {
        if (this._validMission()) {
-         this.mission.uid = this.user.uid;
-         let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
-         if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-         if (vid) this.mission.video = vid;
-         this.$.query.ref.push({ content: this.mission });
-         if (this.input && this.input.files.length > 0) {
-          this.set("uploadedFile",  this.input.files[0]);
-          this._saveMissionStorage();
+          this.mission.uid = this.user.uid;
+          let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
+          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+          if (vid) this.mission.video = vid;
+          const campaignDropdown = this.shadowRoot.querySelector("paper-dropdown-menu");
+          const campaignId = this._getCampaignByName(campaignDropdown.value);
+          this.mission.cid = campaignId;
+          this.$.query.ref.push({ content: this.mission });
+          if (this.input && this.input.files.length > 0) {
+            this.set("uploadedFile",  this.input.files[0]);
+            this._saveMissionStorage();
          }
          this.set('mission', {});
          this.sharedMission = this.missionData[this.missionData.length - 1];
          this.$.confirmation.present();
        }
+      }
+
+      _getCampaignByName(name) {
+        let campaignId = "";
+        this.userCampaigns.forEach(function(value) {
+          if (value.content.name == name)
+            campaignId = value.key;
+        });
+        return campaignId;
       }
 
       _saveMissionStorage() {
@@ -359,6 +407,21 @@
       ready() {
         super.ready();
         this.$.modal.shadowRoot.querySelector("share-menu").addEventListener('finished', this._returnToInbox.bind(this));
+      }
+
+      _onUserChanged() {
+        if (this.user === null) return;
+        this.$.document.db.ref("/campaigns").orderByChild("content/uid").equalTo(this.user.uid).on("value", function(snapshot){
+          const values = Object.values(snapshot.val());
+          const keys = Object.keys(snapshot.val());
+          let campaigns = [];
+          values.forEach(function(value, index){
+            let data = value;
+            data["key"] = keys[index];
+            campaigns.push(data);
+          })
+          this.set("userCampaigns", campaigns);
+        }.bind(this));
       }
     }
     customElements.define(MissionPage.is, MissionPage);
