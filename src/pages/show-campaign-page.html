@@ -318,7 +318,7 @@
       _checkToggle() {
         const toggle = this.shadowRoot.querySelector('app-header-layout').querySelector('paper-toggle-button');
         if(!this.campaign.content) return;
-        if(this.campaign.content.usersFollow.includes(this.user.uid)) {
+        if(this.campaign.content.usersFollow && this.campaign.content.usersFollow.includes(this.user.uid)) {
           toggle.checked = true;
         } else {
           toggle.checked = false;

@@ -413,6 +413,10 @@
           proposals: {
             type: Array
           },
+          vidRegex: {
+            type: Object,
+            value() { return /https.*youtu.?be\/?(.*)/; }
+          },
           states: {
             type: Array,
             value: ["Acre", "Alagoas", "Amapá	", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"]
@@ -473,6 +477,9 @@
 
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
+        let vid = (this.campaign.video) ? this.campaign.video.match(this.vidRegex)[1] : '';
+        if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+        if (vid) this.campaign.video = vid;
         //save campaign
         if(this.campaignId) {
           this.$.document.path = `/campaigns/${this.campaignId}`;
