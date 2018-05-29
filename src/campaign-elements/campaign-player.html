@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 <link rel="import" href="../../bower_components/google-youtube/google-youtube.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
@@ -42,6 +43,11 @@
       }
     </style>
 
+    <firebase-storage-ref 
+      download-url="{{imageUrl}}" 
+      id="storage">
+    </firebase-storage-ref>
+
     <dom-if if="{{mediaUrl}}">
       <template>
         <paper-icon-button class="play" id="play" icon="app:play-circle-outline" on-tap="play">
@@ -66,6 +72,8 @@
         return {
           mediaUrl: String,
           campaign: Object,
+          imageUrl: String,
+          campaignKey: String,
           allowedTypes: {
             type: Array,
             value() {
@@ -79,25 +87,31 @@
           playing: Boolean
         }
       }
-      static get observers() { return ['_setCampaignLayer(campaign)']; }
+      static get observers() { return ['_setCampaignLayer(imageUrl, campaign)']; }
 
-      _setCampaignLayer(campaign) {
+      _setCampaignLayer(imageUrl, campaign) {
         let image = '';
         if (!campaign) return;
+        if (campaign.coverImage) {
+          this.$.storage.path = `/campaigns/${this.campaignKey}/${campaign.coverImage}`;
+        }
         if (campaign.video) {
           image = `https://img.youtube.com/vi/${campaign.video}/0.jpg`;
           this.mediaUrl = campaign.video;
+          this.campaignImage = image;
+        } else {
+          this.campaignImage = this.imageUrl;
+          this.mediaUrl = "";
         }
-        this.campaignImage = image;
       }
 
       stop() {
-        if (!this.mediaType) return;
+        if (!this.mediaUrl) return;
         this.playing = false;
         this.shadowRoot.querySelector('#play').icon = 'app:play-circle-outline';
-        this.$[this.mediaType].pause();
+        this.$.video.pause();
         const exitFullScreen = document.exitFullscreen || document.mozCancelFullScreen || document.webkitCancelFullScreen;
-        if (exitFullScreen && this.mediaType === 'video') {
+        if (exitFullScreen) {
           this.$.dialog.close();
           exitFullScreen.bind(document)();
         }

@@ -295,6 +295,10 @@
 
       _selectedChanged(selected) {
         this._checkToggle();
+         if (!selected) {
+          this.$.player.stop();
+          this.updateStyles({ '--layer-image': 'linear-gradient(to top, grey, grey)' });
+        }
       }
 
       _returnToCampaigns() {
