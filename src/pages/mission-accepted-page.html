@@ -122,7 +122,7 @@
         <div class="content">
           <template is="dom-if" if="{{missionLoaded}}" restamp>
             <div class="receipts">
-              <template is="dom-repeat" items="{{mission.content.usersAccepted}}" filter="loadUser">
+              <template is="dom-repeat" items="{{mission.content.usersAccepted}}" filter="setUserPhoto">
                 <div class="receipt-item">
                       <div class="supporter-img">
                         <div class="user-photo">
@@ -185,7 +185,7 @@
         }
       }
 
-      loadUser(_item) {
+      setUserPhoto(_item) {
         setTimeout(function() {
           this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
             this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
