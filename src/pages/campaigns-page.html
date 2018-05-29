@@ -71,12 +71,25 @@
       #filteredCard {
         width: 100%;
         max-width: 700px;
-        margin-top: 20px;
+        margin-bottom: 20px;
       }
       .empty-message {
         text-align: center;
         padding-right: 10px;
         font-size: 22px;
+      }
+      paper-dropdown-menu,
+      paper-listbox {
+        width: 236px;
+        font-size: 0.9rem;
+      }
+      paper-item {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        display: block;
+        padding-top: 10px;
+        min-height: 35px;
       }
     </style>
 
@@ -145,20 +158,27 @@
         <div class="header">
           <h1>Filtros</h1>
         </div>
-        <paper-dropdown-menu label="Estado" on-value-changed="filterState">
+        <paper-dropdown-menu label="Estado" on-value-changed="filterCampaign" name="state">
           <paper-listbox slot="dropdown-content" class="dropdown-content">
             <template id="statesList" is="dom-repeat" items="{{states}}" as="state">
               <paper-item>{{state}}</paper-item>
             </template>
           </paper-listbox>
         </paper-dropdown-menu>
-        <paper-dropdown-menu label="Cargo que irá disputar" on-value-changed="filterRole">
+        <paper-dropdown-menu label="Cargo que irá disputar" on-value-changed="filterCampaign" name="role">
           <paper-listbox slot="dropdown-content" class="dropdown-content">
             <paper-item>Presidente</paper-item>
             <paper-item>Governador</paper-item>
             <paper-item>Senador</paper-item>
             <paper-item>Deputado Federal</paper-item>
             <paper-item>Deputado Estadual</paper-item>
+          </paper-listbox>
+        </paper-dropdown-menu>
+        <paper-dropdown-menu label="Categoria" on-value-changed="filterCampaign" name="categories">
+          <paper-listbox slot="dropdown-content" class="dropdown-content">
+            <template id="statesList" is="dom-repeat" items="{{categories}}" as="category">
+              <paper-item>{{category}}</paper-item>
+            </template>
           </paper-listbox>
         </paper-dropdown-menu>
       </div>
@@ -194,6 +214,10 @@
             noResults: {
               type: Boolean,
               value: false
+            },
+            categories: {
+              type: Array,
+              value: ["Educação", "Gestão Pública e Economia", "Democracia de Alta Intensidade", "Infraestrutura", "Segurança Pública", "Pacto Federativo e Municipalismo", "Utilização dos recursos naturais", "Trabalho no campo a na cidade", "Esportes e cidades"]
             }
           };
         }
@@ -237,28 +261,15 @@
           });
         }
 
-        filterRole(e) {
-          const option = e.target.value;
-          let filter = this.$.query.ref.orderByChild("content/role").equalTo(option).once("value").then(function(filter) {
-            if (!filter.val()) {
-              this.filteredCampaigns = [];
-              return;
-            }
-            let campaigns = Object.values(filter.val());
-            let filtered = [];
-            campaigns.forEach((campaign, index) => {
-              let obj = {};
-              obj.$key = Object.keys(filter.val())[index];
-              Object.assign(obj, campaign);
-              filtered.push(obj);
-            });
-            this.filteredCampaigns = filtered;
-          }.bind(this));
-        }
-
-        filterState(e) {
-          const option = e.target.value;
-          let filter = this.$.query.ref.orderByChild("content/state").equalTo(option).once("value").then(function (filter) {
+        filterCampaign(e) {
+          let option = e.target.value;
+          const type = e.target.getAttribute('name');
+          let child = `content/${type}`;
+          if(type === 'categories') {
+            child = `content/categories/${option}`;
+            option = true;
+          }
+          let filter = this.$.query.ref.orderByChild(child).equalTo(option).once("value").then(function(filter) {
             if (!filter.val()) {
               this.filteredCampaigns = [];
               return;
@@ -277,10 +288,11 @@
 
         _hideCampaigns(filteredCampaigns) {
           const hide = this.shadowRoot.querySelector('.fill');
-          if(filteredCampaigns.length) {
+          if(filteredCampaigns && filteredCampaigns.length) {
             hide.style.display = "none";
             this.noResults = false;
-          } else if(!filteredCampaigns.length) {
+          } else {
+            hide.style.display = "none";
             this.noResults = true;
           }
         }

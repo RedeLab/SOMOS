@@ -510,6 +510,9 @@
       
       _saveProposal(e) {
         const proposal = this.$.proposalDialog.proposal;
+        const categories = this.campaign.categories || {};
+        categories[proposal.category] = true;
+        this.campaign.categories = categories;
         this.$.proposal.ref.push({ content: proposal });
         //upload images
         if(this.$.proposalDialog.shadowRoot.querySelector('#image').files[0]) {
