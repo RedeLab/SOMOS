@@ -9,6 +9,7 @@
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/app-dialog.html">
@@ -111,6 +112,13 @@
       download-url="{{data.photoURL}}">
     </firebase-storage-ref>
 
+    <firebase-document
+      id="document"
+      path="/users/{{user.uid}}/content"
+      data="{{appUser}}"
+      log="true">
+    </firebase-document>
+
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall">
         <app-toolbar>
@@ -175,6 +183,9 @@
             type: Object,
             notify: true,
             observer: '_setFormData'
+          },
+          appUser: {
+            type: Object
           }
         };
       }
@@ -212,6 +223,7 @@
       }
 
       uploadImage(e) {
+        console.log("eai");
         this.$.upload.click();
       }
 
@@ -222,6 +234,7 @@
           this.user.updateProfile(data).then(setTimeout(function() {
             this.notifyPath('user.displayName');
             this.notifyPath('user.photoURL');
+            this.set("appUser.photoURL", data.photoURL);
           }.bind(this), 1000));
           if(data.password !== 'samplepass' && this.passProvider) {
             this.$.dialog.present();

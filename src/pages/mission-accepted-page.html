@@ -7,6 +7,7 @@
 <link rel="import" href="../../bower_components/app-media/app-media.html">
 <link rel="import" href="../../bower_components/app-media/app-media-recorder.html">
 <link rel="import" href="../../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
@@ -61,6 +62,31 @@
         @apply --default-font-medium;
       }
 
+      .user-photo iron-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+      }
+
+      .content {
+        width: 90%;
+        margin: auto;
+      }
+
+      paper-spinner {
+        width: 40px;
+        height: 40px;
+        padding: 5px;
+        background-color: var(--default-primary-color);
+        border-radius: 50%;
+      }
+
+      #inboxLoading {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
+      }
 
     </style>
 
@@ -76,26 +102,40 @@
       log="true">
     </firebase-document>
 
-      <app-header-layout has-scrolling-region>
+    <firebase-document
+      id="photoDoc"
+      data="{{appUser}}"
+      log="true">
+    </firebase-document>
+
+        <div id="inboxLoading">
+          <paper-spinner active></paper-spinner>
+        </div>
+
+      <app-header-layout>
         <app-form-header shadow slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
             <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
             <span slot="main-title">{{mission.content.usersAccepted.length}} pessoas aceitaram</span>
             <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
-      
-        <template is="dom-if" if="{{missionLoaded}}" restamp>
-          <div class="receipts">
-            <template is="dom-repeat" items="{{mission.content.usersAccepted}}">
-              <div class="receipt-item">
-                <div class="supporter-img">
-                  <iron-image  src="images/favicon.ico"></iron-image>
+
+        <div class="content">
+          <template is="dom-if" if="{{missionLoaded}}" restamp>
+            <div class="receipts">
+              <template is="dom-repeat" items="{{mission.content.usersAccepted}}" filter="loadUser">
+                <div class="receipt-item">
+                      <div class="supporter-img">
+                        <div class="user-photo">
+                          <iron-image  id="{{item.uid}}" sizing="cover"></iron-image>
+                        </div>
+                      </div>
+                    <div class="supporter-name"> <span>{{item.userName}}</span> </div>
                 </div>
-                <div class="supporter-name"> <span>{{item.userName}}</span> </div>
-              </div>
-            </template>
-          </div>
-        </template>
-      </app-header-layout>
+              </template>
+            </div>
+          </template>
+        </div>
+    </app-header-layout>
     </template>
   <script>
     class MissionAcceptedPage extends Polymer.Element {
@@ -110,6 +150,22 @@
           missionLoaded: {
             type: Boolean,
             value: false
+          },
+          appUser: {
+            type: Object,
+            observer: '_appUserChanged'
+          },
+          listItem: String,
+          appUserLoaded: {
+            type: Boolean,
+            value: false
+          },
+          userPhoto: {
+            type: String
+          },
+          domChangeEventCount: {
+            type: Number,
+            value: 0
           }
         }
       }
@@ -124,9 +180,24 @@
 
       _missionChanged() {
         if (this.mission.content !== undefined && this.mission.content.usersAccepted) {
+          this.hideLoading();
           this.set('missionLoaded', true);
         }
       }
+
+      loadUser(_item) {
+        setTimeout(function() {
+          this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
+            this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+          }.bind(this));
+        }.bind(this), 10);
+        return true;
+      }
+
+      hideLoading(e) {
+        this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+      }
+
     }
     customElements.define(MissionAcceptedPage.is, MissionAcceptedPage);
 </script>
