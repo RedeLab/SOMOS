@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="./register-view.html">
@@ -58,6 +59,9 @@
 
     <firebase-auth id="auth" user="{{user}}" on-error="handleError" status-known="{{statusKnown}}">
     </firebase-auth>
+
+    <firebase-document id="document">
+    </firebase-document>
 
     <register-view id="register" user="[[user]]" credentials="{{signUpData}}"
       on-open-login="openLogin" on-provider-auth="authWithProvider"></register-view>
@@ -133,8 +137,17 @@
       }
 
       userChanged(user) {
-        if(user && !user.displayName && this.signUpData && this.signUpData.displayName)
+        if(!user) return;
+        if(!user.displayName && this.signUpData && this.signUpData.displayName)
           user.updateProfile({ displayName: this.signUpData.displayName });
+        if(user.displayName) {
+          this.userData = {
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          };
+          this.$.document.path = `/users/${user.uid}/content`;
+          this.$.document.ref.set(this.userData);
+        }
       }
     }
     window.customElements.define(LoginModal.is, LoginModal);

@@ -203,7 +203,7 @@
         </div>
         <hr>
         <div class="row">
-          <div class="col">
+          <div class="col" on-tap="_redirectToFollowers">
             <span>{{campaign.content.usersFollow.length}}</span>
             <span>total de apoiadores</span>
           </div>
@@ -254,7 +254,7 @@
           </div>
         </div>
       </div>
-      <div class="calendar">
+      <!-- <div class="calendar">
         <h4>Próximos Eventos</h4>
       </div>
       <div class="ratings">
@@ -265,7 +265,7 @@
       </div>
       <div class="administrators">
         <h4>Administradores</h4>
-      </div>
+      </div> -->
     </app-header-layout>
 
   </template>
@@ -303,6 +303,10 @@
 
       _returnToCampaigns() {
         this.set('route.path', '/campaigns');
+      }
+
+      _redirectToFollowers() {
+        this.set('route.path', `/campaign-followers/${this.data.key}`)
       }
 
       _setCampaign(campaign) {

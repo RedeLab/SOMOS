@@ -115,8 +115,7 @@
     <firebase-document
       id="document"
       path="/users/{{user.uid}}/content"
-      data="{{appUser}}"
-      log="true">
+      data="{{appUser}}">
     </firebase-document>
 
     <app-header-layout has-scrolling-region>
@@ -234,7 +233,8 @@
           this.user.updateProfile(data).then(setTimeout(function() {
             this.notifyPath('user.displayName');
             this.notifyPath('user.photoURL');
-            this.set("appUser.photoURL", data.photoURL);
+            this.set('appUser.photoURL', data.photoURL);
+            this.set('appUser.displayName', data.displayName);
           }.bind(this), 1000));
           if(data.password !== 'samplepass' && this.passProvider) {
             this.$.dialog.present();
