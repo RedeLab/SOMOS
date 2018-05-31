@@ -12,6 +12,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../app-elements/app-actions.html">
@@ -54,12 +55,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    <firebase-query
-      id="query"
-      path="/missions"
-      data="{{missions}}"
-      log="true">
-    </firebase-query>
+    <firebase-document
+      id="campaigns">
+    </firebase-document>
 
     <firebase-query
       id="accepted"
@@ -86,7 +84,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       </app-header>
       <iron-pages selected="{{inboxtab}}">
         <div class="inbox">
-          <template id="missionsList" is="dom-repeat" items="{{filteredMissions}}" as="mission"
+          <template id="missionsList" is="dom-repeat" items="{{inboxMissions}}" as="mission"
             notify-dom-change="true" on-dom-change="hideLoading">
             <mission-card mission="{{mission.content}}" key="{{mission.$key}}"
               on-show-mission="_goToMission"></mission-card>
@@ -140,9 +138,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             observer: '_filterMissions'
           },
           acceptedMissions: {
-            type: Array
+            type: Array,
+            value: []
           },
-          filteredMissions: {
+          inboxMissions: {
             type: Array
           },
           myMissions: {
@@ -156,17 +155,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: 0
           },
           user: {
-            type: Object
-          }
+            type: Object,
+            observer: '_onUserChanged'
+          },
+          userMissions: {
+            type: Array,
+            value: []
+          },
         }
       }
+
       static get observers()  {
-        return ['_filterMissions(missions, acceptedMissions)'];
+        return ['_getMissionsByCampaigns(acceptedMissions)'];
       }
 
       _selectedChanged(selected) {
         if(!selected) return;
-        this._filterMissions(this.missions, this.acceptedMissions);
+        this._getMissionsByCampaigns(this.acceptedMissions);
       }
 
       openDrawer() {
@@ -188,10 +193,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _filterMissions(missions, acceptedMissions) {
-        if(!acceptedMissions || !missions) return;
         const keys = [].concat.apply([], [acceptedMissions.map((m) => m.$key)]);
-        this.filteredMissions = missions.filter((m) => !keys.includes(m.$key));
-        this.myMissions = missions.filter((m) => keys.includes(m.$key));
+        this.inboxMissions = missions.filter((m) => !keys.includes(m.$key));
+        this.set("myMissions",  missions.filter((m) => keys.includes(m.$key)));
+        this.hideLoading();
       }
 
       hideLoading(e) {
@@ -202,6 +207,40 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.domChangeEventCount += 1;
       }
 
+      _onUserChanged() {
+        if (this.user === null) return;
+        //this._getMissionsByCampaigns(this.acceptedMissions);
+      }
+
+      _getMissionsByCampaigns(acceptedMissions) {
+        if (this.user === null) return;
+        this.set("userMissions", []);
+        var userCampaigns = new Promise((resolve, reject) => {
+          let campaigns = [];
+          this.$.campaigns.db.ref("/campaigns").orderByChild("content/uid").equalTo(this.user.uid).on("value", function(snapshot){
+            resolve(Object.keys(snapshot.val()));
+          });
+        });
+
+        userCampaigns.then(function(campaigns) {
+          setTimeout(function() {
+            campaigns.forEach(function(campaign) {
+              this.$.campaigns.db.ref("/missions").orderByChild("content/cid").equalTo(campaign).on("value", function(snapshot){
+                if (snapshot.val() == null) return;
+                const missionsContents = Object.values(snapshot.val());
+                const missionsKeys = Object.keys(snapshot.val());
+                 missionsContents.forEach(function(content, index) {
+                  content["$key"] =  missionsKeys[index]
+                   this.push("userMissions", content);
+                  }.bind(this));
+                }.bind(this));
+              }.bind(this));
+            setTimeout(function() {
+              this._filterMissions(this.userMissions, acceptedMissions);
+            }.bind(this), 1000);
+            }.bind(this), 1000);
+          }.bind(this));
+        };
     }
     window.customElements.define(InboxPage.is, InboxPage);
   </script>
