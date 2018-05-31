@@ -119,10 +119,20 @@
       }
     </style>
 
+    <firebase-storage-ref
+      id="campaignRef">
+    </firebase-storage-ref>
+
+    <firebase-document
+      id="campaign"
+      data="{{campaign}}"
+      log="true">
+    </firebase-document>
+
     <div class="card mission-card">
       <div class="card-header">
-        <a href="/campaigns/{{mission.campaignKey}}">
-          <iron-image sizing="cover" class="campaign" src="{{campaignImg}}"></iron-image>
+        <a href="/campaigns/{{mission.cid}}">
+          <iron-image sizing="cover" class="campaign" src="{{candidatePhoto}}"></iron-image>
           <span>{{mission.campaignName}}</span>
           <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
         </a>
@@ -187,6 +197,11 @@
             type: Array,
             value: []
           },
+          campaign: {
+            type: Object,
+            observer: "_onCampaignChanged"
+          },
+          candidatePhoto: String
         }
       }
 
@@ -199,6 +214,8 @@
       }
 
       setMissionData(mission) {
+        const cid = mission.cid;
+        this.$.campaign.path = `/campaigns/${cid}`;
         this.set('accepted', mission.usersAccepted ? mission.usersAccepted.length : '0');
         this.set('concluded', mission.usersFinished ? mission.usersFinished.length: '0');
         this.set('hasMessage', mission.receipts ? mission.receipts.reduce(function (t, r) {
@@ -207,6 +224,13 @@
         if (this.hasMessage) {
           this.set('message', 'Obrigado por colaborar conosco nessa missão! Com sua ajuda, somos mais fortes!');
         }
+      }
+
+      _onCampaignChanged() {
+        if (Object.keys(this.campaign).length == 0) return;
+        this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
+          this.set("candidatePhoto", photo);
+        }.bind(this));
       }
     }
     customElements.define(MissionCard.is, MissionCard);

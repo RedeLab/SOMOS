@@ -116,6 +116,12 @@
 
       .author-photo { margin-top: 5px; }
 
+      .author-photo iron-image {
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+      }
+
       .author-name {
         margin-left: 5px;
         margin-top: 9px;
@@ -187,6 +193,23 @@
       data="{{mission}}">
     </firebase-document>
 
+    <firebase-storage-ref
+      id="campaignRef">
+    </firebase-storage-ref>
+
+
+    <firebase-document
+      id="document"
+      path="/missions/{{data.key}}"
+      data="{{mission}}">
+    </firebase-document>
+
+    <firebase-document
+      id="campaign"
+      data="{{campaign}}"
+      log="true">
+    </firebase-document>
+
     <firebase-query
       id="query"
       path="/comments/[[data.key]]"
@@ -246,11 +269,11 @@
       </app-header>
       <div class="mission-author">
         <div class="author-photo">
-          <iron-image  src="images/favicon.ico"></iron-image>
+          <iron-image  src="{{candidatePhoto}}" sizing="contain"></iron-image>
         </div>
         <div class="author-name">
           <span >Criado por</span>
-          <span id="author">Marina Silva</span>
+          <span id="author">{{campaign.content.candidateName}}</span>
         </div>
       </div>
       <div class="stats">
@@ -358,6 +381,11 @@
             type: Object,
             observer: '_missionChanged'
           },
+          campaign: {
+            type: Object,
+            observer: '_campaignChanged'
+          },
+          candidatePhoto: String,
           remainingTime: {
             type: String,
             computed: 'calcMissionDate(mission.content)'
@@ -512,8 +540,8 @@
       _calcMissionStats() {
         this.set("currentMissionStats", "new");
         this.set("acceptedMissionStats", 0);
-        this.set("mission.content.usersFinished", []);
-        this.set("mission.content.usersPending", []);
+        //this.set("mission.content.usersFinished", []);
+        //this.set("mission.content.usersPending", []);
         this.set("actionIcon", "app:check");
         if (!this.mission.content.usersAccepted) return;
         this.set("acceptedMissionStats", this.mission.content.usersAccepted.length);
@@ -592,10 +620,18 @@
 
       _missionChanged() {
         if (Object.keys(this.mission).length == 0) return;
+        const cid = this.mission.content.cid;
+        this.$.campaign.path = `/campaigns/${cid}`;
         this._calcMissionStats();
         this._setActionBtn();
       }
 
+      _campaignChanged() {
+        if (Object.keys(this.mission).length == 0) return;
+        this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.content.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
+          this.set("candidatePhoto", photo);
+        }.bind(this));
+      }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
