@@ -6,9 +6,12 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../campaign-elements/proposal-card.html">
 <link rel="import" href="../campaign-elements/campaign-player.html">
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
+<link rel="import" href="../campaign-elements/proposal-detail-dialog.html">
 
 <dom-module id="show-campaign-page">
   <template>
@@ -122,7 +125,7 @@
         font-size: 28px;
       }
       .description {
-        margin-bottom: 35px;
+        margin-bottom: 20px;
       }
       .social,
       .calendar,
@@ -137,7 +140,7 @@
         border-radius: 25px;
         text-transform: none;
         font-size: 14px;
-        margin-top: -35px;
+        margin-top: -40px;
       }
       .social paper-icon-button {
         width: 50px;
@@ -149,7 +152,8 @@
       .calendar,
       .ratings,
       .attachments,
-      .administrators {
+      .administrators,
+      .proposal {
         padding: 0 20px;
       }
       .share-campaign {
@@ -175,6 +179,13 @@
         right: 10px;
         top: 10px;
       }
+      .proposal {
+        margin-bottom: 40px;
+      }
+      .proposal h4 {
+        margin: 0;
+      }
+
     </style>
 
     <app-route 
@@ -206,6 +217,14 @@
       path="/proposals/{{data.key}}"
       data="{{proposals}}">
     </firebase-query>
+
+    <app-scrollable-dialog id="detail" modal>
+      <app-form-header slot="header" shadow>
+        <paper-icon-button slot="arrow-back" icon="app:close" on-tap="closeProposalDialog"></paper-icon-button>
+        <span slot="main-title">{{proposal.content.title}}</span>
+      </app-form-header>
+      <proposal-detail-dialog proposal="{{lastProposal}}" data="{{data}}" on-close-dialog="_dismiss"></proposal-detail-dialog>
+    </app-scrollable-dialog>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
@@ -264,9 +283,18 @@
         <div class="description">
           <p>{{campaign.content.description}}</p>
         </div>
+        <hr>
+      </div>
+      <div class="proposal">
+        <h4>Propostas</h4>
+        <dom-if if="{{lastProposal}}">
+          <template>
+            <proposal-card proposal="{{lastProposal}}" key="{{lastProposal.key}}" on-open-detail="openProposalDetail"></proposal-card>
+          </template>
+        </dom-if>
       </div>
       <div class="social">
-        <paper-button class="accent block" on-tap="_redirectToProposals">Veja mais propostas</paper-button>
+          <paper-button class="accent block" on-tap="_redirectToProposals">Veja mais propostas</paper-button>
         <div class="row">
           <dom-if if="{{campaign.content.facebook}}">
             <template>
@@ -450,6 +478,14 @@
 
       setProposal(proposals) {
         this.lastProposal = proposals[0];
+      }
+
+      openProposalDetail(e) {
+        this.$.detail.present();
+      }
+
+      closeProposalDialog() {
+        this.$.detail.close();
       }
     }
 
