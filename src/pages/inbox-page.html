@@ -59,10 +59,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       id="campaigns">
     </firebase-document>
 
+    <firebase-document
+      id="missions"
+      path"/missions"
+      data="{{allMissions}}">
+    </firebase-document>
+
     <firebase-query
       id="accepted"
       path="/users/{{user.uid}}/accepted"
-      on-data-changed="_acceptedChanged"
       data="{{acceptedMissions}}">
     </firebase-query>
 
@@ -91,7 +96,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </template>
         </div>
         <div class="inbox">
-          <template is="dom-repeat" items="{{myMissions}}" as="acceptedMissions">
+          <template is="dom-repeat" items="{{userAcceptedMissions}}" as="acceptedMissions">
             <mission-card mission="{{acceptedMissions.content}}" key="{{acceptedMissions.$key}}"
               on-show-mission="_goToMission" uid="{{user.uid}}">
             </mission-card>
@@ -133,21 +138,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: String,
             value: 'Painel inicial'
           },
-          missions: {
-            type: Array,
-            observer: '_filterMissions'
-          },
           acceptedMissions: {
             type: Array,
             value: []
           },
           inboxMissions: {
-            type: Array
-          },
-          myMissions: {
-            type: Array
-          },
-          missions: {
             type: Array
           },
           domChangeEventCount: {
@@ -162,16 +157,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Array,
             value: []
           },
+          allMissions: {
+            type: Array,
+            value: [],
+            observer: "_onAllMissionsChanged"
+          },
+          userAcceptedMissions: {
+            type: Array,
+            value: []
+          }
         }
-      }
-
-      static get observers()  {
-        return ['_getMissionsByCampaigns(acceptedMissions)'];
       }
 
       _selectedChanged(selected) {
         if(!selected) return;
-        this._getMissionsByCampaigns(this.acceptedMissions);
+        this._getMissionsByCampaigns();
       }
 
       openDrawer() {
@@ -187,15 +187,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('route.path', `/show-mission/${mission}`);
       }
 
-      _acceptedChanged(acceptedMissions) {
-        this.set('myMissions', []);
-        this.set('myMissions', this.acceptedMissions);
-      }
-
-      _filterMissions(missions, acceptedMissions) {
-        const keys = [].concat.apply([], [acceptedMissions.map((m) => m.$key)]);
-        this.inboxMissions = missions.filter((m) => !keys.includes(m.$key));
-        this.set("myMissions",  missions.filter((m) => keys.includes(m.$key)));
+      _filterMissions() {
+        const keys = [].concat.apply([], [this.acceptedMissions.map((m) => m.$key)]);
+        this.inboxMissions = this.userMissions.filter((m) => !keys.includes(m.$key));
+        this.set("userAcceptedMissions",  this.userMissions.filter((m) => keys.includes(m.$key)));
         this.hideLoading();
       }
 
@@ -207,50 +202,55 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.domChangeEventCount += 1;
       }
 
-      _onUserChanged() {
+      _getMissionsByCampaigns() {
         if (this.user === null) return;
-        //this._getMissionsByCampaigns(this.acceptedMissions);
-      }
-
-      _getMissionsByCampaigns(acceptedMissions) {
-        if (this.user === null) return;
-        this.set("userMissions", []);
-
         var userFollowingCampaigns = new Promise((resolve, reject) => {
           let campaigns = [];
           let filteredCampaignsKeys = [];
           let filteredCampaigns = [];
           let campaignsKeys = [];
-          this.$.campaigns.db.ref("/campaigns").on("value", function(snapshot) {
-            campaigns = Object.values(snapshot.val());
-            campaignsKeys = Object.keys(snapshot.val())
-            filteredCampaignsKeys = campaigns.map(function(campaign, index) {
-            if (!(campaign.content.usersFollow == undefined) && campaign.content.usersFollow.includes(this.user.uid))
-              return campaignsKeys[index];
-            }.bind(this));
+          this.$.campaigns.db.ref("/campaigns").once("value", function(snapshot) {
+            if(snapshot.val() != null) {
+              campaigns = Object.values(snapshot.val());
+              campaignsKeys = Object.keys(snapshot.val())
+              filteredCampaignsKeys = campaigns.map(function(campaign, index) {
+                if (!(campaign.content.usersFollow == undefined) && campaign.content.usersFollow.includes(this.user.uid))
+                  return campaignsKeys[index];
+              }.bind(this));
+            }
             resolve(campaignsKeys);
           }.bind(this));
         });
 
+        this.set("userMissions", []);
         userFollowingCampaigns.then(function(campaigns) {
           setTimeout(function() {
             campaigns.forEach(function(campaign) {
-              this.$.campaigns.db.ref("/missions").orderByChild("content/cid").equalTo(campaign).on("value", function(snapshot){
-                if (snapshot.val() == null) return;
-                const missionsContents = Object.values(snapshot.val());
-                const missionsKeys = Object.keys(snapshot.val());
-                 missionsContents.forEach(function(content, index) {
-                  content["$key"] =  missionsKeys[index]
-                   this.push("userMissions", content);
+              this.$.campaigns.db.ref("/missions").orderByChild("content/cid").equalTo(campaign).once("value", function(snapshot){
+                if (snapshot.val() != null){
+                  const missionsContents = Object.values(snapshot.val());
+                  const missionsKeys = Object.keys(snapshot.val());
+                  missionsContents.forEach(function(content, index) {
+                    content["$key"] =  missionsKeys[index]
+                    this.push("userMissions", content);
                   }.bind(this));
-                }.bind(this));
+                }
               }.bind(this));
+            }.bind(this));
             setTimeout(function() {
-              this._filterMissions(this.userMissions, acceptedMissions);
+              this._filterMissions();
             }.bind(this), 1000);
-            }.bind(this), 1000);
-          }.bind(this));
-        };
+          }.bind(this), 1000);
+        }.bind(this));
+      };
+
+      _onAllMissionsChanged() {
+        this._getMissionsByCampaigns();
+      }
+
+      _onUserChanged() {
+        this._getMissionsByCampaigns();
+      }
     }
     window.customElements.define(InboxPage.is, InboxPage);
   </script>

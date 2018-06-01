@@ -404,7 +404,7 @@
 
       _onUserChanged() {
         if (this.user === null) return;
-        this.$.document.db.ref("/campaigns").orderByChild("content/uid").equalTo(this.user.uid).on("value", function(snapshot){
+        this.$.document.db.ref("/campaigns").orderByChild("content/uid").equalTo(this.user.uid).once("value", function(snapshot){
           const values = Object.values(snapshot.val());
           const keys = Object.keys(snapshot.val());
           let campaigns = [];

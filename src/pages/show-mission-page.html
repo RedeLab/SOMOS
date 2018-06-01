@@ -187,16 +187,9 @@
       data="{{data}}">
     </app-route>
 
-    <firebase-document
-      id="document"
-      path="/missions/{{data.key}}"
-      data="{{mission}}">
-    </firebase-document>
-
     <firebase-storage-ref
       id="campaignRef">
     </firebase-storage-ref>
-
 
     <firebase-document
       id="document"
@@ -540,8 +533,8 @@
       _calcMissionStats() {
         this.set("currentMissionStats", "new");
         this.set("acceptedMissionStats", 0);
-        //this.set("mission.content.usersFinished", []);
-        //this.set("mission.content.usersPending", []);
+        this.set("mission.content.usersFinished", []);
+        this.set("mission.content.usersPending", []);
         this.set("actionIcon", "app:check");
         if (!this.mission.content.usersAccepted) return;
         this.set("acceptedMissionStats", this.mission.content.usersAccepted.length);
@@ -626,7 +619,7 @@
       }
 
       _campaignChanged() {
-        if (Object.keys(this.mission).length == 0) return;
+        if (Object.keys(this.mission).length == 0 && Object.keys(this.campaign).length == 0) return;
         this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.content.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
           this.set("candidatePhoto", photo);
         }.bind(this));
@@ -635,5 +628,3 @@
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
 </dom-module>
-
-foo
