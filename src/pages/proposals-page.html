@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../campaign-elements/proposal-card.html">
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../campaign-elements/proposal-detail-dialog.html">
@@ -29,52 +30,7 @@
         padding: 20px;
         color: var(--secondary-text-color);
       }
-      hr {
-        margin: 5px 0;
-      }
-      h4 {
-        margin: 0;
-        color: var(--dark-primary-color);
-      }
-      .card {
-        position: relative;
-        padding: 5px 15px;
-        background-color: var(--primary-background-color);
-        margin: 5px 0 10px 0;
-        color: var(--secondary-text-color);
-      }
-      .card h4 {
-        color: var(--primary-text-color);
-      }
-      .card span {
-        display: block;
-        line-height: 0.7;
-        font-size: 14px;
-      }
-      .card p {
-        margin: 10px 0;
-        line-height: 1.2;
-        height: 65px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 14px;
-      }
-      .card iron-icon {
-        position: absolute;
-        bottom: 10px;
-        right: 0;
-        background: white;
-        padding: 0 10px;
-        color: var(--accent-color);
-      }
-      .card a {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-
+     
     </style>
 
     <app-scrollable-dialog id="detail" modal>
@@ -111,14 +67,7 @@
       </app-form-header>
       <div class="fill">
         <template id="proposalsList" is="dom-repeat" items="{{proposals}}" as="proposal">
-          <div class="card">
-            <a on-tap="openProposalDetail"></a>
-            <h4>{{proposal.content.title}}</h4>
-            <span>{{proposal.content.category}}</span>
-            <hr>
-            <p>{{proposal.content.description}}</p>
-            <iron-icon icon="app:more-horiz"></iron-icon>
-          </div>
+          <proposal-card proposal="{{proposal}}" key="{{proposal.key}}" on-open-detail="openProposalDetail"></proposal-card>
         </template>
       </div>
     </app-header-layout>
@@ -149,6 +98,10 @@
         const data = e.model.get('proposal');
         this.proposal = data;
         this.$.detail.present();
+      }
+
+      _returnToCampaign() {
+        this.set('route.path', `/show-campaign/${this.data.key}`);
       }
 
       _dismiss() {

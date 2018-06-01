@@ -139,6 +139,10 @@
         font-size: 14px;
         margin-top: -35px;
       }
+      .social paper-icon-button {
+        width: 50px;
+        height: 50px;
+      }
       .social .row .col span:not(:first-child) {
         color: var(--secondary-text-color);
       }
@@ -195,6 +199,12 @@
       id="follow"
       path="/users/{{user.uid}}/campaigns/{{data.key}}"
       data="{{follow}}">
+    </firebase-query>
+
+    <firebase-query 
+      id="proposals"
+      path="/proposals/{{data.key}}"
+      data="{{proposals}}">
     </firebase-query>
 
     <app-header-layout has-scrolling-region>
@@ -256,13 +266,13 @@
         </div>
       </div>
       <div class="social">
-        <paper-button class="accent block" on-tap="">Biografia e propostas</paper-button>
+        <paper-button class="accent block" on-tap="_redirectToProposals">Veja mais propostas</paper-button>
         <div class="row">
           <dom-if if="{{campaign.content.facebook}}">
             <template>
               <div class="col">
                 <a href="{{campaign.content.facebook}}" tabindex="-1" target="_blank">
-                  <paper-icon-button icon="app:facebook"></paper-icon-button>
+                  <paper-icon-button src="../../images/ico-facebook.svg"></paper-icon-button>
                 </a>
                 <span>facebook</span>
               </div>
@@ -272,7 +282,7 @@
             <template>
           <div class="col">
             <a href="{{campaign.content.twitter}}" tabindex="-1" target="_blank">
-              <paper-icon-button icon="app:twitter"></paper-icon-button>
+              <paper-icon-button src="../../images/ico-twitter.svg"></paper-icon-button>
             </a>
             <span>twitter</span>
           </div>
@@ -282,7 +292,7 @@
             <template>
               <div class="col">
                 <a href="{{campaign.content.instagram}}" tabindex="-1" target="_blank">
-                  <paper-icon-button icon="app:instagram"></paper-icon-button>
+                  <paper-icon-button src="../../images/ico-instagram.svg"></paper-icon-button>
                 </a>
                 <span>instagram</span>
               </div>
@@ -292,7 +302,7 @@
             <template>
               <div class="col">
                 <a href="{{campaign.content.website}}" tabindex="-1" target="_blank">
-                  <paper-icon-button icon="app:public"></paper-icon-button>
+                  <paper-icon-button src="../../images/ico-site.svg"></paper-icon-button>
                 </a>
                 <span>website</span>
               </div>
@@ -335,6 +345,13 @@
           campaignImage: {
             type: String,
             observer: '_setLayerImage'
+          },
+          proposals: {
+            type: Array,
+            observer: 'setProposal'
+          },
+          lastProposal: {
+            type: Object
           }
         };
       }
@@ -356,6 +373,9 @@
 
       _redirectToFollowers() {
         this.set('route.path', `/campaign-followers/${this.data.key}`)
+      }
+      _redirectToProposals() {
+        this.set('route.path', `/proposals/${this.data.key}`);
       }
 
       _setCampaign(campaign) {
@@ -411,6 +431,7 @@
           this.updateStyles({ '--layer-image': `url(${campaignImage})` });
         }
       }
+      
       shareCampaign(e) {
         this.set('route.path', `/campaign-share/${this.data.key}`);
       }
@@ -425,6 +446,10 @@
           this.set('route.path', `/show-campaign/${this.data.key}`);
           this.set('params', {});
         }
+      }
+
+      setProposal(proposals) {
+        this.lastProposal = proposals[0];
       }
     }
 
