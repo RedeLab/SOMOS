@@ -112,7 +112,7 @@
           <paper-spinner active></paper-spinner>
         </div>
 
-      <app-header-layout>
+      <app-header-layout has-scrolling-region>
         <app-form-header shadow slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
             <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
             <span slot="main-title">{{mission.content.usersAccepted.length}} pessoas aceitaram</span>
@@ -126,7 +126,7 @@
                 <div class="receipt-item">
                       <div class="supporter-img">
                         <div class="user-photo">
-                          <iron-image  id="{{item.uid}}" sizing="cover"></iron-image>
+                          <iron-image  id="ID-{{item.uid}}" sizing="cover"></iron-image>
                         </div>
                       </div>
                     <div class="supporter-name"> <span>{{item.userName}}</span> </div>
@@ -188,7 +188,7 @@
       setUserPhoto(_item) {
         setTimeout(function() {
           this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
-            this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+            this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", res.photoURL);
           }.bind(this));
         }.bind(this), 10);
         return true;
