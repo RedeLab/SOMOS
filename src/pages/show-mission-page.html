@@ -613,7 +613,6 @@
 
       /* every time that route is show-mission, we reload the mission */
       routePathChanged(path) {
-        this.$.document.path = '';
         this.$.document.path = `/missions/${this.data.key}`;
         setTimeout(this._missionChanged.bind(this), 100);
       }
