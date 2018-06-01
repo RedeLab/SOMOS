@@ -194,8 +194,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.hideLoading();
       }
 
-      hideLoading(e) {
+      hideLoading(force=false) {
         // the load is complete.
+        if (force) this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
         if (this.domChangeEventCount == 1) {
           this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
         }
@@ -218,12 +219,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   return campaignsKeys[index];
               }.bind(this));
             }
-            resolve(campaignsKeys);
+            resolve(filteredCampaignsKeys);
           }.bind(this));
         });
 
         this.set("userMissions", []);
         userFollowingCampaigns.then(function(campaigns) {
+          if (campaigns[0] == undefined){
+            this.hideLoading(true);
+            return;
+          }
           setTimeout(function() {
             campaigns.forEach(function(campaign) {
               this.$.campaigns.db.ref("/missions").orderByChild("content/cid").equalTo(campaign).once("value", function(snapshot){
