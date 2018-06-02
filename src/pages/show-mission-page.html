@@ -306,7 +306,7 @@
               <h2>Comentários</h2>
               <dom-repeat items="{{comments}}" as="comment">
                 <template>
-                  <mission-comment comment="{{comment.content}}" key="{{comment.key}}">
+                  <mission-comment user-photo="[[comment.content.image]]" comment="{{comment.content}}" key="{{comment.key}}">
                   </mission-comment>
                 </template>
               </dom-repeat>
@@ -619,10 +619,10 @@
       }
 
       _campaignChanged() {
-        if (Object.keys(this.mission).length == 0 && Object.keys(this.campaign).length == 0) return;
-        this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.content.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
-          this.set("candidatePhoto", photo);
-        }.bind(this));
+        if ((Object.keys(this.mission)[0] == "content") && (Object.keys(this.campaign)[0] == "content"))
+          this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.content.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
+            this.set("candidatePhoto", photo);
+          }.bind(this));
       }
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);

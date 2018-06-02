@@ -40,7 +40,7 @@
     </style>
     <div class="card mission-comment">
       <div class="user-image">
-        <img src="/images/mission-card.jpg">
+        <img src="{{userPhoto}}">
       </div>
       <div class="card-content">
         <h3> {{comment.username}} </h3>
@@ -57,7 +57,8 @@
             type: Object,
             value: function() {}
           },
-          key: String
+          key: String,
+          userPhoto: String
         }
       }
     }

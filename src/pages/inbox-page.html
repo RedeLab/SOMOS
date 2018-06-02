@@ -1,4 +1,4 @@
-<!--
+e!--
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -61,7 +61,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <firebase-document
       id="missions"
-      path"/missions"
+      path="/missions"
       data="{{allMissions}}">
     </firebase-document>
 
@@ -223,12 +223,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           }.bind(this));
         });
 
-        this.set("userMissions", []);
         userFollowingCampaigns.then(function(campaigns) {
           setTimeout(function() {
+            this.set("userMissions", []);
             campaigns.forEach(function(campaign) {
               this.$.campaigns.db.ref("/missions").orderByChild("content/cid").equalTo(campaign).once("value", function(snapshot){
-                if (snapshot.val() != null){
+                if (snapshot.val() != null) {
                   const missionsContents = Object.values(snapshot.val());
                   const missionsKeys = Object.keys(snapshot.val());
                   missionsContents.forEach(function(content, index) {
@@ -243,7 +243,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             }.bind(this), 1000);
           }.bind(this), 1000);
         }.bind(this));
-      };
+      }
 
       _onAllMissionsChanged() {
         this._getMissionsByCampaigns();

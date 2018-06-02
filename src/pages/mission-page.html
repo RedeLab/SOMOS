@@ -271,6 +271,7 @@
             type: Array,
             value: []
           },
+          missionCampaign: String,
           user: {
             type: Object,
             observer: '_onUserChanged'
@@ -293,9 +294,7 @@
           let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
           if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
           if (vid) this.mission.video = vid;
-          const campaignDropdown = this.shadowRoot.querySelector("paper-dropdown-menu");
-          const campaignId = this._getCampaignByName(campaignDropdown.value);
-          this.mission.cid = campaignId;
+          this.mission.cid = this.missionCampaign;
           this.$.query.ref.push({ content: this.mission });
           if (this.input && this.input.files.length > 0) {
             this.set("uploadedFile",  this.input.files[0]);
@@ -366,6 +365,15 @@
             valid = false;
           }
         }
+
+        const campaignDropdown = this.shadowRoot.querySelector("paper-dropdown-menu");
+        const campaignId = this._getCampaignByName(campaignDropdown.value);
+        if (campaignId) {
+          this.set("missionCampaign", campaignId);
+          valid = true;
+        } else {
+          valid = false;
+        }
         return valid;
       }
 
@@ -405,15 +413,17 @@
       _onUserChanged() {
         if (this.user === null) return;
         this.$.document.db.ref("/campaigns").orderByChild("content/uid").equalTo(this.user.uid).once("value", function(snapshot){
-          const values = Object.values(snapshot.val());
-          const keys = Object.keys(snapshot.val());
-          let campaigns = [];
-          values.forEach(function(value, index){
-            let data = value;
-            data["key"] = keys[index];
-            campaigns.push(data);
-          })
-          this.set("userCampaigns", campaigns);
+          if (snapshot.val()){
+            const values = Object.values(snapshot.val());
+            const keys = Object.keys(snapshot.val());
+            let campaigns = [];
+            values.forEach(function(value, index){
+              let data = value;
+              data["key"] = keys[index];
+              campaigns.push(data);
+            })
+            this.set("userCampaigns", campaigns);
+          }
         }.bind(this));
       }
     }

@@ -136,7 +136,7 @@
           <paper-textarea value="{{description}}" max-rows='4' maxlength="1000" char-counter label="descrição"></paper-textarea>
         </div>
 
-        <paper-button toggles raised on-tap="_sendFile">enviar</paper-button>
+        <paper-button toggles raised on-tap="_sendReceipts">enviar</paper-button>
       </div>
 
       </div>
@@ -157,7 +157,8 @@
             type: Object
           },
           description: {
-            type: String
+            type: String,
+            value: ""
           },
           missionId: String,
           missionReceipts: {
@@ -185,26 +186,26 @@
         }
       }
 
-      _sendFile() {
+      _sendReceipts() {
+        let receipt = {};
+        receipt = { "userName": this.user.displayName,
+          "userEmail": this.user.email,
+          "uid": this.user.uid,
+          "status": "pending",
+          "description": this.description};
+
         if(this.input && this.input.files.length > 0) {
           if (!Array.isArray(this.missionReceipts))
             this.set('missionReceipts',  []);
-          this.push("missionReceipts",
-            { "userName": this.user.displayName,
-              "receiptFileName": this.fileName,
-              "userEmail": this.user.email,
-              "uid": this.user.uid, "description": this.description,
-              "status": "pending" });
+          receipt["receiptFileName"] = this.fileName;
           this.fileArray.push(this.file);
           this.$.storage.upload();
-          this.set('description', undefined);
           this.set('file', undefined);
-          this.$.finishConfirmation.present();
-        } else {
-          //console.log("sem arquivos");
         }
-      }
 
+        this.push("missionReceipts", receipt);
+        this.$.finishConfirmation.present();
+      }
     }
 customElements.define(FinishMissionModal.is, FinishMissionModal);
 </script>
