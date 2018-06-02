@@ -60,25 +60,51 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="msapplication-tap-highlight" content="no">
 
     <script>
-      /**
-      * [polymer-root-path]
-      *
-      * By default, we set `Polymer.rootPath` to the server root path (`/`).
-      * Leave this line unchanged if you intend to serve your app from the root
-      * path (e.g., with URLs like `my.domain/` and `my.domain/view1`).
-      *
-      * If you intend to serve your app from a non-root path (e.g., with URLs
-      * like `my.domain/my-app/` and `my.domain/my-app/view1`), edit this line
-      * to indicate the path from which you'll be serving, including leading
-      * and trailing slashes (e.g., `/my-app/`).
-      */
       window.Polymer = {rootPath: '/', passiveTouchGestures : true };
-      // Load and register pre-caching Service Worker
+      // Register the base URL
+      const baseUrl = document.querySelector('base').href;
+      // Show a toast with a service-worker-related update.
+      window.showToast = function(message) {
+        var toast = document.getElementById('sw-toast');
+        if (!toast) {
+          toast = document.createElement('paper-toast');
+          toast.addEventListener('click', () => { window.location.reload()})
+          toast.id = 'sw-toast';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = message;
+        toast.show();
+      };
+
+      // Register service worker, if supported
+      // after the load event (to deprioritize it after lazy imports).
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
-          navigator.serviceWorker.register('service-worker.js', {
-            scope: Polymer.rootPath,
+          navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
+            registration.onupdatefound = function() {
+              // The updatefound event implies that registration.installing is set; see
+              // https://slightlyoff.github.io/ServiceWorker/spec/service_worker/index.html#service-worker-container-updatefound-event
+              const installingWorker = registration.installing;
+              installingWorker.onstatechange = function() {
+                switch (installingWorker.state) {
+                  case 'redundant':
+                    throw Error('The installing service worker became redundant.');
+                }
+              };
+            };
+          }).catch(function(e) {
+            console.error('Service worker registration failed:', e);
           });
+      
+          // Check to see if the service worker controlling the page at initial load
+          // has become redundant, since this implies there's a new service worker with fresh content.
+          if (navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.onstatechange = function(event) {
+              if (event.target.state === 'redundant') {
+                window.showToast('Atualização pendente. Toque para receber novas atualizações.');
+              }
+            };
+          }
         });
       }
     </script>
