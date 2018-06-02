@@ -70,6 +70,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           toast = document.createElement('paper-toast');
           toast.addEventListener('click', () => { window.location.reload()})
           toast.id = 'sw-toast';
+          toast.duration = '60000';
           document.body.appendChild(toast);
         }
         toast.textContent = message;
