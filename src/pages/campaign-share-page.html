@@ -161,7 +161,11 @@
         this.share = `${location.origin}/c/${this.routeData.key}?s=${service}&u=${this.user.uid}`;
         this.$.shareMenu.enabledServices = [ service ];
         document.body.appendChild(this.$.shareMenu);
-        this.$.shareMenu.shadowRoot.querySelector(`#${service}`).click();
+        if(navigator.share) {
+          this.$.shareMenu.share();
+        } else {
+          this.$.shareMenu.shadowRoot.querySelector(`#${service}`).click();
+        }
       }
     }
     customElements.define(CampaignSharePage.is, CampaignSharePage);
