@@ -175,7 +175,8 @@
 
     <app-route 
       route="{{route}}" 
-      pattern="/show-campaign/:key" 
+      query-params="{{params}}"
+      pattern="/:page/:key" 
       data="{{data}}">
     </app-route>
 
@@ -337,6 +338,9 @@
           }
         };
       }
+      static get observers() {
+        return ['computeStats(data.page)'];
+      }
 
       _selectedChanged(selected) {
         this._checkToggle();
@@ -409,6 +413,18 @@
       }
       shareCampaign(e) {
         this.set('route.path', `/campaign-share/${this.data.key}`);
+      }
+
+      computeStats(page) {
+        if(page === 'c') {
+          //compute statistics here
+          // user id provided by url
+          console.log('user', this.params.u);
+          // service used to share: telegram, whatsapp, facebook, twitter or clipboard
+          console.log('service', this.params.s);
+          this.set('route.path', `/show-campaign/${this.data.key}`);
+          this.set('params', {});
+        }
       }
     }
 
