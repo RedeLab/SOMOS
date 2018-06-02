@@ -23,6 +23,7 @@
 <link rel="lazy-import" href="../pages/show-campaign-page.html">
 <link rel="lazy-import" href="../pages/proposals-page.html">
 <link rel="lazy-import" href="../pages/campaign-followers-page.html">
+<link rel="lazy-import" href="../pages/campaign-share-page.html">
 <link rel="lazy-import" href="../pages/mission-page.html">
 <link rel="lazy-import" href="../pages/show-mission-page.html">
 <link rel="lazy-import" href="../pages/mission-receipts-page.html">
@@ -166,6 +167,7 @@
           <proposals-page name="proposals" user="[[user]]" route="{{route}}"></proposals-page>
           <new-campaign-page route="{{route}}" user="[[user]]" name="new-campaign"></new-campaign-page>
           <campaign-followers-page route="{{route}}" user="[[user]]" name="campaign-followers"></campaign-followers-page>
+          <campaign-share-page route="{{route}}" user="[[user]]" name="campaign-share"></campaign-share-page>
           <mission-page name="mission" user="{{user}}" route="{{route}}"></mission-page>
           <show-mission-page name="show-mission" user="[[user]]" route-data="{{routeData}}" route="{{route}}" ></show-mission-page>
           <mission-receipts-page name="mission-receipts" route-data="{{routeData}}" route="{{route}}"></mission-receipts-page>
@@ -213,8 +215,8 @@
       _routePageChanged(page) {
         // If no page was found in the route data, page will be an empty string.
         // Default to 'inbox' in that case.
+        if (page === 'c') page = 'show-campaign';
         this.page = page || 'inbox';
-
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
