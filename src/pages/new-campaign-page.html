@@ -477,7 +477,7 @@
 
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
-        let vid = (this.campaign.video) ? this.campaign.video.match(this.vidRegex)[1] : '';
+        let vid = (this.campaign.video && this.campaign.video.includes('http')) ? this.campaign.video.match(this.vidRegex)[1] : '';
         if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
         if (vid) this.campaign.video = vid;
         //save campaign
