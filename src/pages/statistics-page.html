@@ -1,0 +1,139 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../app-elements/app-actions.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="statistics-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        background: var(--secondary-background-color);
+        height: 100vh;
+        @apply --default-font;
+      }
+      app-header {
+        color: var(--default-primary-color);
+        background: var(--default-primary-color);
+        --app-form-header-background: var(--accent-color);
+        --app-form-header-color: var(--default-primary-color);
+        @apply --default-font-medium;
+      }
+
+      h1[main-title] { margin-left: 20px; }
+
+      app-drawer {
+        --app-drawer-content-container_-_background-color: var(--default-primary-color);
+        --app-drawer-content-container_-_background: var(--default-primary-color);
+      }
+
+      app-drawer .content {
+        text-align: left;
+        padding: 0 10px;
+      }
+
+      app-drawer .header { text-align: center; }
+
+      .scrollable {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        margin-bottom: 30px;
+      }
+
+      .scroll-content {
+        width: auto;
+        white-space: nowrap;
+      }
+
+
+      paper-dropdown-menu
+      {
+        width: 60%;
+        font-size: 0.5rem;
+        margin-top: -20px;
+        margin-left: 10px;
+      }
+
+      paper-icon-button { color: var(--secondary-text-color); }
+
+    </style>
+
+    <firebase-query
+      id="query"
+      path="/campaigns"
+      data="{{campaigns}}">
+    </firebase-query>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed condenses effects="waterfall">
+        <app-toolbar>
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+          <paper-dropdown-menu label="Escolher campanha">
+            <paper-listbox slot="dropdown-content" selected="1">
+              <template is="dom-repeat" items="{{userCampaigns}}">
+                <paper-item>{{item.name}}</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </app-toolbar>
+      </app-header>
+      <div class="content">
+      </div>
+    </app-header-layout>
+  </template>
+  <script>
+    class StatisticsPage extends Polymer.Element {
+        static get is() { return 'statistics-page'; }
+        static get properties() {
+          return {
+            userCampaigns: {
+              type: Array,
+              value: []
+            },
+            campaigns: {
+              type: Array,
+              observer: "_getUserCampaigns"
+            },
+            user: {
+              type: Object
+            }
+          }
+        }
+
+      _getUserCampaigns() {
+        if (this.user === null) return;
+        if (Object.keys(this.campaigns).length == 0) return;
+        this.campaigns.forEach(function(campaign, index) {
+          if (!(campaign.content.usersFollow == undefined) && campaign.content.usersFollow.includes(this.user.uid)){
+            let _campaign = {};
+            _campaign["key"] = campaign.$key;
+            _campaign["name"] = campaign.content.name;
+            this.push("userCampaigns", _campaign);
+          }
+        }.bind(this));
+      }
+
+
+      _returnToInbox() {
+        this.set('route.path', '/');
+      }
+
+
+      }
+
+      window.customElements.define(StatisticsPage.is, StatisticsPage);
+  </script>
+</dom-module>
