@@ -96,6 +96,17 @@
       .upload-button {
         position: relative;
       }
+      .filename {
+        font-size: 14px;
+        color: var(--secondary-text-color);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .filename paper-icon-button {
+        width: 30px;
+        height: 30px;
+      }
       label {
         color: var(--paper-input-container-color);
       }
@@ -199,6 +210,7 @@
         width: 15%;
         opacity: 0;
         height: 30%;
+        overflow: hidden;
       }
       .candidate {
         margin-top: 80px;
@@ -260,9 +272,9 @@
     </firebase-storage-multiupload>
 
     <firebase-storage-multiupload 
-      path="/campaigns/[[campaignId]]/attachments" 
-      files="[[attachmentsArray]]" 
-      upload-tasks="{{uploadTasks}}" 
+      path="/campaigns/[[campaignId]]/attachments"
+      files="[[attachmentsArray]]"
+      upload-tasks="{{uploadTasks}}"
       id="attachmentsStorage">
     </firebase-storage-multiupload>
 
@@ -355,7 +367,10 @@
               </div>
               <template is="dom-if" if="{{attachmentsArray}}">
                 <template is="dom-repeat" items="{{attachmentsArray}}" as="file">
-                  {{file.name}}
+                  <div class="filename">
+                    <paper-icon-button icon="app:close" on-tap="_removeAttachment"></paper-icon-button>
+                    <span>{{file.name}}</span>
+                  </div>
                 </template>
               </template>
               <paper-input value="{{campaign.calling}}" label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
@@ -510,8 +525,14 @@
       getAttachments(e) {
         let files = Array.from(e.target.files);
         files.forEach(file => {
-          this.attachmentsArray.push(file);
+          this.push('attachmentsArray', file);
         });
+      }
+
+      _removeAttachment(e) {
+        const file = e.model.get('file');
+        const index = this.attachmentsArray.indexOf(file);
+        this.splice('attachmentsArray', index, 1);
       }
 
       _saveCampaign(e) {
@@ -582,7 +603,7 @@
 
       _setCreateCampaign(selection) {
         if(!selection) return;
-        this._saveCampaign();
+        // this._saveCampaign();
         if(selection === 2) {
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
@@ -598,8 +619,9 @@
           this.selection = 0;
           this.campaign = {};
           this.campaignId = undefined;
-          this.fileArray= [];
-          this.proposalArray= [];
+          this.fileArray = [];
+          this.attachmentsArray = [];
+          this.proposalArray = [];
         }
       }
 
