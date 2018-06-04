@@ -111,6 +111,11 @@
     </firebase-query>
 
     <firebase-document
+      id="photoDoc"
+      log="true">
+    </firebase-document>
+
+    <firebase-document
       id="firebase">
     </firebase-document>
 
@@ -121,7 +126,7 @@
           <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
           <paper-dropdown-menu on-value-changed="_loadRanking">
             <paper-listbox slot="dropdown-content" selected="1">
-              <template is="dom-repeat" items="{{userCampaigns}}">
+              <template is="dom-repeat" items="{{userCampaigns}}" >
                 <paper-item>{{item.name}}</paper-item>
               </template>
             </paper-listbox>
@@ -138,9 +143,9 @@
       </app-header>
           <div class="card-content">
         <paper-listbox>
-          <template is="dom-repeat" items="{{rankingData}}">
+          <template is="dom-repeat" items="{{rankingData}}" filter="setUserPhoto">
             <div class="ranking-item">
-              <iron-image src="images/favicon.ico" sizing="cover"></iron-image>
+              <iron-image id="ID-{{item.uid}}" sizing="cover"></iron-image>
               <span class="name">{{item.followerName}}</span>
               <span class="score">{{item.followerScore}}/{{item.total}}</span>
             </div>
@@ -270,6 +275,7 @@
               let data = {};
               data["followerScore"] = missionsDoneByFollower;
               data["followerName"] = follower.name;
+              data["uid"] = follower.id;
               data["total"] = totalMissions;
               this.push("rankingData", data);
             }.bind(this));
@@ -288,6 +294,16 @@
         })
         this.set("rankingData", ordered);
       }
+
+      setUserPhoto(_item) {
+        setTimeout(function() {
+          this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
+            this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", res.photoURL);
+          }.bind(this));
+        }.bind(this), 10);
+        return true;
+      }
+
     }
 
     window.customElements.define(StatisticsPage.is, StatisticsPage);
