@@ -260,6 +260,13 @@
     </firebase-storage-multiupload>
 
     <firebase-storage-multiupload 
+      path="/campaigns/[[campaignId]]/attachments" 
+      files="[[attachmentsArray]]" 
+      upload-tasks="{{uploadTasks}}" 
+      id="attachmentsStorage">
+    </firebase-storage-multiupload>
+
+    <firebase-storage-multiupload 
       path="/proposals/[[campaignId]]"
       files="[[proposalArray]]"
       upload-tasks="{{uploadTasks}}"
@@ -343,9 +350,14 @@
                 <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
                 <div class="upload-button">
                   <span class="file">Selecionar arquivo</span>
-                  <input type="file" multiple>
+                  <input id="campaignAttachments" type="file" multiple on-change="getAttachments">
                 </div>
               </div>
+              <template is="dom-if" if="{{attachmentsArray}}">
+                <template is="dom-repeat" items="{{attachmentsArray}}" as="file">
+                  {{file.name}}
+                </template>
+              </template>
               <paper-input value="{{campaign.calling}}" label="Rótulo do botão de chamada" placeholder="Vamos fazer juntos a diferença?"></paper-input>
               <label>Links externos</label>
               <div class="links">
@@ -416,6 +428,10 @@
             value: []
           },
           proposalArray: {
+            type: Array,
+            value: []
+          },
+          attachmentsArray: {
             type: Array,
             value: []
           },
@@ -491,6 +507,13 @@
         }
       }
 
+      getAttachments(e) {
+        let files = Array.from(e.target.files);
+        files.forEach(file => {
+          this.attachmentsArray.push(file);
+        });
+      }
+
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
         let vid = (this.campaign.video && this.campaign.video.includes('http')) ? this.campaign.video.match(this.vidRegex)[1] : '';
@@ -509,6 +532,7 @@
         }
         //upload images
         this._uploadImages();
+        this._uploadAttachments();
       }
 
       _uploadImages() {
@@ -522,6 +546,12 @@
         }
         if(this.campaignId) {
           this.$.storage.upload();
+        }
+      }
+
+      _uploadAttachments() {
+        if(this.$.campaignAttachments.files) {
+          this.$.attachmentsStorage.upload();
         }
       }
       
