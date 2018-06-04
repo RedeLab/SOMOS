@@ -182,7 +182,8 @@
       .proposal {
         margin-bottom: 40px;
       }
-      .proposal h4 {
+      .proposal h4,
+      .attachments h4 {
         margin: 0;
       }
 
@@ -204,6 +205,10 @@
     <firebase-storage-ref 
       download-url="{{coverImage}}"
       id="storage">
+    </firebase-storage-ref>
+
+    <firebase-storage-ref 
+      id="attachmentsStorage">
     </firebase-storage-ref>
 
     <firebase-query 
@@ -338,14 +343,22 @@
           </dom-if>
         </div>
       </div>
+      <template is="dom-if" if="{{campaign.content.attachments}}">
+        <div class="attachments">
+          <h4>Anexos</h4>
+          <template is="dom-repeat" items="{{attachments}}" as="attachment">
+            <div>
+              <a href="{{attachment.path}}" target="_blank">{{attachment.filename}}</a>
+              <hr>
+            </div>
+          </template>
+        </div>
+      </template>
       <!-- <div class="calendar">
         <h4>Próximos Eventos</h4>
       </div>
       <div class="ratings">
         <h4>Avaliações</h4>
-      </div>
-      <div class="attachments">
-        <h4>Anexos</h4>
       </div>
       <div class="administrators">
         <h4>Administradores</h4>
@@ -408,9 +421,17 @@
 
       _setCampaign(campaign) {
         //recover cover image just when exists
-        if(!this.campaign || !this.campaign.content || !this.campaign.content.usersFollow) return;
-        if(this.campaign.content.coverImage) {
-          this.$.storage.path = `campaigns/${this.data.key}/${this.campaign.content.coverImage}`
+        if(!campaign || !campaign.content || !campaign.content.usersFollow) return;
+        if(campaign.content.coverImage) {
+          this.$.storage.path = `campaigns/${this.data.key}/${campaign.content.coverImage}`
+        }
+        this.attachments = [];
+        if(campaign.content.attachments) {
+          campaign.content.attachments.forEach(filename => {
+            this.$.attachmentsStorage.getDownloadURL(`/campaigns/${this.data.key}/attachments/${filename}`).then(function(path) {
+            this.push('attachments', {filename, path});
+            }.bind(this));
+          });
         }
         //set toggle if user is following the campaign
         this._checkToggle();

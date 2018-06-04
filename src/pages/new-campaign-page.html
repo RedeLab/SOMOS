@@ -523,9 +523,11 @@
       }
 
       getAttachments(e) {
+        this.campaign.attachments = this.campaign.attachments || [];
         let files = Array.from(e.target.files);
         files.forEach(file => {
           this.push('attachmentsArray', file);
+          this.campaign.attachments.push(file.name);
         });
       }
 
@@ -533,6 +535,7 @@
         const file = e.model.get('file');
         const index = this.attachmentsArray.indexOf(file);
         this.splice('attachmentsArray', index, 1);
+        this.campaign.attachments.splice(index, 1);
       }
 
       _saveCampaign(e) {
@@ -603,7 +606,7 @@
 
       _setCreateCampaign(selection) {
         if(!selection) return;
-        // this._saveCampaign();
+        this._saveCampaign();
         if(selection === 2) {
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
@@ -622,6 +625,8 @@
           this.fileArray = [];
           this.attachmentsArray = [];
           this.proposalArray = [];
+          this.$.candidateImage.src = '';
+          this.$.coverImage.src = '';
         }
       }
 
