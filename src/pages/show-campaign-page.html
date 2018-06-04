@@ -4,6 +4,8 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../campaign-elements/proposal-card.html">
@@ -143,12 +145,11 @@
         font-size: 14px;
         margin-top: -40px;
       }
-      .social paper-icon-button {
-        width: 50px;
-        height: 50px;
-      }
       .social .row .col span:not(:first-child) {
         color: var(--secondary-text-color);
+      }
+      .social {
+        padding: 20px 20px 10px 20px;
       }
       .calendar,
       .ratings,
@@ -218,7 +219,19 @@
         --iron-icon-width: 16px;
         --iron-icon-height: 16px;
       }
-
+      .progress {
+        position: absolute;
+        top: 0; bottom: 0;
+        left: 0; right: 0;
+      }
+      .progress paper-progress {
+        width: 100%; 
+      }
+      .progress .spinner {
+        height: 125px;
+        text-align: center;
+        padding-top: 97px;
+      }
     </style>
 
     <app-route 
@@ -282,7 +295,7 @@
         <div class="candidate-info">
           <div class="details">
             <span>Brasília/DF</span>
-            <span>Começou em: 05/06/18</span>
+            <span>Começou em: {{campaignDate}}</span>
             <span>Partido: {{campaign.content.party}}</span>
           </div>
           <div class="support">
@@ -337,7 +350,7 @@
             <template>
               <div class="col">
                 <a href="{{campaign.content.facebook}}" tabindex="-1" target="_blank">
-                  <paper-icon-button src="../../images/ico-facebook.svg"></paper-icon-button>
+                  <paper-icon-button icon="app:facebook" class="facebook"></paper-icon-button>
                 </a>
                 <span>facebook</span>
               </div>
@@ -347,7 +360,7 @@
             <template>
           <div class="col">
             <a href="{{campaign.content.twitter}}" tabindex="-1" target="_blank">
-              <paper-icon-button src="../../images/ico-twitter.svg"></paper-icon-button>
+              <paper-icon-button icon="app:twitter" class="twitter"></paper-icon-button>
             </a>
             <span>twitter</span>
           </div>
@@ -357,7 +370,7 @@
             <template>
               <div class="col">
                 <a href="{{campaign.content.instagram}}" tabindex="-1" target="_blank">
-                  <paper-icon-button src="../../images/ico-instagram.svg"></paper-icon-button>
+                  <paper-icon-button icon="app:instagram" class="instagram"></paper-icon-button>
                 </a>
                 <span>instagram</span>
               </div>
@@ -367,7 +380,7 @@
             <template>
               <div class="col">
                 <a href="{{campaign.content.website}}" tabindex="-1" target="_blank">
-                  <paper-icon-button src="../../images/ico-site.svg"></paper-icon-button>
+                  <paper-icon-button icon="app:language"></paper-icon-button>
                 </a>
                 <span>website</span>
               </div>
@@ -400,6 +413,16 @@
       </div> -->
     </app-header-layout>
 
+    <dom-if if="{{!campaign.content}}">
+      <template>
+        <div class="progress">
+          <div class="spinner">
+            <paper-spinner active></paper-spinner>
+          </div>
+          <paper-progress indeterminate></paper-progress>
+        </div>
+      </template>
+    </dom-if>
   </template>
 
   <script>
@@ -440,6 +463,8 @@
          if (!selected) {
           this.$.player.stop();
           this.updateStyles({ '--layer-image': 'linear-gradient(to top, grey, grey)' });
+        } else {
+          this._setLayerImage(this.campaignImage);
         }
       }
 
@@ -460,6 +485,7 @@
         if(campaign.content.coverImage) {
           this.$.storage.path = `campaigns/${this.data.key}/${campaign.content.coverImage}`
         }
+        this._setCampaignDate(campaign);
         this._setAttachments(campaign);
         //set toggle if user is following the campaign
         this._checkToggle();
@@ -474,6 +500,14 @@
             }.bind(this));
           });
         }
+      }
+
+      _setCampaignDate(campaign) {
+        const currentDate = new Date(campaign.content.createdAt);
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+        const day = currentDate.getDate();
+        this.campaignDate = `${day}/${month}/${year}`;
       }
 
       _checkToggle() {

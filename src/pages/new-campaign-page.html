@@ -538,6 +538,11 @@
         this.campaign.attachments.splice(index, 1);
       }
 
+      _setCampaignDate() {
+        const currentDate = Date.now();
+        this.campaign.createdAt = currentDate;
+      }
+
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
         let vid = (this.campaign.video && this.campaign.video.includes('http')) ? this.campaign.video.match(this.vidRegex)[1] : '';
@@ -548,6 +553,7 @@
           this.$.document.path = `/campaigns/${this.campaignId}`;
           this.campaignData = { content: this.campaign };
         } else {
+          this._setCampaignDate();
           this.campaignData = { content: this.campaign };
           this.campaignData.content["usersFollow"] = [this.user.uid];
           this.$.document.saveValue('/campaigns').then(function() {

@@ -29,8 +29,9 @@
       download-url="{{downloadUrl}}" 
       id="storage">
     </firebase-storage-ref>
-
-    <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
+    <template is="dom-if" if="{{downloadUrl}}">
+      <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
+    </template>
     <div class="content">
       <h1>{{proposal.content.title}}</h1>
       <p>{{proposal.content.description}}</p>
