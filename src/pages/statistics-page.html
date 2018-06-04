@@ -1,6 +1,7 @@
 
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
@@ -12,6 +13,8 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
@@ -69,6 +72,18 @@
 
       paper-icon-button { color: var(--secondary-text-color); }
 
+      .content {
+        width: 90%;
+        margin-top: 20px;
+        margin-left: auto;
+        margin-right: auto;
+      } 
+
+      .content paper-card { width: 100%; }
+
+      #ranking-title { color: var(--secondary-text-color); }
+
+      .card-content paper-item { padding: 0; }
     </style>
 
     <firebase-query
@@ -77,11 +92,16 @@
       data="{{campaigns}}">
     </firebase-query>
 
+    <firebase-document
+      id="firebase">
+    </firebase-document>
+
+
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall">
         <app-toolbar>
           <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-          <paper-dropdown-menu label="Escolher campanha">
+          <paper-dropdown-menu label="Escolher campanha" on-value-changed="_loadRanking">
             <paper-listbox slot="dropdown-content" selected="1">
               <template is="dom-repeat" items="{{userCampaigns}}">
                 <paper-item>{{item.name}}</paper-item>
@@ -91,6 +111,21 @@
         </app-toolbar>
       </app-header>
       <div class="content">
+        <paper-card >
+      <app-header>
+        <app-toolbar>
+          <h4 condensed-title id="ranking-title">Ranking</h4>
+          <paper-icon-button icon="app:more-vert"></paper-icon-button>
+        </app-toolbar>
+      </app-header>
+          <div class="card-content">
+        <paper-listbox>
+          <template is="dom-repeat" items="{{rankingData}}">
+            <paper-item>{{item.followerName}}</paper-item>
+          </template>
+        </paper-listbox>
+          </div>
+        </paper-card>
       </div>
     </app-header-layout>
   </template>
@@ -109,6 +144,18 @@
             },
             user: {
               type: Object
+            },
+            campaignFollowers: {
+              type: Array,
+              value: []
+            },
+            campaignMissions: {
+              type: Array,
+              value: []
+            },
+            rankingData: {
+              type: Array,
+              value: []
             }
           }
         }
@@ -121,6 +168,7 @@
             let _campaign = {};
             _campaign["key"] = campaign.$key;
             _campaign["name"] = campaign.content.name;
+            _campaign["followers"] = campaign.content.usersFollow;
             this.push("userCampaigns", _campaign);
           }
         }.bind(this));
@@ -131,9 +179,82 @@
         this.set('route.path', '/');
       }
 
+      _setCampaignFollwers(campaign) {
+          var result = new Promise(function(resolve, reject) {
+            let followersData = [];
 
+            campaign.followers.forEach(function(followerId) {
+            let follower = {};
+            var promise = this.$.firebase.db.ref(`/users/${followerId}`)
+              .once("value", function(snapshot) {
+                follower["id"] = followerId;
+                follower["name"] = snapshot.val().content.displayName;
+              }.bind(this));
+
+              promise.then(function(res) {
+                resolve(this.push("campaignFollowers", follower));
+              }.bind(this));
+
+          }.bind(this));
+        }.bind(this));
       }
 
-      window.customElements.define(StatisticsPage.is, StatisticsPage);
+      _setCampaignMissions(campaign) {
+        var promise = new Promise(function(resolve, reject) {
+          this.$.firebase.db.ref("/missions")
+           .orderByChild("content/cid")
+           .equalTo(campaign.key).once("value", function(snapshot){
+           if (snapshot.val() != null) {
+              resolve(this.set("campaignMissions", Object.values(snapshot.val())));
+           }
+         }.bind(this));
+        }.bind(this));
+        return promise;
+      }
+
+      _getCampaignByName(name) {
+        let campaign = {};
+        this.userCampaigns.forEach(function(value) {
+          if (value.name == name)
+            campaign = value;
+        });
+        return campaign;
+      }
+
+
+      _loadRanking(e) {
+        this.set("rankingData", []);
+        this.set("campaignFollowers", []);
+        this.set("campaignMissions", []);
+        if (e.detail.value) {
+          const selectedCampaign = this._getCampaignByName(e.detail.value);
+          this._setCampaignFollwers(selectedCampaign);
+          this._setCampaignMissions(selectedCampaign).then(function(res){
+            const missions = this.campaignMissions;
+            const followers = this.campaignFollowers;
+            let totalMissions = this.campaignMissions.length;
+            let rankingData = [];
+            followers.forEach(function(follower) {
+              let missionsDoneByFollower = 0;
+              missions.forEach(function(mission) {
+                const receipts = mission.content.receipts;
+                if (receipts != undefined) {
+                  receipts.forEach(function(receipt) {
+                    if (receipt.uid == follower.id)
+                      missionsDoneByFollower += 1;
+                  });
+                }
+              });
+              let data = {};
+              data["followerScore"] = missionsDoneByFollower;
+              data["followerName"] = follower.name;
+              this.push("rankingData", data);
+            }.bind(this));
+          }.bind(this));
+        }
+      }
+    }
+
+    window.customElements.define(StatisticsPage.is, StatisticsPage);
   </script>
 </dom-module>
