@@ -84,6 +84,24 @@
       #ranking-title { color: var(--secondary-text-color); }
 
       .card-content paper-item { padding: 0; }
+
+      .ranking-item { margin-bottom: 15px; }
+      .ranking-item .name, .ranking-item .score {
+        margin-left: 10px;
+        margin-top: 8px;
+      }
+
+      .ranking-item .name {flex-grow: 2; }
+
+      .ranking-item iron-image {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
+      .ranking-item {
+        display: flex;
+      }
     </style>
 
     <firebase-query
@@ -101,7 +119,7 @@
       <app-header slot="header" fixed condenses effects="waterfall">
         <app-toolbar>
           <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-          <paper-dropdown-menu label="Escolher campanha" on-value-changed="_loadRanking">
+          <paper-dropdown-menu on-value-changed="_loadRanking">
             <paper-listbox slot="dropdown-content" selected="1">
               <template is="dom-repeat" items="{{userCampaigns}}">
                 <paper-item>{{item.name}}</paper-item>
@@ -121,7 +139,11 @@
           <div class="card-content">
         <paper-listbox>
           <template is="dom-repeat" items="{{rankingData}}">
-            <paper-item>{{item.followerName}}</paper-item>
+            <div class="ranking-item">
+              <iron-image src="images/favicon.ico" sizing="cover"></iron-image>
+              <span class="name">{{item.followerName}}</span>
+              <span class="score">{{item.followerScore}}/{{item.total}}</span>
+            </div>
           </template>
         </paper-listbox>
           </div>
@@ -248,10 +270,23 @@
               let data = {};
               data["followerScore"] = missionsDoneByFollower;
               data["followerName"] = follower.name;
+              data["total"] = totalMissions;
               this.push("rankingData", data);
             }.bind(this));
+            this._sortRanking();
           }.bind(this));
         }
+      }
+
+      _sortRanking() {
+        const ordered = this.rankingData.sort(function(followerA, followerB) {
+          if (followerA.followerScore < followerB.followerScore)
+            return 1;
+          if (followerA.followerScore > followerB.followerScore)
+            return -1;
+          return 0;
+        })
+        this.set("rankingData", ordered);
       }
     }
 
