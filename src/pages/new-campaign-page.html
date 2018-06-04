@@ -45,8 +45,9 @@
       paper-stepper {
         position: fixed;
         bottom: 0;
+        padding: 5px 0;
         width: 100%;
-        background-color: var(--secondary-background-color);  
+        background-color: var(--primary-background-color);  
       }
       .fill {
         flex: 1;
@@ -204,6 +205,21 @@
       }
       .candidate paper-dropdown-menu {
         width: 100%;
+      }
+      @media screen and (max-width: 640px) {
+        paper-stepper {
+          max-width: 100% !important;
+        }
+      }
+      @media screen and (max-width: 960px) {
+        paper-stepper {
+          max-width: calc(100% - 256px);
+        }
+      }
+      @media screen and (min-width: 961px) {
+        paper-stepper {
+          max-width: 704px;
+        }
       }
 
     </style>
