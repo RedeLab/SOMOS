@@ -358,9 +358,9 @@
           <div class="step" id="step3">
             <h1>Dados da campanha</h1>
             <div class="fields">
-              <paper-input value="{{campaign.name}}" label="Titulo" placeholder="Nome da campanha"></paper-input>
+              <paper-input value="{{campaign.name}}" label="Titulo" placeholder="Nome da campanha" required auto-validate error-message="O nome da campanha não pode estar em branco"></paper-input>
               <paper-textarea value="{{campaign.description}}" label="Descrição" placeholder="Uma breve descrição da campanha" char-counter
-                maxlength="500"></paper-textarea>
+                maxlength="500" required auto-validate error-message="Descrição da campanha não pode estar em branco"></paper-textarea>
               <div class="input-file">
                 <iron-icon icon="app:cloud-upload"></iron-icon>
                 <span>Faça o upload de imagens, vídeos ou aúdios que apoiem a sua descrição de campanha.</span>
@@ -551,21 +551,30 @@
 
       _validateCampaign(campaign) {
         let valid = true;
-        
-        if(!this.campaign.candidateName) {
-          valid = false;
+        //validation of first step
+        if(this.selection === 0) {
+          if(!this.campaign.candidateName) {
+            valid = false;
+          }
+          if(!this.campaign.city) {
+            valid = false;
+          }
         }
-
-        if(!this.campaign.city) {
-          valid = false;
+        //validation of third step
+        if(this.selection === 2) {
+          if(!this.campaign.name) {
+            valid = false;
+          }
+          if(!this.campaign.description) {
+            valid = false;
+          }
         }
-
+        //disable next button
         if(!valid) {
           this.$.stepper.disableNext = true;
         } else {
           this.$.stepper.disableNext = false;
         }
-
 
       }
 
@@ -638,9 +647,10 @@
 
       _setCreateCampaign(selection) {
         if(!selection) return;
-        // this._saveCampaign();
+        this._saveCampaign();
         if(selection === 2) {
           this.nextLabel = 'Concluir';
+          this._validateCampaign(this.campaign);
         } else if(selection === 3) {
           this.$.confirm.present();
         } else {
