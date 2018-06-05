@@ -164,6 +164,10 @@
       _checkToggle() {
         const toggle = this.shadowRoot.querySelector('paper-toggle-button');
         if(!this.campaign) return;
+        if(!this.user) {
+          toggle.disabled = true;
+          return;
+        }
         if(this.campaign.usersFollow && this.campaign.usersFollow.includes(this.user.uid)) {
           toggle.checked = true;
         } else {

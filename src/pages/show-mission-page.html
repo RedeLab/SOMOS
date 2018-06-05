@@ -458,6 +458,10 @@
       }
 
       _acceptMission(e) {
+        if(!this.user) {
+          this.set('route.path', '/');
+          return;
+        }
         const mission = JSON.parse(JSON.stringify(this.mission));
         const usersAccepted = new Set(this.mission.content.usersAccepted);
         usersAccepted.add({"uid": this.user.uid, "userName": this.user.displayName});
@@ -539,7 +543,7 @@
         if (!this.mission.content.usersAccepted) return;
         this.set("acceptedMissionStats", this.mission.content.usersAccepted.length);
         let currentStats = '';
-        let currentUser = this.user.uid;
+        let currentUser = (this.user) ? this.user.uid : '';
         this.mission.content.usersAccepted.forEach(function(user) {
           if (user.uid === currentUser)
             currentStats = "started";
@@ -551,13 +555,12 @@
         let pendingCounter = 0;
         let usersFinishedList = []
         let usersPendingList = []
-        const currentUid = this.user.uid;
         receipts.forEach((receipt) => {
           if (receipt.status === "realized")
             usersFinishedList.push(receipt);
           if (receipt.status === "pending")
             usersPendingList.push(receipt);
-          if (receipt.uid === currentUid)
+          if (receipt.uid === currentUser)
             currentStats = receipt.status
         });
         this.set("mission.content.usersFinished", usersFinishedList);
