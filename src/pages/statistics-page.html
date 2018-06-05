@@ -216,6 +216,7 @@
 
       _getUserCampaigns() {
         if (this.user === null) return;
+        this.set("userCampaigns", []);
         if (Object.keys(this.campaigns).length == 0) return;
         this.campaigns.forEach(function(campaign, index) {
           if (!(campaign.content.usersFollow == undefined) && campaign.content.usersFollow.includes(this.user.uid)){
@@ -334,7 +335,7 @@
       }
 
       routePathChanged(page) {
-        if (page == "statistics")
+        if (page == "/statistics")
           this._getUserCampaigns();
       }
 
