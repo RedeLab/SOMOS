@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../campaign-elements/proposal-card.html">
@@ -29,6 +30,12 @@
       .fill {
         padding: 20px;
         color: var(--secondary-text-color);
+      }
+      .spinner {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
       }
      
     </style>
@@ -65,12 +72,24 @@
         <span slot="main-title">Propostas</span>
         <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
-      <div class="fill">
-        <template id="proposalsList" is="dom-repeat" items="{{proposals}}" as="proposal">
-          <proposal-card proposal="{{proposal}}" key="{{proposal.key}}" on-open-detail="openProposalDetail"></proposal-card>
+      <dom-if if="{{proposals.length}}">
+        <template>
+          <div class="fill">
+            <template id="proposalsList" is="dom-repeat" items="{{proposals}}" as="proposal">
+              <proposal-card proposal="{{proposal}}" key="{{proposal.key}}" on-open-detail="openProposalDetail"></proposal-card>
+            </template>
+          </div>
         </template>
-      </div>
+      </dom-if>
     </app-header-layout>
+
+    <dom-if if="{{!proposals.length}}">
+      <template>
+        <div class="spinner">
+          <paper-spinner active></paper-spinner>
+        </div>
+      </template>
+    </dom-if>
 
   </template>
 
