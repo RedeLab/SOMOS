@@ -320,6 +320,7 @@
                   <paper-item>Senador</paper-item>
                   <paper-item>Deputado Federal</paper-item>
                   <paper-item>Deputado Estadual</paper-item>
+                  <paper-item>Deputado Distrital</paper-item>
                 </paper-listbox>
               </paper-dropdown-menu>
               <paper-dropdown-menu label="Estado" value="{{campaign.state}}">
@@ -475,7 +476,7 @@
         };
       }
 
-      static get observers() { return ['_validateCampaign(campaign.*)']; }
+      static get observers() { return ['_validateCampaign(campaign.*, proposalData.*)']; }
 
       _selectedChanged(selected) {
         if (!selected) return;
@@ -549,7 +550,7 @@
         this.campaign.createdAt = currentDate;
       }
 
-      _validateCampaign(campaign) {
+      _validateCampaign(campaign, proposalData) {
         let valid = true;
         //validation of first step
         if(this.selection === 0) {
@@ -557,6 +558,12 @@
             valid = false;
           }
           if(!this.campaign.city) {
+            valid = false;
+          }
+        }
+        //validation of second step
+        if(this.selection === 1) {
+          if(this.proposalData.length <= 0) {
             valid = false;
           }
         }
@@ -648,6 +655,9 @@
       _setCreateCampaign(selection) {
         if(!selection) return;
         this._saveCampaign();
+        if(selection === 1) {
+          this._validateCampaign(this.campaign);
+        }
         if(selection === 2) {
           this.nextLabel = 'Concluir';
           this._validateCampaign(this.campaign);
