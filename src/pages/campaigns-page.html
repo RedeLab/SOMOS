@@ -8,6 +8,7 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../campaign-elements/campaign-card.html">
 <link rel="import" href="../app-elements/app-actions.html">
@@ -90,6 +91,12 @@
         display: block;
         padding-top: 10px;
         min-height: 35px;
+      }
+      .spinner {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
       }
     </style>
 
@@ -182,6 +189,14 @@
         </paper-dropdown-menu>
       </div>
     </app-drawer>
+
+    <dom-if if="{{!campaigns.length}}">
+      <template>
+        <div class="spinner">
+          <paper-spinner active></paper-spinner>
+        </div>
+      </template>
+    </dom-if>
 
   </template>
   <script>
