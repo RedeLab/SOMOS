@@ -14,6 +14,7 @@
 
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -102,7 +103,27 @@
       .ranking-item {
         display: flex;
       }
+
+      #inboxLoading {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
+      }
+
+
+      paper-spinner {
+        width: 40px;
+        height: 40px;
+        padding: 5px;
+        background-color: var(--default-primary-color);
+        border-radius: 50%;
+      }
     </style>
+
+    <div id="inboxLoading">
+      <paper-spinner active></paper-spinner>
+    </div>
 
     <firebase-query
       id="query"
@@ -187,6 +208,12 @@
           }
         }
 
+      static get observers() {
+        return [
+          'routePathChanged(route.path)'
+        ]
+      }
+
       _getUserCampaigns() {
         if (this.user === null) return;
         if (Object.keys(this.campaigns).length == 0) return;
@@ -207,23 +234,23 @@
       }
 
       _setCampaignFollwers(campaign) {
-          var result = new Promise(function(resolve, reject) {
-            let followersData = [];
+        let followersPromises = [];
+        campaign.followers.forEach(function(followerId) {
+          let follower = {};
 
-            campaign.followers.forEach(function(followerId) {
-            let follower = {};
-            var promise = this.$.firebase.db.ref(`/users/${followerId}`)
-              .once("value", function(snapshot) {
+          var promise = new Promise(function(resolve, reject) {
+          this.$.firebase.db.ref(`/users/${followerId}`)
+            .once("value", function(snapshot) {
+              if(snapshot.val().content != undefined){
                 follower["id"] = followerId;
                 follower["name"] = snapshot.val().content.displayName;
-              }.bind(this));
-
-              promise.then(function(res) {
                 resolve(this.push("campaignFollowers", follower));
-              }.bind(this));
-
-          }.bind(this));
+              }
+            }.bind(this));
         }.bind(this));
+          followersPromises.push(promise);
+        }.bind(this));
+        return followersPromises;
       }
 
       _setCampaignMissions(campaign) {
@@ -255,31 +282,32 @@
         this.set("campaignMissions", []);
         if (e.detail.value) {
           const selectedCampaign = this._getCampaignByName(e.detail.value);
-          this._setCampaignFollwers(selectedCampaign);
-          this._setCampaignMissions(selectedCampaign).then(function(res){
-            const missions = this.campaignMissions;
+          Promise.all(this._setCampaignFollwers(selectedCampaign)).then(function(res){
             const followers = this.campaignFollowers;
-            let totalMissions = this.campaignMissions.length;
-            let rankingData = [];
-            followers.forEach(function(follower) {
-              let missionsDoneByFollower = 0;
-              missions.forEach(function(mission) {
-                const receipts = mission.content.receipts;
-                if (receipts != undefined) {
-                  receipts.forEach(function(receipt) {
-                    if (receipt.uid == follower.id)
-                      missionsDoneByFollower += 1;
-                  });
-                }
-              });
-              let data = {};
-              data["followerScore"] = missionsDoneByFollower;
-              data["followerName"] = follower.name;
-              data["uid"] = follower.id;
-              data["total"] = totalMissions;
-              this.push("rankingData", data);
+            this._setCampaignMissions(selectedCampaign).then(function(res){
+              const missions = this.campaignMissions;
+              let totalMissions = this.campaignMissions.length;
+              let rankingData = [];
+              followers.forEach(function(follower) {
+                let missionsDoneByFollower = 0;
+                missions.forEach(function(mission) {
+                  const receipts = mission.content.receipts;
+                  if (receipts != undefined) {
+                    receipts.forEach(function(receipt) {
+                      if (receipt.uid == follower.id)
+                        missionsDoneByFollower += 1;
+                    });
+                  }
+                });
+                let data = {};
+                data["followerScore"] = missionsDoneByFollower;
+                data["followerName"] = follower.name;
+                data["uid"] = follower.id;
+                data["total"] = totalMissions;
+                this.push("rankingData", data);
+              }.bind(this));
+              this._sortRanking();
             }.bind(this));
-            this._sortRanking();
           }.bind(this));
         }
       }
@@ -293,6 +321,7 @@
           return 0;
         })
         this.set("rankingData", ordered);
+        this.hideLoading();
       }
 
       setUserPhoto(_item) {
@@ -302,6 +331,19 @@
           }.bind(this));
         }.bind(this), 10);
         return true;
+      }
+
+      routePathChanged(page) {
+        if (page == "statistics")
+          this._getUserCampaigns();
+      }
+
+      hideLoading(force=false) {
+        if (force) this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+        if (this.domChangeEventCount == 1) {
+          this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+        }
+        this.domChangeEventCount += 1;
       }
 
     }
