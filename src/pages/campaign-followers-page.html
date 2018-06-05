@@ -112,7 +112,7 @@
         <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
 
-      <template is="dom-if" if="{{followers}}" restamp>
+      <template is="dom-if" if="{{followers}}">
         <div class="receipts">
           <template is="dom-repeat" items="{{users}}" as="user">
             <div class="receipt-item">
@@ -144,11 +144,7 @@
           selected: {
             observer: '_selectedChanged'
           },
-          routeData: Object,
-          missionLoaded: {
-            type: Boolean,
-            value: false
-          }
+          routeData: Object
         }
       }
 
@@ -158,7 +154,6 @@
 
        _selectedChanged(selected) {
         if (!selected) {
-          this.users = [];
         }
       }
 
@@ -166,15 +161,14 @@
         this.set('route.path', `/show-campaign/${this.routeData.key}`);
       }
 
-      _fetchUser(item) {
-        this.users = this.users || [];
-        if(!this.followers) return;
-        console.log(this.followers);
-        this.followers.forEach(function(item) {
-          this.$.user.ref.child(item.$val).once("value").then(function(result) {
-          this.push('users', result.val().content);
+      _fetchUser(followers) {
+        if(!followers) return;
+        const promises  = followers.map(function(item) {
+          return this.$.user.ref.child(item.$val).once("value").then(function(result) {
+            return result.val().content;
           }.bind(this));
         }.bind(this));
+        Promise.all(promises).then(result => this.users = result);
         return true;
       }
 

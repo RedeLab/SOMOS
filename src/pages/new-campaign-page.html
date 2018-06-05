@@ -61,7 +61,8 @@
       }
       #step2 h1 {
         line-height: 22px;
-        margin-bottom: 25px;
+        margin-bottom: 0;
+        padding-bottom: 25px;
       }
       #step2 paper-fab {
         display: inline-block;
@@ -163,6 +164,9 @@
         padding: 10px 20px;;
         color: var(--default-primary-color);
         margin-top: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
       }
       .about .candidate-img {
         overflow: hidden;
@@ -308,9 +312,9 @@
               </span>
             </div>
             <div class="candidate">
-              <paper-input label="Nome do candidato" placeholder="Nome do candidato" value="{{campaign.candidateName}}"></paper-input>
-              <paper-dropdown-menu label="Cargo que irá disputar" value="{{campaign.role}}">
-                <paper-listbox slot="dropdown-content" class="dropdown-content">
+              <paper-input label="Nome do candidato" placeholder="Nome do candidato" required auto-validate error-message="O campo não pode estar em branco!" value="{{campaign.candidateName}}"></paper-input>
+              <paper-dropdown-menu label="Cargo que irá disputar" required value="{{campaign.role}}" >
+                <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
                   <paper-item>Presidente</paper-item>
                   <paper-item>Governador</paper-item>
                   <paper-item>Senador</paper-item>
@@ -319,16 +323,16 @@
                 </paper-listbox>
               </paper-dropdown-menu>
               <paper-dropdown-menu label="Estado" value="{{campaign.state}}">
-                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
                   <template id="statesList" is="dom-repeat" items="{{states}}" as="state">
                     <paper-item>{{state}}</paper-item>
                   </template>
                 </paper-listbox>
               </paper-dropdown-menu>
-              <paper-input label="Cidade" placeholder="Digite o nome da cidade" value="{{campaign.city}}"></paper-input>
+              <paper-input label="Cidade" placeholder="Digite o nome da cidade" value="{{campaign.city}}" required auto-validate error-message="Digite uma cidade para a campanha!"></paper-input>
               <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX" value="{{campaign.voter}}"></paper-input>
               <paper-dropdown-menu label="Escolha o partido" value="{{campaign.party}}">
-                <paper-listbox slot="dropdown-content" class="dropdown-content">
+                <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
                   <paper-item>Rede</paper-item>
                   <paper-item>Outro</paper-item>
                 </paper-listbox>
@@ -397,7 +401,7 @@
           </div>
           <div></div>
         </iron-pages>
-        <paper-stepper selected="{{selection}}" progress-bar back-label="Voltar" next-label="{{nextLabel}}">
+        <paper-stepper selected="{{selection}}" progress-bar back-label="Voltar" next-label="{{nextLabel}}" id="stepper">
           <paper-step></paper-step>
           <paper-step></paper-step>
           <paper-step></paper-step>
@@ -471,6 +475,8 @@
         };
       }
 
+      static get observers() { return ['_validateCampaign(campaign.*)']; }
+
       _selectedChanged(selected) {
         if (!selected) return;
       }
@@ -543,6 +549,26 @@
         this.campaign.createdAt = currentDate;
       }
 
+      _validateCampaign(campaign) {
+        let valid = true;
+        
+        if(!this.campaign.candidateName) {
+          valid = false;
+        }
+
+        if(!this.campaign.city) {
+          valid = false;
+        }
+
+        if(!valid) {
+          this.$.stepper.disableNext = true;
+        } else {
+          this.$.stepper.disableNext = false;
+        }
+
+
+      }
+
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
         let vid = (this.campaign.video && this.campaign.video.includes('http')) ? this.campaign.video.match(this.vidRegex)[1] : '';
@@ -612,7 +638,7 @@
 
       _setCreateCampaign(selection) {
         if(!selection) return;
-        this._saveCampaign();
+        // this._saveCampaign();
         if(selection === 2) {
           this.nextLabel = 'Concluir';
         } else if(selection === 3) {
