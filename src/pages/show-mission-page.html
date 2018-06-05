@@ -299,8 +299,6 @@
           <template>
             <h2>Entenda a missão</h2>
             <p>{{mission.content.description}}</p>
-            <h2>Recompensa</h2>
-            <p>{{mission.content.reward}}</p>
 
             <div class="comments">
               <h2>Comentários</h2>
@@ -315,8 +313,7 @@
                   <template>
                     <div class="message">
                       <paper-input id="commentInput" label="Escreva um comentário"
-                        required auto-validate minlength="1"
-                        error-message="O campo não pode ser vazio.">
+                        required error-message="O campo não pode ser vazio.">
                       </paper-input>
                       <paper-button on-tap="addComment" class="plain">Enviar</paper-button>
                     </div>
@@ -448,13 +445,20 @@
 
       addComment(e) {
         const input = this.shadowRoot.querySelector('#commentInput');
-        if(input.invalid || !input.value) return;
+        if(!input.value) {
+          input.invalid = true;
+          return;
+        } else {
+          input.invalid = false;
+        }
+
         const content = {
           username: this.user.displayName,
           image: this.user.photoURL,
           text: input.value
         };
         this.$.query.ref.push({ content });
+        input.value = "";
       }
 
       _acceptMission(e) {

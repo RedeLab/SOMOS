@@ -279,6 +279,12 @@
         }
       }
 
+      static get observers() {
+        return [
+          'routePathChanged(route.path)'
+        ]
+      }
+
       constructor() {
         super();
       }
@@ -340,7 +346,7 @@
 
         if (!(this.input === undefined) && this.input.files.length > 0) {
           const imgFormats = ["png", "jpg"]
-          const audioFormats = ["mp3", "wav"]
+          const audioFormats = ["mp3", "wav", "ogg"]
           const fileName = this.input.files[0].name;
           const fileFormat = fileName.split('.').pop();
           /* is a image */
@@ -411,6 +417,11 @@
       }
 
       _onUserChanged() {
+        this._getUserCampaigns();
+      }
+
+      _getUserCampaigns(){
+        this.set('mission', {});
         if (this.user === null) return;
         this.$.document.db.ref("/campaigns").orderByChild("content/uid").equalTo(this.user.uid).once("value", function(snapshot){
           if (snapshot.val()){
@@ -426,6 +437,12 @@
           }
         }.bind(this));
       }
+
+      routePathChanged(page) {
+        if (page === "/mission")
+          this._getUserCampaigns();
+      }
+
     }
     customElements.define(MissionPage.is, MissionPage);
 </script>

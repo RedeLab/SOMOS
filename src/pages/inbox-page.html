@@ -207,7 +207,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var userFollowingCampaigns = new Promise((resolve, reject) => {
           let campaigns = [];
           let filteredCampaignsKeys = [];
-          let filteredCampaigns = [];
           let campaignsKeys = [];
           this.$.campaigns.db.ref("/campaigns").once("value", function(snapshot) {
             if(snapshot.val() != null) {
