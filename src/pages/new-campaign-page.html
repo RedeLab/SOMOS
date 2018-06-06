@@ -620,19 +620,29 @@
           }.bind(this));
         }
         //upload images
-        this._uploadImages();
+        if(this.selection === 1) {
+          this._uploadImages();
+        }
         this._uploadAttachments();
       }
 
       _uploadImages() {
         if(this.$.coverPhoto.files[0]) {
+          if(this.campaign.coverImage) {
+            this.$.storage.ref.child(this.campaign.coverImage).delete();
+          }
           this.campaign.coverImage = this.$.coverPhoto.files[0].name;
           this.fileArray.push(this.$.coverPhoto.files[0]);
         }
+        
         if(this.$.candidatePhoto.files[0]) {
+          if(this.campaign.candidateImage) {
+            this.$.storage.ref.child(this.campaign.candidateImage).delete();
+          }
           this.campaign.candidateImage = this.$.candidatePhoto.files[0].name;
           this.fileArray.push(this.$.candidatePhoto.files[0]);
         }
+
         if(this.campaignId) {
           this.$.storage.upload();
         }
@@ -696,6 +706,7 @@
           this.proposalArray = [];
           this.$.candidateImage.src = '';
           this.$.coverImage.src = '';
+          this.nextLabel = 'Próximo';
         }
       }
 
