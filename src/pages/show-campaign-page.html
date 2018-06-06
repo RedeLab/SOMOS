@@ -7,6 +7,10 @@
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 <link rel="import" href="../../bower_components/paper-progress/paper-progress.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 
 <link rel="import" href="../campaign-elements/proposal-card.html">
 <link rel="import" href="../campaign-elements/campaign-player.html">
@@ -234,6 +238,9 @@
         padding-top: 97px;
         background-color: #4a4a4a;
       }
+      paper-menu-button {
+        padding: 0;
+      }
     </style>
 
     <app-route 
@@ -283,7 +290,14 @@
         <app-toolbar>
           <paper-icon-button icon="app:arrow-back" on-tap="_returnToCampaigns"></paper-icon-button>
           <h1 condensed-title class="dark title">{{campaign.content.name}}</h1>
-          <paper-icon-button icon="app:more-vert"></paper-icon-button>
+          <template is="dom-if" if="{{isAdmin}}">
+            <paper-menu-button horizontal-align="right">
+              <paper-icon-button icon="app:more-vert" slot="dropdown-trigger"></paper-icon-button>
+              <paper-listbox slot="dropdown-content">
+                <paper-item on-tap="_goToEdit">Editar campanha</paper-item>
+              </paper-listbox>
+            </paper-menu-button>
+          </template>
         </app-toolbar>
         <app-toolbar class="tall">
           <h1 bottom-item main-title class="title">
@@ -453,6 +467,10 @@
           },
           lastProposal: {
             type: Object
+          },
+          isAdmin: {
+            type: Boolean,
+            value: false
           }
         };
       }
@@ -477,8 +495,13 @@
       _redirectToFollowers() {
         this.set('route.path', `/campaign-followers/${this.data.key}`)
       }
+      
       _redirectToProposals() {
         this.set('route.path', `/proposals/${this.data.key}`);
+      }
+
+      _goToEdit() {
+        this.set('route.path', `/new-campaign/${this.data.key}`);
       }
 
       _setCampaign(campaign) {
@@ -489,6 +512,7 @@
         }
         this._setCampaignDate(campaign);
         this._setAttachments(campaign);
+        this._setAdmin(campaign);
         //set toggle if user is following the campaign
         this._checkToggle();
       }
@@ -510,6 +534,15 @@
         const month = currentDate.getMonth();
         const day = currentDate.getDate();
         this.campaignDate = `${day}/${month}/${year}`;
+      }
+
+      _setAdmin(campaign) {
+        if(!this.user) return;
+        if(campaign.content.uid === this.user.uid) {
+          this.isAdmin = true;
+        } else {
+          this.isAdmin = false;
+        }
       }
 
       _checkToggle() {

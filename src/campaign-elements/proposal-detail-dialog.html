@@ -51,7 +51,7 @@
       }
 
       _setProposal() {
-        if(this.proposal.content.image) {
+        if(this.proposal && this.proposal.content.image) {
           this.$.storage.path = `proposals/${this.data.key}/${this.proposal.content.image}`;
         }
       }
