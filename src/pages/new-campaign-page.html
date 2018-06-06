@@ -257,6 +257,13 @@
       <social-dialog on-save-social="_saveSocialLink"></social-dialog>
     </app-dialog>
 
+    <app-route 
+      route="{{route}}" 
+      query-params="{{params}}" 
+      pattern="/:page/:key" 
+      data="{{data}}">
+    </app-route>
+
     <firebase-document
       id="document"
       data="{{campaignData}}">
@@ -303,12 +310,12 @@
               <h1>Sobre o candidato</h1>
               <span class="cover-img">
                 <iron-icon icon="app:add"></iron-icon>
-                <input id="coverPhoto" type="file" on-change="getCoverPhoto" accept=".jpg, .jpeg, .png" value="{{campaign.coverImage}}">
+                <input id="coverPhoto" type="file" on-change="getCoverPhoto" accept=".jpg, .jpeg, .png">
               </span>
               <span class="candidate-img">
                 <iron-image sizing="cover" id="candidateImage"></iron-image>
                 <iron-icon icon="app:add"></iron-icon>
-                <input id="candidatePhoto" type="file" on-change="getCandidatePhoto" accept=".jpg, .jpeg, .png" value="{{campaign.candidateImage}}">
+                <input id="candidatePhoto" type="file" on-change="getCandidatePhoto" accept=".jpg, .jpeg, .png">
               </span>
             </div>
             <div class="candidate">
@@ -476,7 +483,7 @@
         };
       }
 
-      static get observers() { return ['_validateCampaign(campaign.*, proposalData.*)']; }
+      static get observers() { return ['_validateCampaign(campaign.*, proposalData.*)', '_setEditCampaign(data.key)']; }
 
       _selectedChanged(selected) {
         if (!selected) return;
@@ -543,6 +550,16 @@
         const index = this.attachmentsArray.indexOf(file);
         this.splice('attachmentsArray', index, 1);
         this.campaign.attachments.splice(index, 1);
+      }
+
+      _setEditCampaign(key) {
+        if(key) {
+          this.$.document.db.ref(`/campaigns/${key}`).once("value").then(function(result) {
+            const campaign = JSON.parse(JSON.stringify(result.val().content));
+            this.campaign = campaign;
+            this.campaignId = key;
+          }.bind(this));
+        }
       }
 
       _setCampaignDate() {
