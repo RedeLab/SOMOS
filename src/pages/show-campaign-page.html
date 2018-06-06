@@ -223,6 +223,7 @@
         position: absolute;
         top: 0; bottom: 0;
         left: 0; right: 0;
+        background-color: var(--secondary-background-color);
       }
       .progress paper-progress {
         width: 100%; 
@@ -231,6 +232,7 @@
         height: 125px;
         text-align: center;
         padding-top: 97px;
+        background-color: #4a4a4a;
       }
     </style>
 
@@ -291,121 +293,117 @@
           </campaign-player>
         </app-toolbar>
       </app-header>
-      <dom-if if="{{campaign.content}}">
-        <template>
-          <div class="fill">
-            <div class="candidate-info">
-              <div class="details">
-                <span>Brasília/DF</span>
-                <span>Começou em: {{campaignDate}}</span>
-                <span>Partido: {{campaign.content.party}}</span>
-              </div>
-              <div class="support">
-                <span>Apoiando</span>
-                <paper-toggle-button on-change="_followCampaign"></paper-toggle-button>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col" on-tap="_redirectToFollowers">
-                <span>{{campaign.content.usersFollow.length}}</span>
-                <span>total de apoiadores</span>
-              </div>
-              <div class="col">
-                <span>{{campaign.content.usersFollow.length}}</span>
-                <span>novos membros</span>
-              </div>
-              <div class="col">
-                <span>321</span>
-                <span>membros ativos</span>
-              </div>
-              <div class="col">
-                <span>321</span>
-                <span>missões concluídas</span>
-              </div>
-            </div>
-            <hr>
-            <div class="share-campaign">
-              <p>Convide seus amigos para a campanha de
-                <span>{{campaign.content.candidateName}}!</span>
-              </p>
-              <paper-icon-button icon="app:share" on-tap="shareCampaign"></paper-icon-button>
-            </div>
-            <hr>
-            <div class="description">
-              <p>{{campaign.content.description}}</p>
-            </div>
-            <hr>
+      <div class="fill">
+        <div class="candidate-info">
+          <div class="details">
+            <span>Brasília/DF</span>
+            <span>Começou em: {{campaignDate}}</span>
+            <span>Partido: {{campaign.content.party}}</span>
           </div>
-          <div class="proposal">
-            <h4>Propostas</h4>
-            <dom-if if="{{lastProposal}}">
-              <template>
-                <proposal-card proposal="{{lastProposal}}" key="{{lastProposal.key}}" on-open-detail="openProposalDetail"></proposal-card>
-              </template>
-            </dom-if>
+          <div class="support">
+            <span>Apoiando</span>
+            <paper-toggle-button on-change="_followCampaign"></paper-toggle-button>
           </div>
-          <div class="social">
-              <paper-button class="accent block" on-tap="_redirectToProposals">Veja mais propostas</paper-button>
-            <div class="row">
-              <dom-if if="{{campaign.content.facebook}}">
-                <template>
-                  <div class="col">
-                    <a href="{{campaign.content.facebook}}" tabindex="-1" target="_blank">
-                      <paper-icon-button icon="app:facebook" class="facebook"></paper-icon-button>
-                    </a>
-                    <span>facebook</span>
-                  </div>
-                </template>
-              </dom-if>
-              <dom-if if="{{campaign.content.twitter}}">
-                <template>
-              <div class="col">
-                <a href="{{campaign.content.twitter}}" tabindex="-1" target="_blank">
-                  <paper-icon-button icon="app:twitter" class="twitter"></paper-icon-button>
-                </a>
-                <span>twitter</span>
-              </div>
-                </template>
-              </dom-if>
-              <dom-if if="{{campaign.content.instagram}}">
-                <template>
-                  <div class="col">
-                    <a href="{{campaign.content.instagram}}" tabindex="-1" target="_blank">
-                      <paper-icon-button icon="app:instagram" class="instagram"></paper-icon-button>
-                    </a>
-                    <span>instagram</span>
-                  </div>
-                </template>
-              </dom-if>
-              <dom-if if="{{campaign.content.website}}">
-                <template>
-                  <div class="col">
-                    <a href="{{campaign.content.website}}" tabindex="-1" target="_blank">
-                      <paper-icon-button icon="app:language"></paper-icon-button>
-                    </a>
-                    <span>website</span>
-                  </div>
-                </template>
-              </dom-if>
-            </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col" on-tap="_redirectToFollowers">
+            <span>{{campaign.content.usersFollow.length}}</span>
+            <span>total de apoiadores</span>
           </div>
-          <template is="dom-if" if="{{campaign.content.attachments}}">
-            <div class="attachments">
-              <h4>Anexos</h4>
-              <template is="dom-repeat" items="{{attachments}}" as="attachment">
-                <div class="border">
-                  <div class="link">
-                    <a href="{{attachment.path}}" target="_blank">{{attachment.filename}}</a>
-                    <div class="space"></div>
-                    <iron-icon icon="app:arrow-downward"></iron-icon>
-                  </div>
-                </template>
-              </div>
-            </div>
+          <div class="col">
+            <span>{{campaign.content.usersFollow.length}}</span>
+            <span>novos membros</span>
+          </div>
+          <div class="col">
+            <span>321</span>
+            <span>membros ativos</span>
+          </div>
+          <div class="col">
+            <span>321</span>
+            <span>missões concluídas</span>
+          </div>
+        </div>
+        <hr>
+        <div class="share-campaign">
+          <p>Convide seus amigos para a campanha de
+            <span>{{campaign.content.candidateName}}!</span>
+          </p>
+          <paper-icon-button icon="app:share" on-tap="shareCampaign"></paper-icon-button>
+        </div>
+        <hr>
+        <div class="description">
+          <p>{{campaign.content.description}}</p>
+        </div>
+        <hr>
+      </div>
+      <div class="proposal">
+        <h4>Propostas</h4>
+        <dom-if if="{{lastProposal}}">
+          <template>
+            <proposal-card proposal="{{lastProposal}}" key="{{lastProposal.key}}" on-open-detail="openProposalDetail"></proposal-card>
           </template>
-        </template>
-      </dom-if>
+        </dom-if>
+      </div>
+      <div class="social">
+          <paper-button class="accent block" on-tap="_redirectToProposals">Veja mais propostas</paper-button>
+        <div class="row">
+          <dom-if if="{{campaign.content.facebook}}">
+            <template>
+              <div class="col">
+                <a href="{{campaign.content.facebook}}" tabindex="-1" target="_blank">
+                  <paper-icon-button icon="app:facebook" class="facebook"></paper-icon-button>
+                </a>
+                <span>facebook</span>
+              </div>
+            </template>
+          </dom-if>
+          <dom-if if="{{campaign.content.twitter}}">
+            <template>
+          <div class="col">
+            <a href="{{campaign.content.twitter}}" tabindex="-1" target="_blank">
+              <paper-icon-button icon="app:twitter" class="twitter"></paper-icon-button>
+            </a>
+            <span>twitter</span>
+          </div>
+            </template>
+          </dom-if>
+          <dom-if if="{{campaign.content.instagram}}">
+            <template>
+              <div class="col">
+                <a href="{{campaign.content.instagram}}" tabindex="-1" target="_blank">
+                  <paper-icon-button icon="app:instagram" class="instagram"></paper-icon-button>
+                </a>
+                <span>instagram</span>
+              </div>
+            </template>
+          </dom-if>
+          <dom-if if="{{campaign.content.website}}">
+            <template>
+              <div class="col">
+                <a href="{{campaign.content.website}}" tabindex="-1" target="_blank">
+                  <paper-icon-button icon="app:language"></paper-icon-button>
+                </a>
+                <span>website</span>
+              </div>
+            </template>
+          </dom-if>
+        </div>
+      </div>
+      <template is="dom-if" if="{{campaign.content.attachments}}">
+        <div class="attachments">
+          <h4>Anexos</h4>
+          <template is="dom-repeat" items="{{attachments}}" as="attachment">
+            <div class="border">
+              <div class="link">
+                <a href="{{attachment.path}}" target="_blank">{{attachment.filename}}</a>
+                <div class="space"></div>
+                <iron-icon icon="app:arrow-downward"></iron-icon>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
       <!-- <div class="calendar">
         <h4>Próximos Eventos</h4>
       </div>
@@ -463,7 +461,7 @@
       }
 
       _selectedChanged(selected) {
-        this._checkToggle();
+        // this._checkToggle();
          if (!selected) {
           this.$.player.stop();
           this.updateStyles({ '--layer-image': 'linear-gradient(to top, grey, grey)' });
