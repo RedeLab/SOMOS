@@ -137,7 +137,7 @@
 
     <div class="card mission-card">
       <div class="card-header">
-        <a href="/campaigns/{{mission.cid}}">
+        <a href="/show-campaign/{{mission.cid}}">
           <iron-image sizing="cover" class="campaign" src="{{candidatePhoto}}"></iron-image>
           <span>{{campaign.content.name}}</span>
           <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
@@ -173,11 +173,13 @@
           </paper-button>
         </div>
       </div>
-
-      <mission-player id="player" mission-image="{{missionImage}}"
-        mission="{{mission}}" mission-key="{{key}}">
-      </mission-player>
-
+      <dom-if if="{{!hasMessage}}">
+        <template>
+          <mission-player id="player" mission-image="{{missionImage}}"
+            mission="{{mission}}" mission-key="{{key}}">
+          </mission-player>
+        </template>
+      </dom-if>
     </div>
   </template>
   <script>
@@ -227,7 +229,7 @@
         this.set('hasMessage', mission.receipts ? mission.receipts.reduce(function (t, r) {
           return t || (r.uid === this.uid && r.status === 'realized');
         }.bind(this), false) : false);
-        if (this.hasMessage) {
+        if(this.hasMessage) {
           this.set('message', 'Obrigado por colaborar conosco nessa missão! Com sua ajuda, somos mais fortes!');
         }
       }
