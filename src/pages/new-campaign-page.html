@@ -15,10 +15,12 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
 
 <link rel="import" href="../campaign-elements/proposal-dialog.html">
 <link rel="import" href="../campaign-elements/social-dialog.html">
 <link rel="import" href="../campaign-elements/create-campaign-dialog.html">
+<link rel="import" href="../campaign-elements/edit-campaign-dialog.html">
 <link rel="import" href="../app-elements/app-dialog.html">
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
@@ -244,6 +246,10 @@
       <create-campaign-dialog></create-campaign-dialog>
     </app-dialog>
 
+    <app-dialog id="confirmEdit" opened="{{openedEdit}}">
+      <edit-campaign-dialog></edit-campaign-dialog>
+    </app-dialog>
+
     <app-scrollable-dialog id="dialog" modal>
       <app-form-header slot="header" shadow>
         <paper-icon-button slot="arrow-back" icon="app:close" on-tap="closeProposalDialog"></paper-icon-button>
@@ -377,11 +383,11 @@
                   <input id="campaignAttachments" type="file" multiple on-change="getAttachments">
                 </div>
               </div>
-              <template is="dom-if" if="{{attachmentsArray}}">
-                <template is="dom-repeat" items="{{attachmentsArray}}" as="file">
+              <template is="dom-if" if="{{campaign.attachments}}">
+                <template is="dom-repeat" items="{{campaign.attachments}}" as="file" restamp>
                   <div class="filename">
                     <paper-icon-button icon="app:close" on-tap="_removeAttachment"></paper-icon-button>
-                    <span>{{file.name}}</span>
+                    <span>{{file}}</span>
                   </div>
                 </template>
               </template>
@@ -449,6 +455,10 @@
           openedModal: {
             type: Boolean,
             observer: '_observeModal'
+          },
+          openedEdit: {
+            type: Boolean,
+            observer: '_observeEditModal'
           },
           fileArray: {
             type: Array,
@@ -541,15 +551,20 @@
         let files = Array.from(e.target.files);
         files.forEach(file => {
           this.push('attachmentsArray', file);
-          this.campaign.attachments.push(file.name);
+          this.push('campaign.attachments', file.name);
         });
+        if(this.$.campaignAttachments.files) {
+          this.$.attachmentsStorage.upload();
+        }
+        this._saveCampaign();
       }
 
       _removeAttachment(e) {
         const file = e.model.get('file');
-        const index = this.attachmentsArray.indexOf(file);
-        this.splice('attachmentsArray', index, 1);
-        this.campaign.attachments.splice(index, 1);
+        const array = this.campaign.attachments;
+        this.set('campaign.attachments', array.filter(i => i !== file));
+        this.$.attachmentsStorage.ref.child(file).delete();
+        this._saveCampaign();
       }
 
       _setEditCampaign(key) {
@@ -623,7 +638,6 @@
         if(this.selection === 1) {
           this._uploadImages();
         }
-        this._uploadAttachments();
       }
 
       _uploadImages() {
@@ -648,12 +662,6 @@
         }
       }
 
-      _uploadAttachments() {
-        if(this.$.campaignAttachments.files) {
-          this.$.attachmentsStorage.upload();
-        }
-      }
-      
       _saveProposal(e) {
         const proposal = this.$.proposalDialog.proposal;
         const categories = this.campaign.categories || {};
@@ -689,7 +697,11 @@
           this.nextLabel = 'Concluir';
           this._validateCampaign(this.campaign);
         } else if(selection === 3) {
-          this.$.confirm.present();
+          if(this.data.key) {
+            this.$.confirmEdit.present();
+          } else {
+            this.$.confirm.present();
+          }
         } else {
           this.nextLabel = 'Próximo';
         }
@@ -707,6 +719,23 @@
           this.$.candidateImage.src = '';
           this.$.coverImage.src = '';
           this.nextLabel = 'Próximo';
+          this.data.key = undefined;
+        }
+      }
+
+      _observeEditModal() {
+        if (!this.openedEdit) {
+          this._returnToInbox();
+          this.selection = 0;
+          this.campaign = {};
+          this.campaignId = undefined;
+          this.fileArray = [];
+          this.attachmentsArray = [];
+          this.proposalArray = [];
+          this.$.candidateImage.src = '';
+          this.$.coverImage.src = '';
+          this.nextLabel = 'Próximo';
+          this.data.key = undefined;
         }
       }
 
