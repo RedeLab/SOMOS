@@ -254,9 +254,8 @@
       <app-form-header slot="header" shadow>
         <paper-icon-button slot="arrow-back" icon="app:close" on-tap="closeProposalDialog"></paper-icon-button>
         <span slot="main-title">Nova Proposta</span>
-        <paper-icon-button slot="more-vert" icon="app:check" on-tap="_saveProposal"></paper-icon-button>
       </app-form-header>
-      <proposal-dialog  id="proposalDialog" proposals="{{proposals}}"></proposal-dialog>
+      <proposal-dialog id="proposalDialog" proposals="{{proposals}}" on-create-proposal="_saveProposal"></proposal-dialog>
     </app-scrollable-dialog>
 
     <app-dialog id="social">
@@ -509,6 +508,8 @@
 
       closeProposalDialog() {
         this.$.dialog.close();
+        this.$.proposalDialog.proposal = {};
+        this.proposalArray = [];
       }
 
       openSocial(e) {
