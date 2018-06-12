@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 
 <link rel="import" href="../app-elements/app-form-header.html">
 <link rel="import" href="../mission-elements/mission-modal.html">
@@ -130,7 +131,7 @@
       }
 
       #save paper-button {
-        padding: 10px 50px;
+        padding: 10px 25px;
       }
 
       #icon-bg {
@@ -148,7 +149,11 @@
     </style>
 
     <app-dialog id="confirmation" opened="{{openedModal}}">
-      <mission-modal id="modal" mission="{{sharedMission}}"></mission-modal>
+      <mission-modal
+        id="modal" mission="{{sharedMission}}"
+        modal-title="{{confirmationTitle}}"
+        modal-description="{{confirmationDescription}}">
+      </mission-modal>
     </app-dialog>
 
     <firebase-query
@@ -172,7 +177,7 @@
     <app-header-layout has-scrolling-region>
       <app-form-header shadow slot="header">
           <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
-          <span slot="main-title">Criar missão</span>
+          <span slot="main-title">{{missionFormTitle}}</span>
           <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
       <div class="sub-header">
@@ -198,9 +203,9 @@
         </div>
       </div>
       <div class="form" id="form">
-        <paper-input id="missionTitle" required error-message="Chamada da missão está em branco" value="{{mission.title}}" label="Chamada" char-counter maxlength="30"></paper-input>
+        <paper-input id="missionTitle" required error-message="Chamada da missão está em branco" value="{{mission.title}}" label="Chamada" char-counter maxlength="100"></paper-input>
         <paper-input id="missionDate" required error-message="Duração da missão está em branco" type="date"  value="{{mission.endDate}}" label="Prazo da missão"></paper-input>
-        <paper-input id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="250"></paper-input>
+        <paper-textarea max-Rows="2" type="text" id="missionDesc" required error-message="Descrição da missão está em branco" value="{{mission.description}}" label="Descrição" char-counter maxlength="1000"></paper-textarea>
         <div id="mission-required">
           <paper-toggle-button checked="{{mission.requiredReceipt}}">Comprovação obrigatória</paper-toggle-button>
         </div>
@@ -214,7 +219,7 @@
       </paper-dropdown-menu>
 
         <div id="save">
-          <paper-button toggles raised class="accent" on-tap="_saveMission">criar missão</paper-button>
+          <paper-button id="saveBtn" toggles raised class="accent">{{missionFormTitle}}</paper-button>
         </div>
       </div>
     </app-header-layout>
@@ -275,7 +280,15 @@
           user: {
             type: Object,
             observer: '_onUserChanged'
-          }
+          },
+          missionFormTitle: {
+            type: String,
+            value: "Criar Missão"
+          },
+          saveMissionFunc: Function,
+          editMissionFunc: Function,
+          confirmationTitle: String,
+          confirmationDescription: String
         }
       }
 
@@ -291,6 +304,12 @@
 
       _returnToInbox() {
         this.$.confirmation.dismiss();
+        this.set('mission', {});
+        this.set("route.data", {});
+        this.set("missionFormTitle", "Criar Missão");
+        const btn = this.$.saveBtn;
+        btn.removeEventListener("tap", this.editMissionFunc, false);
+        btn.removeEventListener("tap", this.saveMissionFunc, false);
         this.set('route.path', '/');
       }
 
@@ -312,11 +331,14 @@
        }
       }
 
-      _getCampaignByName(name) {
+      _getCampaignByName(_name) {
         let campaignId = "";
-        this.userCampaigns.forEach(function(value) {
-          if (value.content.name == name)
-            campaignId = value.key;
+        this.userCampaigns.forEach(function(_value) {
+        let campaignName = _value.content.name.replace(/\s*$/,"");
+        campaignName = campaignName.replace(/\s*^/,"");
+          if (campaignName === _name) {
+            campaignId = _value.key;
+          }
         });
         return campaignId;
       }
@@ -421,7 +443,6 @@
       }
 
       _getUserCampaigns(){
-        this.set('mission', {});
         if (this.user === null) return;
         this.$.document.db.ref("/campaigns").orderByChild("content/uid").equalTo(this.user.uid).once("value", function(snapshot){
           if (snapshot.val()){
@@ -439,8 +460,51 @@
       }
 
       routePathChanged(page) {
+        const btn = this.$.saveBtn;
+        btn.removeEventListener("tap", this.editMissionFunc, false);
+        btn.removeEventListener("tap", this.saveMissionFunc, false);
+        this.set('mission', {});
+        this.set("missionFormTitle", "Criar Missão");
+        if ((this.route.data != undefined) && (Object.keys(this.route.data).length > 0)) {
+          const missionID = this.route.data.missionID;
+          this.$.document.getStoredValue(`/missions/${missionID}`)
+            .then(function(res) {
+              this.set("mission", res.content);
+              this.set("missionFormTitle", "Editar Missão");
+              btn.addEventListener("tap", this.editMissionFunc);
+            }.bind(this));
+        }
+        else {
+          btn.addEventListener("tap", this.saveMissionFunc);
+        }
         if (page === "/mission")
           this._getUserCampaigns();
+      }
+
+      _editMission() {
+        console.log(this._validMission());
+        if (this._validMission()) {
+          let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
+          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+          if (vid) this.mission.video = vid;
+          this.mission.cid = this.missionCampaign;
+          this.$.document.data = this.mission;
+          this.$.document.saveValue(`/missions/${this.route.data.missionID}/`, "content");
+          if (this.input && this.input.files.length > 0) {
+            this.set("uploadedFile",  this.input.files[0]);
+            this._saveMissionStorage();
+          }
+          this.set('mission', {});
+          this.sharedMission = this.missionData[this.missionData.length - 1];
+          this.set("confirmationTitle", "Missão editada com sucesso");
+          this.$.confirmation.present();
+        }
+      }
+
+      ready() {
+        super.ready();
+        this.editMissionFunc = this._editMission.bind(this);
+        this.saveMissionFunc = this._saveMission.bind(this);
       }
 
     }
