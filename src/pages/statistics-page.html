@@ -164,7 +164,7 @@
       </app-header>
           <div class="card-content">
         <paper-listbox>
-          <template is="dom-repeat" items="{{rankingData}}" filter="setUserPhoto">
+          <template is="dom-repeat" items="{{rankingData}}" filter="setUserPhoto" notify-dom-change="true" on-dom-change="hideLoading">
             <div class="ranking-item">
               <iron-image id="ID-{{item.uid}}" sizing="cover"></iron-image>
               <span class="name">{{item.followerName}}</span>
@@ -204,6 +204,10 @@
             rankingData: {
               type: Array,
               value: []
+            },
+            domChangeEventCount: {
+              type: Number,
+              value: 0
             }
           }
         }
@@ -270,7 +274,9 @@
       _getCampaignByName(name) {
         let campaign = {};
         this.userCampaigns.forEach(function(value) {
-          if (value.name == name)
+          let campaignName = value.name.replace(/\s*$/,"");
+          campaignName = campaignName.replace(/\s*^/,"");
+          if (campaignName == name)
             campaign = value;
         });
         return campaign;
@@ -283,6 +289,8 @@
         this.set("campaignMissions", []);
         if (e.detail.value) {
           const selectedCampaign = this._getCampaignByName(e.detail.value);
+          console.log("hdsjkhdjskahsjkhakj");
+          console.log(selectedCampaign);
           Promise.all(this._setCampaignFollwers(selectedCampaign)).then(function(res){
             const followers = this.campaignFollowers;
             this._setCampaignMissions(selectedCampaign).then(function(res){
@@ -322,7 +330,6 @@
           return 0;
         })
         this.set("rankingData", ordered);
-        this.hideLoading();
       }
 
       setUserPhoto(_item) {
@@ -339,11 +346,19 @@
           this._getUserCampaigns();
       }
 
-      hideLoading(force=false) {
-        if (force) this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
-        if (this.domChangeEventCount == 1) {
+      hideLoading() {
+        console.log(this.domChangeEventCount);
+        if (this.domChangeEventCount == 2) {
           this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
         }
+        else if (this.domChangeEventCount != 0 && this.domChangeEventCount % 2 == 0){
+          this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+        }
+
+        else if (this.domChangeEventCount > 1 && this.domChangeEventCount % 2 == 1){
+          this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:block');
+        }
+
         this.domChangeEventCount += 1;
       }
 
