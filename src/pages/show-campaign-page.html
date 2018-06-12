@@ -277,6 +277,12 @@
       data="{{proposals}}">
     </firebase-query>
 
+    <firebase-query
+      id="missions"
+      path="/missions"
+      data="{{missions}}">
+    </firebase-query>
+
     <app-scrollable-dialog id="detail" modal>
       <app-form-header slot="header" shadow>
         <paper-icon-button slot="arrow-back" icon="app:close" on-tap="closeProposalDialog"></paper-icon-button>
@@ -334,8 +340,8 @@
             <span>membros ativos</span>
           </div>
           <div class="col">
-            <span>321</span>
-            <span>missões concluídas</span>
+            <span>{{missionTotal}}</span>
+            <span>missões lançadas</span>
           </div>
         </div>
         <hr>
@@ -471,6 +477,12 @@
           isAdmin: {
             type: Boolean,
             value: false
+          },
+          missions: {
+            type: Array
+          },
+          missionTotal: {
+            type: Number
           }
         };
       }
@@ -510,6 +522,7 @@
         if(campaign.content.coverImage) {
           this.$.storage.path = `campaigns/${this.data.key}/${campaign.content.coverImage}`
         }
+        this._setMissionTotal();
         this._setCampaignDate(campaign);
         this._setAttachments(campaign);
         this._setAdmin(campaign);
@@ -543,6 +556,17 @@
         } else {
           this.isAdmin = false;
         }
+      }
+
+      _setMissionTotal() {
+        this.$.missions.ref.orderByChild(`content/cid`).equalTo(this.data.key).once("value").then(function (finished) {
+          if(!finished.val()) {
+            this.missionTotal = 0;
+            return;
+          }
+          let missions = Object.values(finished.val()).length;
+          this.missionTotal = missions;
+        }.bind(this));
       }
 
       _checkToggle() {
