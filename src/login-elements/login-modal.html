@@ -125,7 +125,16 @@
           .then(function(res) {
             // use app-notify to display success message
           }.bind(this))
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            console.log(err.message);
+            if(err.code === "auth/wrong-password") {
+              let input = this.$.login.shadowRoot.querySelector('paper-input[type="password"]');
+              input.invalid = true;
+            } else {
+              let input = this.$.login.shadowRoot.querySelector('paper-input');
+              input.invalid = true;
+            }
+          });
       }
 
       authWithProvider(e) {
