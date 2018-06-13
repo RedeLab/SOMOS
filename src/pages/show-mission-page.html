@@ -689,6 +689,7 @@
       routePathChanged(path) {
         if (this.route.__queryParams && this.route.__queryParams["shared"] === "true") {
           this.route["shared"] = this.data.key;
+          this.route.__queryParams = {};
         }
         this.$.document.path = `/missions/${this.data.key}`;
         setTimeout(this._missionChanged.bind(this), 100);
