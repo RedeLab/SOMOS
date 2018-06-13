@@ -75,6 +75,8 @@
 
       h1.title[main-title] { margin: 5px 20px; }
 
+      h3 { color: var(--dark-primary-color); }
+
       .dark { color: black; }
 
       .timing { font-size: 0.6em; }
@@ -95,10 +97,7 @@
         padding-top: 97px;
       }
 
-      .content {
-        min-height: calc(100vh - 150px);
-        padding: 0 20px 80px;;
-      }
+      .content { padding: 20px 20px; }
 
       .content p,
       .content h2 { margin: 10px 0; }
@@ -136,9 +135,23 @@
         margin-top: -10px;
       }
 
+      .share-mission, .stats { background-color: #f1f1f1; }
+      .share-mission { height: 50px; }
+
+      .share-mission div {
+        width: 90%;
+        margin: auto;
+        font-size: 1em;
+      }
+
+      .share-mission div h3 {
+        display: inline-block;
+        margin: 0;
+        padding-top: 8px;
+      }
+
       .stats {
         height: 25px;
-        background-color: #f1f1f1;
         font-size: 0.9em;
       }
 
@@ -308,11 +321,21 @@
         </paper-button>
       </div>
 
-      <div class="content">
-        <dom-if if="{{mission.content}}">
-          <template>
-            <h2>Entenda a missão</h2>
-            <p>{{mission.content.description}}</p>
+      <template is="dom-if" if="{{mission.content}}">
+        <div class="content">
+          <h3>Entenda a missão</h3>
+          <p>{{mission.content.description}}</p>
+
+          <a id="leaveMission" href="#">Desistir dessa missão</a>
+        </div>
+
+        <div class="share-mission">
+          <div>
+            <h3>Compartilhar missão</h3>
+            <paper-icon-button>
+            </paper-icon-button>
+          </div>
+        </div>
 
             <div class="comments">
               <h2>Comentários</h2>
@@ -340,9 +363,7 @@
                 </dom-if>
               </div>
             </div>
-          </template>
-        </dom-if>
-      </div>
+        </template>
     </app-header-layout>
 
     <dom-if if="{{!mission.content}}">

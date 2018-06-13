@@ -355,16 +355,23 @@
           this.$.missionTitle.invalid = true;
           valid = false;
         }
+        else
+          this.$.missionTitle.invalid = false;
 
         if (!this.mission.endDate) {
           this.$.missionDate.invalid = true;
           valid = false;
         }
+        else
+          this.$.missionDate.invalid = false;
 
         if (!this.mission.description) {
           this.$.missionDesc.invalid = true;
           valid = false;
         }
+        else
+          this.$.missionDesc.invalid = false;
+
 
         if (!(this.input === undefined) && this.input.files.length > 0) {
           const imgFormats = ["png", "jpg"]
@@ -374,12 +381,11 @@
           /* is a image */
           if (imgFormats.includes(fileFormat)) {
             this.mission.imageTitle = fileName;
-            valid = true;
           }
 
           else if (audioFormats.includes(fileFormat)) {
             this.mission.audioTitle = fileName;
-            valid = true;
+            this.$.genericInput.invalid = false;
           }
           else {
             this.$.genericInput.invalid = true;
@@ -392,13 +398,14 @@
             this.$.genericInput.invalid = true;
             valid = false;
           }
+          else
+            this.$.genericInput.invalid = true;
         }
 
         const campaignDropdown = this.shadowRoot.querySelector("paper-dropdown-menu");
         const campaignId = this._getCampaignByName(campaignDropdown.value);
         if (campaignId) {
           this.set("missionCampaign", campaignId);
-          valid = true;
         } else {
           valid = false;
         }
@@ -475,8 +482,11 @@
             }.bind(this));
         }
         else {
-          btn.addEventListener("tap", this.saveMissionFunc);
+          setTimeout(function() {
+            btn.addEventListener("tap", this.saveMissionFunc)
+          }.bind(this), 100);
         }
+
         if (page === "/mission")
           this._getUserCampaigns();
       }
@@ -503,8 +513,10 @@
 
       ready() {
         super.ready();
-        this.editMissionFunc = this._editMission.bind(this);
-        this.saveMissionFunc = this._saveMission.bind(this);
+        this.set("editMissionFunc",  this._editMission.bind(this));
+        this.set("saveMissionFunc",  this._saveMission.bind(this));
+        console.log("hdjshdkashdj");
+        console.log(this.saveMissionFunc);
       }
 
     }
