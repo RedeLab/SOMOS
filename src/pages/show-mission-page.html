@@ -533,15 +533,22 @@
           this.set('route.path', '/');
           return;
         }
-        const mission = JSON.parse(JSON.stringify(this.mission));
-        const usersAccepted = new Set(this.mission.content.usersAccepted);
-        usersAccepted.add({"uid": this.user.uid, "userName": this.user.displayName});
-        this.mission.content.usersAccepted = Array.from(usersAccepted);
-        this.$.document.ref.set(this.mission);
-        this.$.accepted.ref.set(this.mission);
-        this.$.acceptedDialog.present();
-        this._calcMissionStats();
-        this._setActionBtn();
+
+        if (!(this.campaign.content.usersFollow.includes(this.user.uid))) {
+          this.campaign.content.usersFollow.push(this.user.uid);
+          this.$.campaign.data = this.campaign.content;
+          this.$.campaign.saveValue(`/campaigns/${this.mission.content.cid}/`, "content");
+        }
+
+       const mission = JSON.parse(JSON.stringify(this.mission));
+       const usersAccepted = new Set(this.mission.content.usersAccepted);
+       usersAccepted.add({"uid": this.user.uid, "userName": this.user.displayName});
+       this.mission.content.usersAccepted = Array.from(usersAccepted);
+       this.$.document.ref.set(this.mission);
+       this.$.accepted.ref.set(this.mission);
+       this.$.acceptedDialog.present();
+       this._calcMissionStats();
+       this._setActionBtn();
       }
 
       _rejectMission(e) {
