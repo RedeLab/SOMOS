@@ -336,7 +336,7 @@
             <span>novos membros</span>
           </div>
           <div class="col">
-            <span>321</span>
+            <span>{{activeMembers}}</span>
             <span>membros ativos</span>
           </div>
           <div class="col">
@@ -483,6 +483,9 @@
           },
           missionTotal: {
             type: Number
+          },
+          activeMembers: {
+            type: Number
           }
         };
       }
@@ -522,7 +525,7 @@
         if(campaign.content.coverImage) {
           this.$.storage.path = `campaigns/${this.data.key}/${campaign.content.coverImage}`
         }
-        this._setMissionTotal();
+        this._setStatistics();
         this._setCampaignDate(campaign);
         this._setAttachments(campaign);
         this._setAdmin(campaign);
@@ -558,14 +561,32 @@
         }
       }
 
-      _setMissionTotal() {
+      _setStatistics() {
         this.$.missions.ref.orderByChild(`content/cid`).equalTo(this.data.key).once("value").then(function (finished) {
           if(!finished.val()) {
             this.missionTotal = 0;
+            this.activeMembers = 0;
             return;
           }
-          let missions = Object.values(finished.val()).length;
-          this.missionTotal = missions;
+          //set total off missions created
+          let missionTotal = Object.values(finished.val()).length;
+          this.missionTotal = missionTotal;
+          //set active followers
+          let unique = [];
+          Object.values(finished.val()).forEach(function(mission) {
+            if(mission.content.receipts) {
+              mission.content.receipts.forEach(function(user) {
+                if(user.status === 'realized') {
+                  unique.push(user.uid);
+                } else {
+                  this.activeMembers = 0;
+                }
+              }.bind(this));
+            }
+          }.bind(this));
+          const active = new Set(unique).size;
+          this.set('activeMembers', active);
+
         }.bind(this));
       }
 
