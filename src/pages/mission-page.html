@@ -318,9 +318,14 @@
           this.mission.uid = this.user.uid;
           let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
           if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-          if (vid) this.mission.video = vid;
+          if (vid) {
+            this.mission.video = vid;
+          } else {
+            this.mission.video = '';
+          }
           this.mission.cid = this.missionCampaign;
           this.$.query.ref.push({ content: this.mission });
+          
           if (this.input && this.input.files.length > 0) {
             this.set("uploadedFile",  this.input.files[0]);
             this._saveMissionStorage();
@@ -496,6 +501,7 @@
         if (this._validMission()) {
           let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
           if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+          console.log(vid);
           if (vid) this.mission.video = vid;
           this.mission.cid = this.missionCampaign;
           this.$.document.data = this.mission;
