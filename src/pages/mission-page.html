@@ -445,11 +445,6 @@
         }
       }
 
-      ready() {
-        super.ready();
-        this.$.modal.shadowRoot.querySelector("share-menu").addEventListener('finished', this._returnToInbox.bind(this));
-      }
-
       _onUserChanged() {
         this._getUserCampaigns();
       }
@@ -519,6 +514,7 @@
 
       ready() {
         super.ready();
+        this.$.modal.shadowRoot.querySelector("share-menu").addEventListener('finished', this._returnToInbox.bind(this));
         this.set("editMissionFunc",  this._editMission.bind(this));
         this.set("saveMissionFunc",  this._saveMission.bind(this));
         console.log("hdjshdkashdj");

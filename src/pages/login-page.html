@@ -12,7 +12,7 @@
     </style>
 
     <app-dialog id="dialog" modal animated>
-      <login-modal id="login" user="{{user}}" status-known="{{statusKnown}}"></login-modal>
+      <login-modal id="login" shared-mission="{{sharedMissionID}}" user="{{user}}" status-known="{{statusKnown}}"></login-modal>
     </app-dialog>
 
   </template>
@@ -29,6 +29,7 @@
             notify: true
           },
           route: Object,
+          data: Object,
           publicRoutes: {
             type: Array,
             value() {
@@ -39,7 +40,8 @@
                 'not-found'
               ];
             }
-          }
+          },
+          sharedMissionID: Boolean
         };
       }
       static get observers() {
@@ -56,6 +58,9 @@
           if(this.publicRoutes.reduce(reducer, false)) {
             this.$.dialog.dismiss();
           } else {
+            if (this.route.shared) {
+              this.set("sharedMissionID", this.route.shared);
+            }
             this.$.dialog.present();
           }
         }
@@ -73,6 +78,13 @@
 
       signOut() {
         this.$.login.$.auth.signOut();
+      }
+
+      ready() {
+        super.ready();
+        this.$.login.addEventListener('returnToMission', function(e) {
+          this.set("route.path", `/show-mission/${e.detail.mission}`);
+        }.bind(this));
       }
     }
 
