@@ -352,7 +352,7 @@
             <h3>Compartilhar missão</h3>
             <div id="share-btn">
               <paper-icon-button on-tap="_shareMission" icon="app:share"></paper-icon-button>
-              <share-menu id="shareMenu" title="{{mission.content.title}}" text="{{mission.content.description}}" url="{{address}}/{{data.key}}" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard"]'></share-menu>
+              <share-menu id="shareMenu" title="{{mission.content.title}}" text="{{mission.content.description}}" url="{{address}}/{{data.key}}?shared=true" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard"]'></share-menu>
             </div>
           </div>
         </div>
@@ -466,6 +466,10 @@
             type: String,
             value: function() {return window.location.origin.concat('/show-mission')}
           },
+          sharedMission: {
+            type: Object,
+            value: function() {}
+          }
         };
       }
 
@@ -676,6 +680,9 @@
 
       /* every time that route is show-mission, we reload the mission */
       routePathChanged(path) {
+        if (this.route.__queryParams && this.route.__queryParams["shared"] === "true") {
+          this.route["shared"] = this.data.key;
+        }
         this.$.document.path = `/missions/${this.data.key}`;
         setTimeout(this._missionChanged.bind(this), 100);
       }

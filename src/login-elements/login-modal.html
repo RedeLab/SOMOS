@@ -63,9 +63,9 @@
     <firebase-document id="document">
     </firebase-document>
 
-    <register-view id="register" user="[[user]]" credentials="{{signUpData}}"
+    <register-view id="register" shared-mission="{{sharedMission}}" user="[[user]]" credentials="{{signUpData}}"
       on-open-login="openLogin" on-provider-auth="authWithProvider"></register-view>
-    <login-view id="login" user="[[user]]" credentials="{{signInData}}"
+    <login-view id="login" shared-mission="{{sharedMission}}" user="[[user]]" credentials="{{signInData}}"
       on-open-register="openRegister" on-provider-auth="authWithProvider"></login-view>
   </template>
 
@@ -90,6 +90,10 @@
           },
           newUser: {
             type: Object
+          },
+          sharedMission: {
+            type: String,
+          value: ""
           }
         };
       }
@@ -116,6 +120,9 @@
         this.$.auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
             // use app-notify to display success message
+            if (this.sharedMission) {
+              this.dispatchEvent(new CustomEvent('returnToMission', {detail: { mission: this.sharedMission }}));
+            }
           }.bind(this))
           .catch((err) => console.error(err));
       }
@@ -124,6 +131,9 @@
         this.$.auth.signInWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
             // use app-notify to display success message
+            if (this.sharedMission) {
+              this.dispatchEvent(new CustomEvent('returnToMission', {detail: { mission: this.sharedMission }}));
+            }
           }.bind(this))
           .catch((err) => {
             console.log(err.message);
