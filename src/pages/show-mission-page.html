@@ -15,6 +15,7 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../../bower_components/share-menu/share-menu.html">
 
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
@@ -75,7 +76,10 @@
 
       h1.title[main-title] { margin: 5px 20px; }
 
-      h3 { color: var(--dark-primary-color); }
+      h3 {
+        color: var(--dark-primary-color);
+        margin: 5px 0;
+      }
 
       .dark { color: black; }
 
@@ -135,20 +139,28 @@
         margin-top: -10px;
       }
 
-      .share-mission, .stats { background-color: #f1f1f1; }
+      .share-mission, .stats {
+        background-color: #f1f1f1;
+      }
+
       .share-mission { height: 50px; }
 
-      .share-mission div {
+      .share-mission .share-mission-content {
         width: 90%;
         margin: auto;
         font-size: 1em;
+        display: flex;
       }
 
-      .share-mission div h3 {
+      .share-mission .share-mission-content h3 {
         display: inline-block;
         margin: 0;
+        flex-grow: 2;
         padding-top: 8px;
       }
+
+      #share-btn { padding: 4px 0px; }
+      #share-btn paper-icon-button { color: var(--dark-primary-color); }
 
       .stats {
         height: 25px;
@@ -202,6 +214,12 @@
         margin-right: 30px;
         margin-left: 10px;
       }
+
+      .comments {
+        background-color: var(--primary-background-color);
+        padding: 10px 0px;
+      }
+      .comments h2 { margin: 0; }
     </style>
 
     <app-route route="{{route}}"
@@ -330,10 +348,12 @@
         </div>
 
         <div class="share-mission">
-          <div>
+          <div class="share-mission-content">
             <h3>Compartilhar missão</h3>
-            <paper-icon-button>
-            </paper-icon-button>
+            <div id="share-btn">
+              <paper-icon-button on-tap="_shareMission" icon="app:share"></paper-icon-button>
+              <share-menu id="shareMenu" title="{{mission.content.title}}" text="{{mission.content.description}}" url="{{address}}/{{data.key}}" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard"]'></share-menu>
+            </div>
           </div>
         </div>
 
@@ -441,7 +461,11 @@
             value: "app:check"
           },
           acceptMissionFunc: Function,
-          finishMissionFunc: Function
+          finishMissionFunc: Function,
+          address: {
+            type: String,
+            value: function() {return window.location.origin.concat('/show-mission')}
+          },
         };
       }
 
@@ -670,6 +694,18 @@
             this.set("candidatePhoto", photo);
           }.bind(this));
       }
+
+      _shareMission(e) {
+        const shareMissionNode = this.shadowRoot.querySelector("#shareMenu");
+        const clonedNode = shareMissionNode.cloneNode(true);
+        //TODO: make clonedNode a property, to be able to remove it later.
+        shareMissionNode.addEventListener('iron-overlay-closed', function() {
+          document.body.removeChild(clonedNode);
+        }.bind(this));
+        document.body.appendChild(clonedNode);
+        clonedNode.share();
+      }
+
     }
     window.customElements.define(ShowMissionPage.is, ShowMissionPage);
   </script>
