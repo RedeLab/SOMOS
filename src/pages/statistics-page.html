@@ -303,7 +303,7 @@
                   const receipts = mission.content.receipts;
                   if (receipts != undefined) {
                     receipts.forEach(function(receipt) {
-                      if (receipt.uid == follower.id)
+                      if (receipt.uid == follower.id && receipt.status == "realized")
                         missionsDoneByFollower += 1;
                     });
                   }
