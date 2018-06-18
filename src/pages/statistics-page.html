@@ -146,7 +146,7 @@
         <app-toolbar>
           <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
           <paper-dropdown-menu on-value-changed="_loadRanking">
-            <paper-listbox slot="dropdown-content" selected="1">
+            <paper-listbox id="campaignsList" slot="dropdown-content">
               <template is="dom-repeat" items="{{userCampaigns}}" >
                 <paper-item>{{item.name}}</paper-item>
               </template>
@@ -223,12 +223,13 @@
         this.set("userCampaigns", []);
         if (Object.keys(this.campaigns).length == 0) return;
         this.campaigns.forEach(function(campaign, index) {
-          if (!(campaign.content.usersFollow == undefined) && campaign.content.usersFollow.includes(this.user.uid)){
+          if (!(campaign.content.usersFollow == undefined) && campaign.content.uid == this.user.uid){
             let _campaign = {};
             _campaign["key"] = campaign.$key;
             _campaign["name"] = campaign.content.name;
             _campaign["followers"] = campaign.content.usersFollow;
             this.push("userCampaigns", _campaign);
+            this.$.campaignsList.selected = "0";
           }
         }.bind(this));
       }
@@ -297,6 +298,9 @@
               const missions = this.campaignMissions;
               let totalMissions = this.campaignMissions.length;
               let rankingData = [];
+              if (!followers) {
+                this._hideLoading();
+              }
               followers.forEach(function(follower) {
                 let missionsDoneByFollower = 0;
                 missions.forEach(function(mission) {
@@ -346,7 +350,12 @@
           this._getUserCampaigns();
       }
 
-      hideLoading() {
+      hideLoading(force=false) {
+
+        if(force) {
+          this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
+          return;
+        }
         console.log(this.domChangeEventCount);
         if (this.domChangeEventCount == 2) {
           this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
