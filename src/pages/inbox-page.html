@@ -110,11 +110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div id="actionsContainer">
         <app-actions id="actions" selected="{{selected}}" icon="app:add">
           <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="_openMissionForm" name="edit"></paper-fab>
-          <paper-tooltip slot="actions" for="newMission">Sugerir Missão</paper-tooltip>
-          <paper-fab slot="actions" mini icon="app:assessment" id="survey" name="edit"></paper-fab>
-          <paper-tooltip slot="actions" for="survey">Enquete</paper-tooltip>
-          <paper-fab slot="actions" mini icon="app:create" id="post" name="edit"></paper-fab>
-          <paper-tooltip slot="actions" for="post">Postagem</paper-tooltip>
+          <paper-tooltip slot="actions" for="newMission">Criar Missão</paper-tooltip>
         </app-actions>
       </div>
     </app-header-layout>
@@ -182,7 +178,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.$.campaigns.db.ref("/campaigns").orderByChild("content/uid").
           equalTo(this.user.uid).once("value",
           function(snapshot) {
-            if ((snapshot.val())){
+            if ((snapshot.val())) {
               this.$.actionsContainer.setAttribute("style", "display:block");
               this.$.statsBtn.setAttribute("style", "display:block");
             }
