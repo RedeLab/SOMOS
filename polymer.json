@@ -35,6 +35,15 @@
       "addServiceWorker": true,
       "addPushManifest": true,
       "insertPrefetchLinks": true
+    }, {
+      "name": "bundled",
+      "bundle": true,
+      "js": {"compile": true, "minify": true},
+      "css": {"minify": true},
+      "html": {"minify": true},
+      "addServiceWorker": true,
+      "addPushManifest": true,
+      "insertPrefetchLinks": true
     }
   ]
 }
