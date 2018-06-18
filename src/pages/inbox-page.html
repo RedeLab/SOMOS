@@ -55,6 +55,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         background-color: var(--default-primary-color);
         border-radius: 50%;
       }
+
+      #actionsContainer { display: none; }
     </style>
 
     <firebase-document
@@ -89,7 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <app-toolbar>
           <paper-icon-button icon="app:menu" drawer-toggle on-tap="openDrawer"></paper-icon-button>
           <div main-title>{{pageTitle}}</div>
-          <paper-icon-button on-tap="_openStatatisticsPage" icon="app:timeline"></paper-icon-button>
+          <paper-icon-button id="statsBtn" style="display: none" on-tap="_openStatatisticsPage" icon="app:timeline"></paper-icon-button>
         </app-toolbar>
         <app-toolbar sticky>
           <paper-tabs selected="{{inboxtab}}" fallback-selection="0">
@@ -117,14 +119,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <div id="inboxLoading">
         <paper-spinner active></paper-spinner>
       </div>
-      <app-actions id="actions" selected="{{selected}}" icon="app:add">
-        <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="_openMissionForm" name="edit"></paper-fab>
-        <paper-tooltip slot="actions" for="newMission">Sugerir Missão</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:assessment" id="survey" name="edit"></paper-fab>
-        <paper-tooltip slot="actions" for="survey">Enquete</paper-tooltip>
-        <paper-fab slot="actions" mini icon="app:create" id="post" name="edit"></paper-fab>
-        <paper-tooltip slot="actions" for="post">Postagem</paper-tooltip>
-      </app-actions>
+      <div id="actionsContainer">
+        <app-actions id="actions" selected="{{selected}}" icon="app:add">
+          <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="_openMissionForm" name="edit"></paper-fab>
+          <paper-tooltip slot="actions" for="newMission">Sugerir Missão</paper-tooltip>
+          <paper-fab slot="actions" mini icon="app:assessment" id="survey" name="edit"></paper-fab>
+          <paper-tooltip slot="actions" for="survey">Enquete</paper-tooltip>
+          <paper-fab slot="actions" mini icon="app:create" id="post" name="edit"></paper-fab>
+          <paper-tooltip slot="actions" for="post">Postagem</paper-tooltip>
+        </app-actions>
+      </div>
     </app-header-layout>
 
   </template>
@@ -189,6 +193,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._getMissionsByCampaigns();
       }
 
+      _hideFabBtn() {
+        const component = this.$.actions;
+        this.$.campaigns.db.ref("/campaigns").orderByChild("content/uid").
+          equalTo(this.user.uid).once("value",
+          function(snapshot) {
+            if ((snapshot.val())){
+              this.$.actionsContainer.setAttribute("style", "display:block");
+              this.$.statsBtn.setAttribute("style", "display:block");
+            }
+          }.bind(this));
+      }
+
       openDrawer() {
         this.dispatchEvent(new CustomEvent('open-drawer'));
       }
@@ -220,6 +236,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _getMissionsByCampaigns() {
         if (this.user === null) return;
+        this._hideFabBtn();
         var userFollowingCampaigns = new Promise((resolve, reject) => {
           let campaigns = [];
           let filteredCampaignsKeys = [];
