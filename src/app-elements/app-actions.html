@@ -143,6 +143,9 @@
 
       _showTips() {
         this.__tips.forEach((tip) => {
+          setTimeout(function() {
+            tip.updatePosition();
+          }.bind(this), 100);
           tip.show();
         });
       }
