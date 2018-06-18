@@ -31,6 +31,7 @@
 <link rel="lazy-import" href="../pages/not-found-page.html">
 
 <link rel="import" href="app-icons.html">
+<link rel="import" href="app-notify.html">
 <link rel="import" href="app-theme.html">
 
 <dom-module id="app-shell">
@@ -181,6 +182,7 @@
         </login-page>
       </iron-pages>
     </app-drawer-layout>
+    <app-notify id="notify"></app-notify>
   </template>
 
   <script>
@@ -212,6 +214,11 @@
         return [
           '_routePageChanged(routeData.page)',
         ];
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this.addEventListener('show-notify', this.showMessage.bind(this));
       }
 
       _routePageChanged(page) {
@@ -254,6 +261,10 @@
 
       gotoProfile(e) {
         this.set('route.path', '/profile');
+      }
+
+      showMessage(e) {
+        this.$.notify.showMessage(e.detail);
       }
     }
 
