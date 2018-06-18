@@ -49,7 +49,7 @@
         <div class="image">
           <iron-image sizing="contain" src="/images/splash.svg"></iron-image>
         </div>
-        <p>SOMOS é uma plataforma para engajar eleitores e candidatos 
+        <p>SOMOS é uma plataforma para engajar eleitores e candidatos
           a desempenharem suas melhores versões pela renovação da política.
         </p>
         <paper-button class="accent" on-tap="openRegister">Começar</paper-button>
@@ -159,14 +159,22 @@
         if(!user) return;
         if(!user.displayName && this.signUpData && this.signUpData.displayName)
           user.updateProfile({ displayName: this.signUpData.displayName });
-        if(user.displayName) {
-          this.userData = {
-            displayName: user.displayName,
-            photoURL: user.photoURL
-          };
-          this.$.document.path = `/users/${user.uid}/content`;
-          this.$.document.ref.set(this.userData);
-        }
+        const name = user.displayName || this.signUpData.displayName;
+        this.userData = {
+          displayName: name,
+          photoURL: user.photoURL,
+          tutorial: {
+            home: false,
+            createCampaign: false,
+            findCampaign: false
+          }
+        };
+        this.$.document.db.ref(`/users/${user.uid}/content`).once("value").then(function(result) {
+          if(result.val() === null) {
+            this.$.document.path = `/users/${user.uid}/content`;
+            this.$.document.ref.set(this.userData);
+          }
+        }.bind(this));
       }
     }
     window.customElements.define(LoginModal.is, LoginModal);
