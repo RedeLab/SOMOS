@@ -344,7 +344,7 @@
           <h3>Entenda a missão</h3>
           <p>{{mission.content.description}}</p>
 
-          <a id="leaveMission" href="#">Desistir dessa missão</a>
+          <!-- <a id="leaveMission" href="#">Desistir dessa missão</a> -->
         </div>
 
         <div class="share-mission">
@@ -352,7 +352,7 @@
             <h3>Compartilhar missão</h3>
             <div id="share-btn">
               <paper-icon-button on-tap="_shareMission" icon="app:share"></paper-icon-button>
-              <share-menu id="shareMenu" title="{{mission.content.title}}" text="{{mission.content.description}}" url="{{address}}/{{data.key}}?shared=true" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard"]'></share-menu>
+              <share-menu id="shareMenu" title="{{mission.content.title}}" text="{{mission.content.description}}" url="{{address}}/{{data.key}}?shared=true" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard", "twitter", "instagram"]'></share-menu>
             </div>
           </div>
         </div>
