@@ -11,6 +11,7 @@
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../campaign-elements/campaign-card.html">
+<link rel="import" href="../tutorial-elements/campaigns-tutorial-dialog.html">
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 
@@ -100,11 +101,21 @@
       }
     </style>
 
-    <firebase-query 
+    <firebase-query
       id="query"
-      path="/campaigns" 
+      path="/campaigns"
       data="{{campaigns}}">
     </firebase-query>
+
+    <firebase-document
+      id="userTutorial"
+      path="/users/{{user.uid}}/content"
+      data="{{userTutorial}}">
+    </firebase-document>
+
+    <app-dialog id="tutorial">
+      <campaigns-tutorial-dialog user="{{userTutorial}}" user-key="{{user.uid}}" on-close-tutorial="_closeTutorial"></campaigns-tutorial-dialog>
+    </app-dialog>
 
     <app-header-layout has-scrolling-region>
       <app-header slot="header" fixed condenses effects="waterfall">
@@ -246,17 +257,21 @@
             categories: {
               type: Array,
               value: ["Educação", "Gestão Pública e Economia", "Democracia de Alta Intensidade", "Infraestrutura", "Segurança Pública", "Pacto Federativo e Municipalismo", "Utilização dos recursos naturais", "Trabalho no campo a na cidade", "Esportes e cidades"]
+            },
+            userTutorial: {
+              type: Object,
+              observer: 'showTutorial'
             }
           };
         }
 
         _selectedChanged(selected) {
-          this.filteredCampaigns = undefined; 
+          this.filteredCampaigns = undefined;
           const hide = this.shadowRoot.querySelector('.fill');
           hide.style.display = "block";
           this.noResults = false;
         }
-        
+
         _returnToInbox() {
           this.set('route.path', '/');
         }
@@ -325,6 +340,17 @@
             hide.style.display = "none";
             this.noResults = true;
           }
+        }
+
+        showTutorial(user) {
+          if(!user) return;
+          if(user.tutorial && !user.tutorial.findCampaign) {
+            this.$.tutorial.present();
+          }
+        }
+
+        _closeTutorial() {
+          this.$.tutorial.close();
         }
 
       }
