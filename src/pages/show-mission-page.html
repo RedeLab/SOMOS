@@ -282,12 +282,14 @@
         <app-toolbar>
           <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
           <h1 condensed-title class="dark title">{{mission.content.title}}</h1>
-          <paper-menu-button horizontal-align="right">
-            <paper-icon-button icon="app:more-vert" slot="dropdown-trigger"></paper-icon-button>
-            <paper-listbox slot="dropdown-content">
-              <paper-item on-tap="_editMission">Editar missão</paper-item>
-            </paper-listbox>
-          </paper-menu-button>
+          <template is="dom-if" if="{{isOwner}}">
+            <paper-menu-button horizontal-align="right">
+              <paper-icon-button icon="app:more-vert" slot="dropdown-trigger"></paper-icon-button>
+              <paper-listbox slot="dropdown-content">
+                <paper-item on-tap="_editMission">Editar missão</paper-item>
+              </paper-listbox>
+            </paper-menu-button>
+          </template>
         </app-toolbar>
         <app-toolbar class="tall">
           <h1 bottom-item main-title class="title">
@@ -469,6 +471,10 @@
           sharedMission: {
             type: Object,
             value: function() {}
+          },
+          isOwner: {
+            type: Boolean,
+            value: false
           }
         };
       }
@@ -500,6 +506,12 @@
         this.set("route.data", {missionID: this.data.key});
         this.set("route.path", "/mission");
       }
+
+      _checkOwner() {
+        if (this.user.uid == this.mission.content.uid)
+          this.set("isOwner", true);
+      }
+
       _observeFinishedModal() {
         if (!this.finishedModal)
           this._returnToInbox();
@@ -699,6 +711,7 @@
         if (Object.keys(this.mission).length == 0) return;
         const cid = this.mission.content.cid;
         this.$.campaign.path = `/campaigns/${cid}`;
+        this._checkOwner();
         this._calcMissionStats();
         this._setActionBtn();
       }
