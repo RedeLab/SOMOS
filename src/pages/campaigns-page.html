@@ -9,6 +9,7 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/neon-animation/web-animations.html">
 <link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
 
 <link rel="import" href="../campaign-elements/campaign-card.html">
 <link rel="import" href="../tutorial-elements/campaigns-tutorial-dialog.html">
@@ -35,17 +36,6 @@
       h1[main-title] {
         margin-left: 20px;
       }
-      app-drawer {
-        --app-drawer-content-container_-_background-color: var(--default-primary-color);
-        --app-drawer-content-container_-_background: var(--default-primary-color);
-      }
-      app-drawer .content {
-        text-align: left;
-        padding: 0 10px;
-      }
-      app-drawer .header {
-        text-align: center;
-      }
       paper-input paper-button {
         color: var(--accent-color);
         border: none;
@@ -55,6 +45,13 @@
       }
       .fill h1 {
         color: var(--secondary-text-color);
+      }
+      .collapse-content {
+        display: flex;
+        padding: 10px 10px 10px 15px;
+      }
+      .collapse-flex {
+        flex: 1;
       }
       .conditional {
         flex: 1;
@@ -80,10 +77,12 @@
         padding-right: 10px;
         font-size: 22px;
       }
-      paper-dropdown-menu,
-      paper-listbox {
-        width: 236px;
+      paper-dropdown-menu {
+        width: calc(33% - 10px);
         font-size: 0.9rem;
+      }
+      paper-dropdown-menu:not(:last-of-type) {
+        margin-right: 10px;
       }
       paper-item {
         white-space: nowrap;
@@ -98,6 +97,14 @@
         top: 50%;
         right: 50%;
         transform: translate(50%);
+      }
+
+      @media screen and (max-width: 640px) {
+        paper-dropdown-menu {
+          width: 100%;
+          font-size: 0.9rem;
+          margin: 0;
+        }
       }
     </style>
 
@@ -125,6 +132,36 @@
           <paper-icon-button icon="app:filter" on-tap="_openFilter"></paper-icon-button>
         </app-toolbar>
       </app-header>
+      <iron-collapse id="collapse">
+        <div class="collapse-content">
+          <div class="collapse-flex">
+            <paper-dropdown-menu label="Estado" on-value-changed="filterCampaign" name="state" horizontal-align="left">
+              <paper-listbox slot="dropdown-content" class="dropdown-content">
+                <template id="statesList" is="dom-repeat" items="{{states}}" as="state">
+                  <paper-item>{{state}}</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <paper-dropdown-menu label="Cargo que irá disputar" on-value-changed="filterCampaign" name="role">
+              <paper-listbox slot="dropdown-content" class="dropdown-content">
+                <paper-item>Presidente</paper-item>
+                <paper-item>Governador</paper-item>
+                <paper-item>Senador</paper-item>
+                <paper-item>Deputado Federal</paper-item>
+                <paper-item>Deputado Estadual</paper-item>
+                <paper-item>Deputado Distrital</paper-item>
+              </paper-listbox>
+            </paper-dropdown-menu>
+            <paper-dropdown-menu label="Categoria" on-value-changed="filterCampaign" name="categories">
+              <paper-listbox slot="dropdown-content" class="dropdown-content">
+                <template id="statesList" is="dom-repeat" items="{{categories}}" as="category">
+                  <paper-item>{{category}}</paper-item>
+                </template>
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+        </div>
+      </iron-collapse>
       <div class="fill">
         <dom-if if="{{campaigns.length}}">
           <template>
@@ -179,38 +216,6 @@
         <paper-tooltip slot="actions" for="campaign">Criar campanha</paper-tooltip>
       </app-actions>
     </app-header-layout>
-
-    <app-drawer id="filter" slot="drawer" align="end">
-      <div class="content">
-        <div class="header">
-          <h1>Filtros</h1>
-        </div>
-        <paper-dropdown-menu label="Estado" on-value-changed="filterCampaign" name="state">
-          <paper-listbox slot="dropdown-content" class="dropdown-content">
-            <template id="statesList" is="dom-repeat" items="{{states}}" as="state">
-              <paper-item>{{state}}</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-        <paper-dropdown-menu label="Cargo que irá disputar" on-value-changed="filterCampaign" name="role">
-          <paper-listbox slot="dropdown-content" class="dropdown-content">
-            <paper-item>Presidente</paper-item>
-            <paper-item>Governador</paper-item>
-            <paper-item>Senador</paper-item>
-            <paper-item>Deputado Federal</paper-item>
-            <paper-item>Deputado Estadual</paper-item>
-            <paper-item>Deputado Distrital</paper-item>
-          </paper-listbox>
-        </paper-dropdown-menu>
-        <paper-dropdown-menu label="Categoria" on-value-changed="filterCampaign" name="categories">
-          <paper-listbox slot="dropdown-content" class="dropdown-content">
-            <template id="statesList" is="dom-repeat" items="{{categories}}" as="category">
-              <paper-item>{{category}}</paper-item>
-            </template>
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-    </app-drawer>
 
     <dom-if if="{{!campaigns.length}}">
       <template>
@@ -277,7 +282,8 @@
         }
 
         _openFilter() {
-          this.$.filter.toggle();
+          this.$.collapse.toggle();
+
         }
 
         _openCampaignForm() {

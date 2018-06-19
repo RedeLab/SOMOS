@@ -40,6 +40,7 @@
     "google-youtube": "GoogleWebComponents/google-youtube#^2.0.0",
     "paper-progress": "PolymerElements/paper-progress#^2.1.1",
     "paper-spinner": "PolymerElements/paper-spinner#^2.1.0",
+    "iron-collapse": "PolymerElements/iron-collapse#^2.2.1",
     "share-menu": "https://github.com/RedeLab/share-menu.git#148f7bb6f5",
     "paper-toast": "PolymerElements/paper-toast#^2.1.1"
     "skeleton-carousel": "FabricElements/skeleton-carousel#^2.0.5"
