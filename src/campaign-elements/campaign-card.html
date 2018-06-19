@@ -13,9 +13,10 @@
     <style include="shared-styles"></style>
     <style>
       :host {
-        width: 85%;
-        max-width: 300px;
-        display: inline-block;
+        width: 100%;
+        max-width: 500px;
+        display: block;
+        margin: 0 auto 20px ;
         background: var(--secondary-background-color);
         @apply --default-font;
       }
@@ -95,25 +96,25 @@
       .support-status {
         margin-right: 5px;
       }
-      
+
     </style>
 
-    <firebase-storage-ref 
+    <firebase-storage-ref
       metadata="{{metadata}}"
       storage-uri="{{gsUri}}"
       download-url="{{downloadUrl}}"
-      log="true" 
+      log="true"
       id="storage">
     </firebase-storage-ref>
 
-    <firebase-query 
-      id="follow" 
-      path="/users/{{user.uid}}/campaigns/{{key}}" 
+    <firebase-query
+      id="follow"
+      path="/users/{{user.uid}}/campaigns/{{key}}"
       data="{{follow}}">
     </firebase-query>
 
-    <firebase-document 
-      id="document" 
+    <firebase-document
+      id="document"
       path="/campaigns/{{key}}">
     </firebase-document>
 
