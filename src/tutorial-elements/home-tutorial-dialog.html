@@ -97,6 +97,7 @@
       _setTutorial() {
         this.user.tutorial.home = true;
         this.$.user.db.ref(`/users/${this.userKey}/content`).set(this.user);
+        this.dispatchEvent(new CustomEvent('close-tutorial', {}));
       }
 
     }

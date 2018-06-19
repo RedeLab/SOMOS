@@ -21,6 +21,7 @@
 <link rel="import" href="../campaign-elements/social-dialog.html">
 <link rel="import" href="../campaign-elements/create-campaign-dialog.html">
 <link rel="import" href="../campaign-elements/edit-campaign-dialog.html">
+<link rel="import" href="../tutorial-elements/new-campaign-tutorial-dialog.html">
 <link rel="import" href="../app-elements/app-dialog.html">
 <link rel="import" href="../app-elements/app-scrollable-dialog.html">
 <link rel="import" href="../app-elements/app-form-header.html">
@@ -49,7 +50,7 @@
         bottom: 0;
         padding: 5px 0;
         width: 100%;
-        background-color: var(--primary-background-color);  
+        background-color: var(--primary-background-color);
       }
       .fill {
         flex: 1;
@@ -242,6 +243,10 @@
 
     </style>
 
+    <app-dialog id="tutorial">
+      <new-campaign-tutorial-dialog user="{{userTutorial}}" user-key="{{user.uid}}" on-close-tutorial="_closeTutorial"></new-campaign-tutorial-dialog>
+    </app-dialog>
+
     <app-dialog id="confirm" opened="{{openedModal}}">
       <create-campaign-dialog></create-campaign-dialog>
     </app-dialog>
@@ -262,10 +267,10 @@
       <social-dialog on-save-social="_saveSocialLink"></social-dialog>
     </app-dialog>
 
-    <app-route 
-      route="{{route}}" 
-      query-params="{{params}}" 
-      pattern="/:page/:key" 
+    <app-route
+      route="{{route}}"
+      query-params="{{params}}"
+      pattern="/:page/:key"
       data="{{data}}">
     </app-route>
 
@@ -274,33 +279,39 @@
       data="{{campaignData}}">
     </firebase-document>
 
+    <firebase-document
+      id="userTutorial"
+      path="/users/{{user.uid}}/content"
+      data="{{userTutorial}}">
+    </firebase-document>
+
     <firebase-query
       id="proposal"
       path="/proposals/[[campaignId]]"
       data="{{proposalData}}">
     </firebase-query>
 
-    <firebase-storage-multiupload 
+    <firebase-storage-multiupload
       path="/campaigns/[[campaignId]]"
       files="[[fileArray]]"
       upload-tasks="{{uploadTasks}}"
       id="storage">
     </firebase-storage-multiupload>
 
-    <firebase-storage-multiupload 
+    <firebase-storage-multiupload
       path="/campaigns/[[campaignId]]/attachments"
       files="[[attachmentsArray]]"
       upload-tasks="{{uploadTasks}}"
       id="attachmentsStorage">
     </firebase-storage-multiupload>
 
-    <firebase-storage-multiupload 
+    <firebase-storage-multiupload
       path="/proposals/[[campaignId]]"
       files="[[proposalArray]]"
       upload-tasks="{{uploadTasks}}"
       id="proposalStorage">
     </firebase-storage-multiupload>
-    
+
     <app-header-layout has-scrolling-region>
       <app-form-header slot="header" shadow>
         <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
@@ -488,6 +499,10 @@
           states: {
             type: Array,
             value: ["Acre", "Alagoas", "Amapá	", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"]
+          },
+          userTutorial: {
+            type: Object,
+            observer: 'showTutorial'
           }
         };
       }
@@ -534,7 +549,7 @@
           reader.readAsDataURL(photo);
         }
       }
-        
+
       getCoverPhoto(e) {
         let photo = e.target.files[0];
         if (photo) {
@@ -649,7 +664,7 @@
           this.campaign.coverImage = this.$.coverPhoto.files[0].name;
           this.fileArray.push(this.$.coverPhoto.files[0]);
         }
-        
+
         if(this.$.candidatePhoto.files[0]) {
           if(this.campaign.candidateImage) {
             this.$.storage.ref.child(this.campaign.candidateImage).delete();
@@ -737,6 +752,17 @@
           this.nextLabel = 'Próximo';
           this.data.key = undefined;
         }
+      }
+
+      showTutorial(user) {
+        if(!user) return;
+        if(user.tutorial && !user.tutorial.createCampaign) {
+          this.$.tutorial.present();
+        }
+      }
+
+      _closeTutorial() {
+        this.$.tutorial.close();
       }
 
     }
