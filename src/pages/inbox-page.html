@@ -19,6 +19,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../app-elements/app-icons.html">
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../mission-elements/mission-card.html">
+<link rel="import" href="../tutorial-elements/home-tutorial-dialog.html">
+<link rel="import" href="../app-elements/app-dialog.html">
 
 <dom-module id="inbox-page">
   <template>
@@ -60,6 +62,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </firebase-document>
 
     <firebase-document
+      id="userTutorial"
+      path="/users/{{user.uid}}/content"
+      data="{{userTutorial}}">
+    </firebase-document>
+
+    <firebase-document
       id="missions"
       path="/missions"
       data="{{allMissions}}">
@@ -70,6 +78,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       path="/users/{{user.uid}}/accepted"
       data="{{acceptedMissions}}">
     </firebase-query>
+
+    <app-dialog id="tutorial" opened="{{openedModal}}">
+      <home-tutorial-dialog user="{{userTutorial}}" user-key="{{user.uid}}"></home-tutorial-dialog>
+    </app-dialog>
 
     <app-header-layout has-scrolling-region>
 
@@ -164,6 +176,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           userAcceptedMissions: {
             type: Array,
             value: []
+          },
+          userTutorial: {
+            type: Object,
+            observer: 'showTutorial'
           }
         }
       }
@@ -254,6 +270,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _openStatatisticsPage() {
         this.set("route.path", "/statistics");
       }
+
+      showTutorial(user) {
+        if(!user) return;
+        if(user.tutorial && !user.tutorial.home) {
+          this.$.tutorial.present();
+        }
+      }
+
     }
     window.customElements.define(InboxPage.is, InboxPage);
   </script>

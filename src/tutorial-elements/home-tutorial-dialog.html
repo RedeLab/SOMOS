@@ -1,0 +1,105 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/skeleton-carousel/skeleton-carousel.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+
+<dom-module id="home-tutorial-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        @apply --default-font;
+        font-size: 1rem;
+      }
+      skeleton-carousel {
+        --skeleton-carousel: {
+          max-width: 230px;
+        }
+      }
+      skeleton-carousel {
+        --skeleton-carousel-min-height: 250px;
+        --skeleton-carousel-dot: {
+          color: var(--accent-color);
+        }
+      }
+      skeleton-carousel div p:first-of-type {
+        margin: 0;
+      }
+      skeleton-carousel div p:not(:first-of-type) {
+        margin-bottom: 0;
+      }
+      h1 {
+        margin-top: 0;
+        color: var(--accent-color);
+      }
+      .right {
+        text-align: right;
+        margin-top: 10px;
+      }
+      .right paper-button {
+        border-radius: unset;
+      }
+
+    </style>
+
+    <firebase-document
+      id="user"
+    </firebase-document>
+
+    <div>
+      <h4>Como funciona?</h4>
+      <skeleton-carousel dots>
+        <div>
+          <h1>Campanha</h1>
+          <p>Navegue e encontre campanhas que mais façam sentido pra você.</p>
+          <p>Ao apoiar uma campanha você receberá missões relacioandas à ela em sua caixa de entrada</p>
+        </div>
+        <div>
+          <h1>Aceite missões</h1>
+          <p>
+            Você terá uma série de missões em sua caixa de entrada, decida qual você vai realizar vendo sua descrição
+            vídeo de apresentação e a forma de comprovação de realização.
+          </p>
+        </div>
+        <div>
+          <h1>Conclua Missões</h1>
+          <p>
+            Fez uma missão? Verifique o que é pedido como comprovação e clique em <strong>Concluir missão</strong>,
+            é possível que você tenha que anexar algum arquivo para comprovação.
+          </p>
+          <p>
+            Aguarde enquanto um coordenador de campanha valide sua missão.
+          </p>
+          <p>
+            Fique de olho no ranking de usuários.
+          </p>
+          <div class="right">
+            <paper-button on-tap="_setTutorial">Entendi</paper-button>
+          </div>
+        </div>
+      </skeleton-carousel>
+    </div>
+
+  </template>
+  <script>
+    class HomeTutorialDialog extends Polymer.Element {
+      static get is() { return 'home-tutorial-dialog'; }
+      static get properties() {
+        return {
+          user: Object,
+          userKey: String
+        };
+      }
+
+      _setTutorial() {
+        this.user.tutorial.home = true;
+        this.$.user.db.ref(`/users/${this.userKey}/content`).set(this.user);
+      }
+
+    }
+    window.customElements.define(HomeTutorialDialog.is, HomeTutorialDialog);
+  </script>
+</dom-module>
