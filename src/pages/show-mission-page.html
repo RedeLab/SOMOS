@@ -344,7 +344,7 @@
       <template is="dom-if" if="{{mission.content}}">
         <div class="content">
           <h3>Entenda a missão</h3>
-          <p>{{mission.content.description}}</p>
+          <p id="description"></p>
 
           <!-- <a id="leaveMission" href="#">Desistir dessa missão</a> -->
         </div>
@@ -714,6 +714,7 @@
         this._checkOwner();
         this._calcMissionStats();
         this._setActionBtn();
+        this._setDescription();
       }
 
       _campaignChanged() {
@@ -732,6 +733,16 @@
         }.bind(this));
         document.body.appendChild(clonedNode);
         clonedNode.share();
+      }
+
+      _setDescription() {
+        const url = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gim;
+        const scriptTags = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gim;
+        let withLinks = this.mission.content.description.replace(url, '<a href="$&" target="_blank">$&</a>');
+        let description = withLinks.replace(scriptTags, '').replace(/\n/g, "<br />");
+        setTimeout(function() {
+          this.shadowRoot.querySelector('#description').innerHTML = description;
+        }.bind(this), 10);
       }
 
     }
