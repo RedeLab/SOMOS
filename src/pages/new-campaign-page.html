@@ -569,8 +569,12 @@
           this.push('attachmentsArray', file);
           this.push('campaign.attachments', file.name);
         });
+        const clean = this.campaign.attachments;
+        this.campaign.attachments = [];
+        this.set('campaign.attachments', clean);
         if(this.$.campaignAttachments.files) {
           this.$.attachmentsStorage.upload();
+          this.$.campaignAttachments.value = '';
         }
         this._saveCampaign();
       }
@@ -651,9 +655,7 @@
           }.bind(this));
         }
         //upload images
-        if(this.selection === 1) {
-          this._uploadImages();
-        }
+        this._uploadImages();
       }
 
       _uploadImages() {
@@ -675,6 +677,9 @@
 
         if(this.campaignId) {
           this.$.storage.upload();
+          this.$.candidatePhoto.value = '';
+          this.$.coverPhoto.value = '';
+          this.fileArray = [];
         }
       }
 

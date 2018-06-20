@@ -61,7 +61,7 @@
 
       .tall .username,
       .tall .email {
-        color: var(--light-text-color); 
+        color: var(--light-text-color);
         font-size: 0.6em;
         line-height: 1;
         font-weight: 100;
@@ -135,7 +135,7 @@
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
         <app-toolbar class="tall">
           <div bottom-item on-tap="gotoProfile">
-            <iron-image src="{{user.photoURL}}" sizing="cover"> 
+            <iron-image src="{{user.photoURL}}" sizing="cover">
             </iron-image>
             <div class="username">
               {{user.displayName}}
