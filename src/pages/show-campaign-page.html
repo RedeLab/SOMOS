@@ -646,9 +646,7 @@
         if(page === 'c') {
           //compute statistics here
           // user id provided by url
-          console.log('user', this.params.u);
           // service used to share: telegram, whatsapp, facebook, twitter or clipboard
-          console.log('service', this.params.s);
           this.set('route.path', `/show-campaign/${this.data.key}`);
           this.set('params', {});
         }

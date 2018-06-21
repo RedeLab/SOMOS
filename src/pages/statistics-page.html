@@ -290,8 +290,6 @@
         this.set("campaignMissions", []);
         if (e.detail.value) {
           const selectedCampaign = this._getCampaignByName(e.detail.value);
-          console.log("hdsjkhdjskahsjkhakj");
-          console.log(selectedCampaign);
           Promise.all(this._setCampaignFollwers(selectedCampaign)).then(function(res){
             const followers = this.campaignFollowers;
             this._setCampaignMissions(selectedCampaign).then(function(res){
@@ -356,7 +354,6 @@
           this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
           return;
         }
-        console.log(this.domChangeEventCount);
         if (this.domChangeEventCount == 2) {
           this.shadowRoot.querySelector('#inboxLoading').setAttribute('style', 'display:none');
         }

@@ -127,18 +127,26 @@
       sendSignUpCredentials(credentials) {
         this.$.auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
-            // use app-notify to display success message
             if (this.sharedMission) {
               this.dispatchEvent(new CustomEvent('returnToMission', {detail: { mission: this.sharedMission }}));
             }
           }.bind(this))
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            if(err.code === "auth/email-already-in-use") {
+              let input = this.$.login.shadowRoot.querySelector('paper-input');
+              input.invalid = true;
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: 'Usuário já cadastrado. Informe um email válido.'
+              }, bubbles: true, composed: true }));
+            } else {
+            }
+          });
       }
 
       sendSignInCredentials(credentials) {
         this.$.auth.signInWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
-            // use app-notify to display success message
             if (this.sharedMission) {
               this.dispatchEvent(new CustomEvent('returnToMission', {detail: { mission: this.sharedMission }}));
             }
@@ -149,7 +157,12 @@
               input.invalid = true;
               this.dispatchEvent(new CustomEvent('show-notify', { detail: {
                 status: 500,
-                text: 'Senha incorreta. Verifique a senha digitada.'
+                text: 'Senha inválida. Verifique a senha digitada ou o serviço utilizado, caso tenha se cadastrado com Facebook ou Google.'
+              }, bubbles: true, composed: true }));
+            } else if (err.code === 'auth/account-exists-with-different-credential') {
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: `Login efetado com outro serviço. Tente utilizar o Facebook ou Google.`
               }, bubbles: true, composed: true }));
             } else {
               let input = this.$.login.shadowRoot.querySelector('paper-input');
@@ -165,9 +178,15 @@
       authWithProvider(e) {
         this.$.auth.signInWithPopup(e.detail.provider)
           .then(function(res) {
-            // use app-notify to display success message
           }.bind(this))
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            if (err.code === 'auth/account-exists-with-different-credential') {
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: `Login efetado com outro serviço. Tente utilizar o Facebook ou Google.`
+              }, bubbles: true, composed: true }));
+            }
+          });
       }
 
       userChanged(user) {
@@ -224,7 +243,7 @@
             status: 500,
             text: 'Não foi possível encontrar sua localização. Acesse o seu perfil para informar a localidade correta.'
           }, bubbles: true, composed: true}));
-        }.bind(this), 5000);
+        }.bind(this), 10000);
       }
     }
     window.customElements.define(LoginModal.is, LoginModal);

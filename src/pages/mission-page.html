@@ -491,11 +491,9 @@
       }
 
       _editMission() {
-        console.log(this._validMission());
         if (this._validMission()) {
           let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
           if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-          console.log(vid);
           if (vid) this.mission.video = vid;
           this.mission.cid = this.missionCampaign;
           this.$.document.data = this.mission;
@@ -516,8 +514,6 @@
         this.$.modal.shadowRoot.querySelector("share-menu").addEventListener('finished', this._returnToInbox.bind(this));
         this.set("editMissionFunc",  this._editMission.bind(this));
         this.set("saveMissionFunc",  this._saveMission.bind(this));
-        console.log("hdjshdkashdj");
-        console.log(this.saveMissionFunc);
       }
 
     }
