@@ -163,7 +163,7 @@
         padding: 0 20px;
       }
       .share-campaign {
-        position: relative; 
+        position: relative;
       }
       .share-campaign span,
       .share-campaign p {
@@ -230,7 +230,7 @@
         background-color: var(--secondary-background-color);
       }
       .progress paper-progress {
-        width: 100%; 
+        width: 100%;
       }
       .progress .spinner {
         height: 125px;
@@ -243,35 +243,35 @@
       }
     </style>
 
-    <app-route 
-      route="{{route}}" 
+    <app-route
+      route="{{route}}"
       query-params="{{params}}"
-      pattern="/:page/:key" 
+      pattern="/:page/:key"
       data="{{data}}">
     </app-route>
 
-    <firebase-document 
-      id="document" 
-      path="/campaigns/{{data.key}}" 
+    <firebase-document
+      id="document"
+      path="/campaigns/{{data.key}}"
       data="{{campaign}}">
     </firebase-document>
 
-    <firebase-storage-ref 
+    <firebase-storage-ref
       download-url="{{coverImage}}"
       id="storage">
     </firebase-storage-ref>
 
-    <firebase-storage-ref 
+    <firebase-storage-ref
       id="attachmentsStorage">
     </firebase-storage-ref>
 
-    <firebase-query 
+    <firebase-query
       id="follow"
       path="/users/{{user.uid}}/campaigns/{{data.key}}"
       data="{{follow}}">
     </firebase-query>
 
-    <firebase-query 
+    <firebase-query
       id="proposals"
       path="/proposals/{{data.key}}"
       data="{{proposals}}">
@@ -457,8 +457,7 @@
           },
           data: Object,
           campaign: {
-            type: Object,
-            observer: '_setCampaign'
+            type: Object
           },
           follow: {
             type: Array
@@ -490,11 +489,11 @@
         };
       }
       static get observers() {
-        return ['computeStats(data.page)'];
+        return ['computeStats(data.page)', '_setCampaign(campaign.*)'];
       }
 
       _selectedChanged(selected) {
-        // this._checkToggle();
+        this._checkToggle();
          if (!selected) {
           this.$.player.stop();
           this.updateStyles({ '--layer-image': 'linear-gradient(to top, grey, grey)' });
@@ -510,7 +509,7 @@
       _redirectToFollowers() {
         this.set('route.path', `/campaign-followers/${this.data.key}`)
       }
-      
+
       _redirectToProposals() {
         this.set('route.path', `/proposals/${this.data.key}`);
       }
@@ -519,18 +518,19 @@
         this.set('route.path', `/new-campaign/${this.data.key}`);
       }
 
-      _setCampaign(campaign) {
+      _setCampaign(campaignPath) {
+        const campaign = this.campaign;
+        if(!campaign || !campaign.content) return;
         //recover cover image just when exists
-        if(!campaign || !campaign.content || !campaign.content.usersFollow) return;
         if(campaign.content.coverImage) {
           this.$.storage.path = `campaigns/${this.data.key}/${campaign.content.coverImage}`
         }
-        this._setStatistics();
         this._setCampaignDate(campaign);
         this._setAttachments(campaign);
         this._setAdmin(campaign);
         //set toggle if user is following the campaign
         this._checkToggle();
+        this._setStatistics();
       }
 
       _setAttachments(campaign) {
@@ -637,7 +637,7 @@
           this.updateStyles({ '--layer-image': `url(${campaignImage})` });
         }
       }
-      
+
       shareCampaign(e) {
         this.set('route.path', `/campaign-share/${this.data.key}`);
       }
