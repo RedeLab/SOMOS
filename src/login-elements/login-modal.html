@@ -60,7 +60,7 @@
         <p>SOMOS é uma plataforma para engajar eleitores e candidatos
           a desempenharem suas melhores versões pela renovação da política.
         </p>
-        <paper-button class="accent" on-tap="openRegister">Começar</paper-button>
+        <paper-button class="accent" on-tap="openLogin">Começar</paper-button>
         <a class="bottom" href="#">créditos</a>
       </div>
     </div>
@@ -144,13 +144,20 @@
             }
           }.bind(this))
           .catch((err) => {
-            console.log(err.message);
             if(err.code === "auth/wrong-password") {
               let input = this.$.login.shadowRoot.querySelector('paper-input[type="password"]');
               input.invalid = true;
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: 'Senha incorreta. Verifique a senha digitada.'
+              }, bubbles: true, composed: true }));
             } else {
               let input = this.$.login.shadowRoot.querySelector('paper-input');
               input.invalid = true;
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: 'Usuário não existe. Faça um cadastro ou informe uma conta válida.'
+              }, bubbles: true, composed: true }));
             }
           });
       }
@@ -175,7 +182,8 @@
             home: false,
             createCampaign: false,
             findCampaign: false
-          }
+          },
+          state: this.state || 'Distrito Federal'
         };
         this.$.document.db.ref(`/users/${user.uid}/content`).once("value").then(function(result) {
           if(result.val() === null) {
@@ -198,7 +206,6 @@
               let states = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
               let state = results[0].address_components.filter((c) => c.types.includes('administrative_area_level_1'));
               if (state.length > 0 && states.includes(state[0].short_name)) this.state = state[0].long_name;
-              console.log(this.state);
             } else {
               this.dispatchEvent(new CustomEvent('show-notify',{ detail: {
                 status: 400,
