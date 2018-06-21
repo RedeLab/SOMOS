@@ -508,7 +508,7 @@
       }
 
       _checkOwner() {
-        if (this.user.uid == this.mission.content.uid)
+        if (this.user && this.user.uid == this.mission.content.uid)
           this.set("isOwner", true);
       }
 

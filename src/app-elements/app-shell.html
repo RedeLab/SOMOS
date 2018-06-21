@@ -241,7 +241,7 @@
 
       connectedCallback() {
         super.connectedCallback();
-        this.addEventListener('show-notify', this.showMessage.bind(this));
+        document.addEventListener('show-notify', this.showMessage.bind(this));
       }
 
       _routePageChanged(page) {

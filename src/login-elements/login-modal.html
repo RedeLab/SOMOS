@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/geo-location/geo-location.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/google-apis/google-maps-api.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
@@ -43,6 +45,12 @@
         max-width: 250px;
       }
     </style>
+
+    <geo-location latitude="{{latitude}}" longitude="{{longitude}}"
+      on-geo-response="requestGeocoder"></geo-location>
+    <google-maps-api api-key="AIzaSyAUEldVyZu-1NXZj6V6ieYBCbc-GkADIBY"
+      on-api-load="requestGeocoder" id="maps">
+    </google-maps-api>
 
     <div id="content">
       <div class="fill center">
@@ -175,6 +183,41 @@
             this.$.document.ref.set(this.userData);
           }
         }.bind(this));
+      }
+
+      requestGeocoder(e) {
+        if(!google || !this.latitude) {
+          this._fireError();
+          return;
+        }
+        const geocoder = new google.maps.Geocoder;
+        const latlng = { lat: this.latitude, lng: this.longitude };
+        geocoder.geocode({'location': latlng}, (results, status) => {
+          if (status === 'OK') {
+            if (results[0]) {
+              let states = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
+              let state = results[0].address_components.filter((c) => c.types.includes('administrative_area_level_1'));
+              if (state.length > 0 && states.includes(state[0].short_name)) this.state = state[0].long_name;
+              console.log(this.state);
+            } else {
+              this.dispatchEvent(new CustomEvent('show-notify',{ detail: {
+                status: 400,
+                text: `Encontramos dificuldades em identificar sua localidade. Se você não está no Distrito Federal, acesse o seu perfil para corrir a localização.`
+              }, bubbles: true, composed: true}));
+            }
+          } else {
+            this._fireError();
+          }
+        });
+      }
+      _fireError() {
+        setTimeout(function () {
+          if(this.state) return;
+          this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+            status: 500,
+            text: 'Não foi possível encontrar sua localização. Acesse o seu perfil para informar a localidade correta.'
+          }, bubbles: true, composed: true}));
+        }.bind(this), 5000);
       }
     }
     window.customElements.define(LoginModal.is, LoginModal);
