@@ -13,6 +13,8 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-messaging.html">
 
 <link rel="import" href="../pages/login-page.html">
 
@@ -130,6 +132,22 @@
         tail="{{subroute}}">
     </app-route>
 
+    <firebase-document
+      id="userToken"
+      path="/users/{{user.uid}}/content/token"
+      data="[[token]]">
+    </firebase-document>
+
+    <firebase-document
+      id="userPath">
+    </firebase-document>
+
+    <firebase-messaging
+      id="messaging"
+      token="{{token}}"
+      on-message="handleMessage">
+    </firebase-messaging>
+
     <app-drawer-layout fullbleed narrow="{{narrow}}">
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
@@ -206,7 +224,12 @@
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
           rootPath: String,
-          user: Object
+          user: Object,
+          token: {
+            type: String,
+            observer: '_setUserToken'
+          },
+          notifications: Boolean
         };
       }
 
@@ -266,6 +289,22 @@
       showMessage(e) {
         this.$.notify.showMessage(e.detail);
       }
+
+      _setUserToken(token) {
+        // if(!this.user) return;
+        if(!token) {
+          this.$.messaging.requestPermission().then(() => {
+            console.log('user subscribed successfully!');
+            this.$.userPath.path = `/users/${this.user.uid}/content`;
+            this.$.userPath.ref.update({notifications: true});
+          }, (err) => {
+            console.log('user subscribe failed :(', err);
+          });
+        } else {
+
+        }
+      }
+
     }
 
     window.customElements.define(AppShell.is, AppShell);
