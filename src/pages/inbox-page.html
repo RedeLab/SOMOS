@@ -212,8 +212,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _filterMissions() {
         const keys = this.acceptedMissions.map((m) => m.$key);
-        this.inboxMissions = this.userMissions.filter((m) => !keys.includes(m.$key));
-        this.set('userAcceptedMissions',  this.userMissions.filter((m) => keys.includes(m.$key)));
+        this.inboxMissions = this.userMissions.filter((m) => !keys.includes(m.$key)).reverse();
+        this.userAcceptedMissions = this.userMissions.filter((m) => keys.includes(m.$key)).reverse();
         this.hideLoading();
       }
 
@@ -234,7 +234,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _getMissionsByCampaigns() {
-        if (!this.user || !this.appUser || !this.appUser.state) return;
+        if (!this.user || !this.appUser) return;
+        if (!this.appUser.state) this.dispatchEvent(new CustomEvent({detail: {
+          status: 400,
+          text: 'Sua localização está indefinida. Acesse seu perfil e informe seu estado.'
+        }}));
         this._hideFabBtn();
         this.showLoading();
         let user = this.user;
@@ -268,22 +272,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               // of missions, in the format [[m1, m2], [m3, m4]];
               const missionKeys = Object.keys(snapshot.val());
               const missionContents = Object.values(snapshot.val());
-              return  missionContents.filter(function(content) {
+              return  missionContents.filter(function(content, index) {
                 // remove missions by state filter
                 const campaign = campaigns[i];
-                console.log(campaign);
-                console.log(content);
-                console.log(appuser);
                 // if campaign is not for all states, all missions can be shown
-                return (campaign.content.state !== 'Todos' ||
+                const valid = (campaign.content.state !== 'Todos' ||
                   // if campaign is for all states, filter only missions to user state
                   content.content.state === appuser.state ||
                   // and missions to all states.
                   content.content.state === 'Todos');
-              }).map(function(content, index) {
-                // add mission $key to its content
-                content['$key'] =  missionKeys[index];
-                return content;
+                if(valid) content['$key'] = missionKeys[index];
+                return valid;
               }.bind(this));
             });
             // expand the [[m1, m2], [m3, m4]] to [m1, m2, m3, m4];
