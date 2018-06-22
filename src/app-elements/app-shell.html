@@ -227,7 +227,6 @@
           user: Object,
           token: {
             type: String,
-            observer: '_setUserToken'
           },
           notifications: Boolean
         };
@@ -236,6 +235,7 @@
       static get observers() {
         return [
           '_routePageChanged(routeData.page)',
+          '_setUserToken(token, user)'
         ];
       }
 
@@ -290,19 +290,23 @@
         this.$.notify.showMessage(e.detail);
       }
 
-      _setUserToken(token) {
-        // if(!this.user) return;
-        if(!token) {
-          this.$.messaging.requestPermission().then(() => {
-            console.log('user subscribed successfully!');
-            this.$.userPath.path = `/users/${this.user.uid}/content`;
-            this.$.userPath.ref.update({notifications: true});
-          }, (err) => {
-            console.log('user subscribe failed :(', err);
-          });
-        } else {
-
-        }
+      _setUserToken(token, user) {
+        if(token || !user) return;
+        this.$.messaging.requestPermission().then(() => {
+          this.$.userPath.path = `/users/${this.user.uid}/content`;
+          this.$.userPath.ref.update({notifications: true});
+          this.dispatchEvent(new CustomEvent('show-notify'), { detail: {
+            status: 100,
+            text: 'Notificações habilitadas com sucesso.'
+          }});
+        }, (err) => {
+          this.$.userPath.path = `/users/${this.user.uid}/content`;
+          this.$.userPath.ref.update({notifications: false});
+          this.dispatchEvent(new CustomEvent('show-notify'), { detail: {
+            status: 500,
+            text: 'Não foi possível configurar as notificações.'
+          }});
+        });
       }
 
     }

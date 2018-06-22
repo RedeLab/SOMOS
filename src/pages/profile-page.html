@@ -167,7 +167,7 @@
         </div>
         <hr>
         <div class="notify">
-          <span>Receber notificações</span> <paper-toggle-button checked></paper-toggle-button>
+          <paper-toggle-button checked="{{data.notifications}}"><span>Receber notificações</span></paper-toggle-button>
         </div>
         <paper-button class="accent" on-tap="saveUserData">Salvar</paper-button>
       </div>
@@ -225,6 +225,7 @@
           displayName: user.displayName,
           email: user.email,
           state: appUser.state,
+          notifications: appUser.notifications,
           password: 'samplepass',
           confirmpass: 'samplepass'
         };
@@ -250,6 +251,7 @@
             this.set('appUser.photoURL', data.photoURL);
             this.set('appUser.displayName', data.displayName);
             this.set('appUser.state', data.state);
+            this.set('appUser.notifications', data.notifications);
           }.bind(this), 1000));
           if(data.password !== 'samplepass' && this.passProvider) {
             this.$.dialog.present();

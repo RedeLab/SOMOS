@@ -64,15 +64,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </firebase-document>
 
     <firebase-document
-      id="userTutorial"
+      id="appUser"
       path="/users/{{user.uid}}/content"
-      data="{{userTutorial}}">
-    </firebase-document>
-
-    <firebase-document
-      id="missions"
-      path="/missions"
-      data="{{allMissions}}">
+      data="{{appUser}}">
     </firebase-document>
 
     <firebase-query
@@ -82,7 +76,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </firebase-query>
 
     <app-dialog id="tutorial" opened="{{openedModal}}">
-      <home-tutorial-dialog user="{{userTutorial}}" user-key="{{user.uid}}" on-close-tutorial="_closeTutorial"></home-tutorial-dialog>
+      <home-tutorial-dialog user="{{appUser}}" user-key="{{user.uid}}" on-close-tutorial="_closeTutorial"></home-tutorial-dialog>
     </app-dialog>
 
     <app-header-layout has-scrolling-region>
@@ -168,16 +162,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Array,
             value: []
           },
-          allMissions: {
-            type: Array,
-            value: [],
-            observer: '_onAllMissionsChanged'
-          },
           userAcceptedMissions: {
             type: Array,
             value: []
           },
-          userTutorial: {
+          appUser: {
             type: Object,
             observer: 'showTutorial'
           },
@@ -190,7 +179,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _selectedChanged(selected) {
         if(!selected) return;
-        this.showTutorial(this.userTutorial);
+        this.showTutorial(this.appUser);
       }
 
       _hideFabBtn() {
@@ -245,11 +234,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _getMissionsByCampaigns() {
-        if (!this.user || !this.userTutorial || !this.userTutorial.state) return;
+        if (!this.user || !this.appUser || !this.appUser.state) return;
         this._hideFabBtn();
         this.showLoading();
         let user = this.user;
-        let appuser = this.userTutorial;
+        let appuser = this.appUser;
         let missionPromises = [];
         this.$.campaigns.db.ref('/campaigns').once('value', function(snapshot) {
           if(!snapshot.val()) return;
