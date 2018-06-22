@@ -120,7 +120,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         <paper-spinner active></paper-spinner>
       </div>
       <div id="actionsContainer">
-        <app-actions id="actions" selected="{{selected}}" icon="app:add">
+        <app-actions id="actions" selected="{{selectedAction}}" icon="app:add">
           <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="_openMissionForm" name="edit"></paper-fab>
           <paper-tooltip slot="actions" for="newMission">Criar Missão</paper-tooltip>
         </app-actions>
@@ -190,7 +190,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _selectedChanged(selected) {
         if(!selected) return;
-        this._getMissionsByCampaigns();
+        this.showTutorial(this.userTutorial);
       }
 
       _hideFabBtn() {
@@ -245,39 +245,54 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _getMissionsByCampaigns() {
-        if (!this.user) return;
+        if (!this.user || !this.userTutorial || !this.userTutorial.state) return;
         this._hideFabBtn();
         this.showLoading();
         let user = this.user;
+        let appuser = this.userTutorial;
         let missionPromises = [];
         this.$.campaigns.db.ref('/campaigns').once('value', function(snapshot) {
           if(!snapshot.val()) return;
 
           // get the keys of the folllowed campaigs
+          const campaigns = Object.values(snapshot.val());
           const campaignKeys = Object.keys(snapshot.val()).filter((key, i) => {
-            const campaign = Object.values(snapshot.val())[i].content;
+            const campaign = campaigns[i].content;
             return !!campaign.usersFollow && campaign.usersFollow.includes(user.uid);
           });
 
           // map each campaign key into a request to its missions
-          missionPromises = campaignKeys.map(function(campaign) {
+          missionPromises = campaignKeys.map(function(key) {
             return this.$.campaigns.db.ref('/missions')
-              .orderByChild('content/cid').equalTo(campaign).once('value');
+              .orderByChild('content/cid').equalTo(key).once('value');
           }.bind(this));
 
           // wait until all requests are finished
           Promise.all(missionPromises).then(function(snapshots) {
 
-            let nestedMissions = snapshots.filter((snapshot) => {
+            let nestedMissions = snapshots.filter((snapshot, i) => {
               // filter removing empty missions list
+              if(!snapshot.val()) campaigns.splice(i, 1);
               return !!snapshot.val();
-            }).map((snapshot) => {
+            }).map((snapshot, i) => {
               // iterate through valid results and concatenate nested array
               // of missions, in the format [[m1, m2], [m3, m4]];
               const missionKeys = Object.keys(snapshot.val());
               const missionContents = Object.values(snapshot.val());
-              // add mission $key to its content
-              return  missionContents.map(function(content, index) {
+              return  missionContents.filter(function(content) {
+                // remove missions by state filter
+                const campaign = campaigns[i];
+                console.log(campaign);
+                console.log(content);
+                console.log(appuser);
+                // if campaign is not for all states, all missions can be shown
+                return (campaign.content.state !== 'Todos' ||
+                  // if campaign is for all states, filter only missions to user state
+                  content.content.state === appuser.state ||
+                  // and missions to all states.
+                  content.content.state === 'Todos');
+              }).map(function(content, index) {
+                // add mission $key to its content
                 content['$key'] =  missionKeys[index];
                 return content;
               }.bind(this));
@@ -296,7 +311,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onUserChanged() {
         this._getMissionsByCampaigns();
-        this.showTutorial();
       }
 
       _openStatatisticsPage() {
@@ -304,10 +318,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       showTutorial(user) {
-        if(!user) return;
+        if(!user || !this.selected) return;
         if(user.tutorial && !user.tutorial.home) {
           this.$.tutorial.present();
         }
+        this._getMissionsByCampaigns();
       }
 
       _closeTutorial() {
