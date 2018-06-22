@@ -144,6 +144,10 @@
 
       paper-dropdown-menu {
         margin-top: 10px;
+        max-width: calc(50% - 7px);
+      }
+      paper-dropdown-menu.campaign {
+        margin-right: 10px;
       }
 
     </style>
@@ -209,13 +213,22 @@
           <paper-toggle-button checked="{{mission.requiredReceipt}}">Comprovação obrigatória</paper-toggle-button>
         </div>
 
-      <paper-dropdown-menu label="Campanha">
-        <paper-listbox slot="dropdown-content" selected="1">
-          <template is="dom-repeat" items="{{userCampaigns}}">
-            <paper-item>{{item.content.name}}</paper-item>
-          </template>
-        </paper-listbox>
-      </paper-dropdown-menu>
+        <paper-dropdown-menu label="Campanha" class="campaign">
+          <paper-listbox slot="dropdown-content" attr-for-selected="name"
+            on-selected-changed="_enableStateDropdown" fallback-selection="{{userCampaigns.0.content.name}}">
+            <template is="dom-repeat" items="{{userCampaigns}}">
+              <paper-item name="{{item.content.name}}">{{item.content.name}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
+
+        <paper-dropdown-menu label="Estado" class="state" disabled>
+          <paper-listbox slot="dropdown-content" attr-for-selected="name" fallback-selection="{{userCampaigns.0.content.state}}">
+            <template is="dom-repeat" items="{{states}}">
+              <paper-item name="{{item}}">{{item}}</paper-item>
+            </template>
+          </paper-listbox>
+        </paper-dropdown-menu>
 
         <div id="save">
           <paper-button id="saveBtn" toggles raised class="accent">{{missionFormTitle}}</paper-button>
@@ -284,6 +297,10 @@
             type: String,
             value: "Criar Missão"
           },
+          states: {
+            type: Array,
+            value: ["Todos", "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"]
+          },
           saveMissionFunc: Function,
           editMissionFunc: Function,
           confirmationTitle: String,
@@ -312,39 +329,16 @@
         this.set('route.path', '/');
       }
 
-      _saveMission(e) {
-       if (this._validMission()) {
-          this.mission.uid = this.user.uid;
-          let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
-          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-          if (vid) {
-            this.mission.video = vid;
-          } else {
-            this.mission.video = '';
-          }
-          this.mission.cid = this.missionCampaign;
-          this.$.query.ref.push({ content: this.mission });
-          
-          if (this.input && this.input.files.length > 0) {
-            this.set("uploadedFile",  this.input.files[0]);
-            this._saveMissionStorage();
-         }
-         this.set('mission', {});
-         this.sharedMission = this.missionData[this.missionData.length - 1];
-         this.$.confirmation.present();
-       }
-      }
-
-      _getCampaignByName(_name) {
-        let campaignId = "";
-        this.userCampaigns.forEach(function(_value) {
-        let campaignName = _value.content.name.replace(/\s*$/,"");
+      _getCampaignByName(name) {
+        let campaign = "";
+        this.userCampaigns.forEach(function(value) {
+        let campaignName = value.content.name.replace(/\s*$/,"");
         campaignName = campaignName.replace(/\s*^/,"");
-          if (campaignName === _name) {
-            campaignId = _value.key;
+          if (campaignName === name) {
+            campaign = value;
           }
         });
-        return campaignId;
+        return campaign;
       }
 
       _saveMissionStorage() {
@@ -390,30 +384,44 @@
           else if (audioFormats.includes(fileFormat)) {
             this.mission.audioTitle = fileName;
             this.$.genericInput.invalid = false;
-          }
-          else {
+          } else {
             this.$.genericInput.invalid = true;
             valid = false;
           }
-        }
-        else {
+        } else {
           this.mission.video = this.genericInputValue;
           if (!this._validVideo(this.mission.video)) {
             this.$.genericInput.invalid = true;
             valid = false;
-          }
-          else
+          } else {
             this.$.genericInput.invalid = true;
+          }
         }
 
-        const campaignDropdown = this.shadowRoot.querySelector("paper-dropdown-menu");
-        const campaignId = this._getCampaignByName(campaignDropdown.value);
+        const campaignDropdown = this.shadowRoot.querySelector("paper-dropdown-menu.campaign");
+        const campaign = this._getCampaignByName(campaignDropdown.value);
+        const campaignId = campaign.key;
         if (campaignId) {
           this.set("missionCampaign", campaignId);
         } else {
           valid = false;
         }
+        const stateDropdown = this.shadowRoot.querySelector("paper-dropdown-menu.state");
+        if (!stateDropdown.value) {
+          valid = false;
+        }
         return valid;
+      }
+
+      _enableStateDropdown(e) {
+        const campaign = this._getCampaignByName(e.target.selected).content;
+        const stateDropdown = this.shadowRoot.querySelector("paper-dropdown-menu.state");
+        if (campaign.state === 'Todos') {
+          stateDropdown.disabled = false;
+        } else {
+          stateDropdown.disabled = true;
+        }
+        stateDropdown.value = campaign.state;
       }
 
       _validVideo(video) {
@@ -471,7 +479,7 @@
         btn.removeEventListener("tap", this.saveMissionFunc, false);
         this.set('mission', {});
         this.set("missionFormTitle", "Criar Missão");
-        if ((this.route.data != undefined) && (Object.keys(this.route.data).length > 0)) {
+        if (this.route.data && Object.keys(this.route.data).length > 0) {
           const missionID = this.route.data.missionID;
           this.$.document.getStoredValue(`/missions/${missionID}`)
             .then(function(res) {
@@ -488,6 +496,29 @@
 
         if (page === "/mission")
           this._getUserCampaigns();
+      }
+
+      _saveMission(e) {
+        if (this._validMission()) {
+          this.mission.uid = this.user.uid;
+          let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
+          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+          if (vid) {
+            this.mission.video = vid;
+          } else {
+            this.mission.video = '';
+          }
+          this.mission.cid = this.missionCampaign;
+          this.mission.state = this.shadowRoot.querySelector("paper-dropdown-menu.state").value;
+          this.$.query.ref.push({ content: this.mission });
+          if (this.input && this.input.files.length > 0) {
+            this.set("uploadedFile",  this.input.files[0]);
+            this._saveMissionStorage();
+          }
+          this.set('mission', {});
+          this.sharedMission = this.missionData[this.missionData.length - 1];
+          this.$.confirmation.present();
+        }
       }
 
       _editMission() {
