@@ -299,7 +299,7 @@
             status: 100,
             text: 'Notificações habilitadas com sucesso.'
           }});
-        }, (err) => {
+        }).catch((err) => {
           this.$.userPath.path = `/users/${this.user.uid}/content`;
           this.$.userPath.ref.update({notifications: false});
           this.dispatchEvent(new CustomEvent('show-notify'), { detail: {
@@ -308,7 +308,9 @@
           }});
         });
       }
-
+      handleMessage() {
+        console.log('message:', arguments);
+      }
     }
 
     window.customElements.define(AppShell.is, AppShell);
