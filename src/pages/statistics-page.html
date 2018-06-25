@@ -179,30 +179,32 @@
         </app-toolbar>
       </app-header>
       <div class="content">
-        <div class="row">
-          <div class="col">
-            <span>{{campaignFollowers.length}}</span>
-            <span>total de apoiadores</span>
+        <template is="dom-if" if="{{percentageOfMissions}}">
+          <div class="row">
+            <div class="col">
+              <span>{{campaignFollowers.length}}</span>
+              <span>total de apoiadores</span>
+            </div>
+            <div class="col">
+              <span>0</span>
+              <span>novos membros</span>
+            </div>
+            <div class="col">
+              <span>{{activeMembers}}</span>
+              <span>membros ativos</span>
+            </div>
+            <div class="col">
+              <span>{{campaignMissions.length}}</span>
+              <span>missões lançadas</span>
+            </div>
           </div>
-          <div class="col">
-            <span>0</span>
-            <span>novos membros</span>
+          <div class="row">
+            <div class="col">
+              <span>{{percentageOfMissions}}%</span>
+              <span>taxa média de aceite de missões</span>
+            </div>
           </div>
-          <div class="col">
-            <span>{{activeMembers}}</span>
-            <span>membros ativos</span>
-          </div>
-          <div class="col">
-            <span>{{campaignMissions.length}}</span>
-            <span>missões lançadas</span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <span>{{campaignMissions.length}}%</span>
-            <span>porcentagem de missões aceitas</span>
-          </div>
-        </div>
+        </template>
         <paper-card>
       <app-header>
         <app-toolbar>
@@ -425,12 +427,18 @@
       }
 
       _setStatistics() {
-        //set active members statistic
         let unique = [];
         let accepted = 0;
+        let usersAcc = [];
         this.campaignMissions.forEach(function(mission) {
-          if(mission.usersAccepted)
-
+          //set users that accepted missions and missions accepted of total
+          if(mission.content.usersAccepted) {
+            accepted += mission.content.usersAccepted.length;
+            mission.content.usersAccepted.forEach(function(user) {
+              usersAcc = usersAcc.concat(user.uid);
+            });
+          }
+          //set active members statistic
           if(mission.content.receipts) {
             mission.content.receipts.forEach(function(user) {
               if(user.status === 'realized') {
@@ -439,14 +447,16 @@
             }.bind(this));
           }
         }.bind(this));
+        //variables to store calc
+        const newAcc = new Set(usersAcc).size;
+        const percentageOfMissions = Math.floor((accepted * newAcc) / (this.campaignMissions.length * this.campaignFollowers.length) * 100);
+        this.set('percentageOfMissions', percentageOfMissions);
         if(unique.length > 0) {
           const active = new Set(unique).size;
           this.set('activeMembers', active);
         } else {
           this.set('activeMembers', 0);
         }
-
-        //set percentage of missions
 
       }
 
