@@ -10,7 +10,6 @@
     <style include="shared-styles">
       :host {
         display: flex;
-        background: url(/images/frame-bg.svg);
         background-size: cover;
         background-position: center;
         flex-direction: column;
@@ -27,10 +26,10 @@
         background: var(--default-primary-color);
       }
       paper-input {
-        --paper-input-container-color: var(--default-primary-color);
-        --paper-input-container-focus-color: var(--default-primary-color);
-        --paper-input-container-invalid-color: var(--default-primary-color);
-        --paper-input-container-input-color: var(--default-primary-color);
+        --paper-input-container-color: var(--accent-color);
+        --paper-input-container-focus-color: var(--accent-color);
+        --paper-input-container-invalid-color: var(--accent-color);
+        --paper-input-container-input-color: var(--accent-color);
       }
       .facebook {
         color: #1A467B;
@@ -59,10 +58,14 @@
         font-weight: bold;
         color: #99391f;
       }
+      paper-button.plain {
+        color: white;
+        background: var(--accent-color);
+      }
     </style>
     <div class="fill">
       <div class="image">
-        <iron-image sizing="contain" src="/images/logo-white.svg"></iron-image>
+        <iron-image sizing="contain" src="/images/logo.png"></iron-image>
       </div>
       <div class="fields">
         <paper-input label="nome" value="{{name}}" minlength="5" auto-validate

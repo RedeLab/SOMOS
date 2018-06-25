@@ -15,7 +15,11 @@
     <style include="shared-styles">
       :host {
         display: block;
-        background: var(--secondary-background-color);
+        background-color: var(--secondary-background-color);
+        background-image: url(/images/frame-bg.svg);
+        background-repeat: no-repeat;
+        background-position: top center;
+        background-size: 110%;
       }
       #content {
         display: flex;
@@ -28,7 +32,8 @@
         padding: 40px;
       }
       p {
-        min-height: 18vh;
+        text-align: left;
+        font-size: 16px;
       }
       paper-button {
         display: block;
@@ -55,10 +60,21 @@
     <div id="content">
       <div class="fill center">
         <div class="image">
-          <iron-image sizing="contain" src="/images/splash.svg"></iron-image>
+          <iron-image sizing="contain" src="/images/logo.png"></iron-image>
         </div>
-        <p>SOMOS é uma plataforma para engajar eleitores e candidatos
-          a desempenharem suas melhores versões pela renovação da política.
+        <p><strong>Olá!</strong></p>
+        <p>
+          Se você chegou até aqui é porque compartilha da nossa
+          vontade de ocupar e renovar a política.
+        </p>
+        <p>
+          <strong>SOMOS</strong> é uma plataforma de colaboração
+          Entre eleitores e candidatos.
+        </p>
+        <p>
+          Aqui você pode encontrar campanhas que mereçam seu apoio
+          e realizar missões para que elas aconteçam e transformem
+          a sociedade.
         </p>
         <paper-button class="accent" on-tap="openLogin">Começar</paper-button>
         <a class="bottom" href="#">créditos</a>
