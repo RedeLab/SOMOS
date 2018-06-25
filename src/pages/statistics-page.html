@@ -197,7 +197,12 @@
             <span>missões lançadas</span>
           </div>
         </div>
-        <hr>
+        <div class="row">
+          <div class="col">
+            <span>{{campaignMissions.length}}%</span>
+            <span>porcentagem de missões aceitas</span>
+          </div>
+        </div>
         <paper-card>
       <app-header>
         <app-toolbar>
@@ -254,6 +259,9 @@
               value: 0
             },
             activeMembers: {
+              type: Number
+            },
+            percentageOfMissions: {
               type: Number
             }
           }
@@ -417,8 +425,12 @@
       }
 
       _setStatistics() {
+        //set active members statistic
         let unique = [];
+        let accepted = 0;
         this.campaignMissions.forEach(function(mission) {
+          if(mission.usersAccepted)
+
           if(mission.content.receipts) {
             mission.content.receipts.forEach(function(user) {
               if(user.status === 'realized') {
@@ -433,6 +445,9 @@
         } else {
           this.set('activeMembers', 0);
         }
+
+        //set percentage of missions
+
       }
 
     }
