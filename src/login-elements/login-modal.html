@@ -213,7 +213,7 @@
       }
 
       requestGeocoder(e) {
-        if(!google || !this.latitude) {
+        if(!window.google || !this.latitude) {
           this._fireError();
           return;
         }
