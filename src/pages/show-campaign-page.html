@@ -579,13 +579,17 @@
                 if(user.status === 'realized') {
                   unique.push(user.uid);
                 } else {
-                  this.activeMembers = 0;
+                  // this.activeMembers = 0;
                 }
               }.bind(this));
             }
           }.bind(this));
-          const active = new Set(unique).size;
-          this.set('activeMembers', active);
+          if(unique.length > 0) {
+            const active = new Set(unique).size;
+            this.set('activeMembers', active);
+          } else {
+            this.set('activeMembers', 0);
+          }
 
         }.bind(this));
       }

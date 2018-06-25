@@ -78,7 +78,7 @@
         margin-top: 20px;
         margin-left: auto;
         margin-right: auto;
-      } 
+      }
 
       .content paper-card { width: 100%; }
 
@@ -111,13 +111,37 @@
         transform: translate(50%);
       }
 
-
       paper-spinner {
         width: 40px;
         height: 40px;
         padding: 5px;
         background-color: var(--default-primary-color);
         border-radius: 50%;
+      }
+      .row {
+        display: flex;
+        margin: 20px 0;
+      }
+      .row .col {
+        flex: 1;
+        text-align: center;
+        line-height: 1;
+        margin-right: 5px;
+      }
+      .col span:first-child {
+        font-size: 28px;
+      }
+      .row span {
+        display: block;
+      }
+      .row .col span:first-child {
+        font-weight: bold;
+        color: var(--dark-primary-color);
+      }
+      .row .col span:not(:first-child) {
+        font-size: 14px;
+        color: var(--dark-primary-color);
+        font-weight: bold;
       }
     </style>
 
@@ -155,7 +179,26 @@
         </app-toolbar>
       </app-header>
       <div class="content">
-        <paper-card >
+        <div class="row">
+          <div class="col">
+            <span>{{campaignFollowers.length}}</span>
+            <span>total de apoiadores</span>
+          </div>
+          <div class="col">
+            <span>0</span>
+            <span>novos membros</span>
+          </div>
+          <div class="col">
+            <span>{{activeMembers}}</span>
+            <span>membros ativos</span>
+          </div>
+          <div class="col">
+            <span>{{campaignMissions.length}}</span>
+            <span>missões lançadas</span>
+          </div>
+        </div>
+        <hr>
+        <paper-card>
       <app-header>
         <app-toolbar>
           <h4 condensed-title id="ranking-title">Ranking</h4>
@@ -199,7 +242,8 @@
             },
             campaignMissions: {
               type: Array,
-              value: []
+              value: [],
+              observer: '_setStatistics'
             },
             rankingData: {
               type: Array,
@@ -208,6 +252,9 @@
             domChangeEventCount: {
               type: Number,
               value: 0
+            },
+            activeMembers: {
+              type: Number
             }
           }
         }
@@ -346,6 +393,7 @@
       routePathChanged(page) {
         if (page == "/statistics")
           this._getUserCampaigns();
+          this._setStatistics()
       }
 
       hideLoading(force=false) {
@@ -366,6 +414,25 @@
         }
 
         this.domChangeEventCount += 1;
+      }
+
+      _setStatistics() {
+        let unique = [];
+        this.campaignMissions.forEach(function(mission) {
+          if(mission.content.receipts) {
+            mission.content.receipts.forEach(function(user) {
+              if(user.status === 'realized') {
+                unique.push(user.uid);
+              }
+            }.bind(this));
+          }
+        }.bind(this));
+        if(unique.length > 0) {
+          const active = new Set(unique).size;
+          this.set('activeMembers', active);
+        } else {
+          this.set('activeMembers', 0);
+        }
       }
 
     }
