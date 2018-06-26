@@ -223,7 +223,7 @@
         this.$.document.db.ref(`/users/${user.uid}/content`).once("value").then(function(result) {
           if(result.val() === null) {
             this.$.document.path = `/users/${user.uid}/content`;
-            this.$.document.ref.set(this.userData);
+            this.$.document.ref.update(this.userData);
           }
         }.bind(this));
       }

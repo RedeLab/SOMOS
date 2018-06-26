@@ -301,6 +301,7 @@
               <paper-icon-button icon="app:more-vert" slot="dropdown-trigger"></paper-icon-button>
               <paper-listbox slot="dropdown-content">
                 <paper-item on-tap="_goToEdit">Editar campanha</paper-item>
+                <paper-item on-tap="_goToAdmins">Adicionar admins</paper-item>
               </paper-listbox>
             </paper-menu-button>
           </template>
@@ -521,6 +522,10 @@
         this.set('route.path', `/new-campaign/${this.data.key}`);
       }
 
+      _goToAdmins() {
+        this.set('route.path', `/campaign-admins/${this.data.key}`);
+      }
+
       _setCampaign(campaignPath) {
         const campaign = this.campaign;
         if(!campaign || !campaign.content) return;
@@ -557,7 +562,7 @@
 
       _setAdmin(campaign) {
         if(!this.user) return;
-        if(campaign.content.uid === this.user.uid) {
+        if(campaign.content.admins.includes(this.user.uid)) {
           this.isAdmin = true;
         } else {
           this.isAdmin = false;

@@ -235,7 +235,7 @@
       }
 
       _onCampaignChanged() {
-        if (Object.keys(this.campaign).length == 0) return;
+        if (Object.keys(this.campaign).length == 0 || !this.campaign.content.candidateImage) return;
         this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
           this.set("candidatePhoto", photo);
         }.bind(this));

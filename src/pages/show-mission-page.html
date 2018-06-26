@@ -239,8 +239,7 @@
 
     <firebase-document
       id="campaign"
-      data="{{campaign}}"
-      log="true">
+      data="{{campaign}}">
     </firebase-document>
 
     <firebase-query
@@ -482,7 +481,7 @@
       static get observers() {
         return [
           'routePathChanged(route.path)'
-        ]
+        ];
       }
 
       _selectedChanged(selected) {
@@ -508,8 +507,12 @@
       }
 
       _checkOwner() {
-        if (this.user && this.user.uid == this.mission.content.uid)
+        if(!this.campaign.content || !this.user) return;
+        if(this.campaign.content.admins.includes(this.user.uid)) {
           this.set("isOwner", true);
+        } else {
+          this.set("isOwner", false);
+        }
       }
 
       _observeFinishedModal() {
@@ -718,10 +721,11 @@
       }
 
       _campaignChanged() {
-        if ((Object.keys(this.mission)[0] == "content") && (Object.keys(this.campaign)[0] == "content"))
+        if ((Object.keys(this.mission)[0] == "content") && (Object.keys(this.campaign)[0] == "content") && this.campaign.content.candidateImage)
           this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.content.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
             this.set("candidatePhoto", photo);
           }.bind(this));
+        this._checkOwner();
       }
 
       _shareMission(e) {

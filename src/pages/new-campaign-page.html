@@ -659,6 +659,7 @@
           this._setCampaignDate();
           this.campaignData = { content: this.campaign };
           this.campaignData.content["usersFollow"] = [this.user.uid];
+          this.campaignData.content["admins"] = [this.user.uid];
           this.$.document.saveValue('/campaigns').then(function() {
             this.campaignId = this.$.document.path.match(/\/.*\/(.*)/)[1];
           }.bind(this));
