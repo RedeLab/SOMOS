@@ -319,6 +319,9 @@
             <span>Brasília/DF</span>
             <span>Começou em: {{campaignDate}}</span>
             <span>Partido: {{campaign.content.party}}</span>
+            <template is="dom-if" if="{{campaign.content.vice}}">
+              <span>Vice: {{campaign.content.vice}}</span>
+            </template>
           </div>
           <div class="support">
             <span>Apoiando</span>

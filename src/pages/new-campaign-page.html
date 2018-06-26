@@ -360,6 +360,7 @@
                 </paper-listbox>
               </paper-dropdown-menu>
               <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX" value="{{campaign.membership}}"></paper-input>
+              <paper-input id="viceCandidate" label="Nome do Vice" placeholder="Nome do vice candidato" value="{{campaign.vice}}"></paper-input>
               <paper-input label="Video de apresentação" placeholder="Link do vídeo de apresentação" value="{{campaign.video}}"></paper-input>
             </div>
           </div>
@@ -505,7 +506,7 @@
         };
       }
 
-      static get observers() { return ['_validateCampaign(campaign.*, proposalData.*)', '_setEditCampaign(data.key)']; }
+      static get observers() { return ['_validateCampaign(campaign.*, proposalData.*)', '_setEditCampaign(data.key)', '_showViceInput(campaign.*)']; }
 
       _selectedChanged(selected) {
         if (!selected) return;
@@ -534,6 +535,16 @@
         const data = e.detail;
         this.set(`campaign.${this.$.social.socialMedia}`, data.link);
         this.$.social.dismiss();
+      }
+
+      _showViceInput(campaignPath) {
+        const campaign = this.campaign;
+        if(campaign.role === 'Presidente') {
+          this.$.viceCandidate.style.display = 'block';
+        } else {
+          this.$.viceCandidate.style.display = 'none';
+        }
+
       }
 
       getCandidatePhoto(e) {
