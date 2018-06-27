@@ -121,11 +121,13 @@
     <div class="card campaign-card">
       <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
       <div class="card-content">
-        <h1>
-          {{campaign.name}}
-          <paper-icon-button icon="app:arrow-forward"></paper-icon-button>
-        </h1>
-        <a on-tap="_goToCampaign"></a>
+          <h1>
+            {{campaign.name}}
+            <paper-icon-button disabled="{{disabled}}" icon="app:arrow-forward"></paper-icon-button>
+          </h1>
+          <template is="dom-if" if="{{!disabled}}">
+          <a on-tap="_goToCampaign"></a>
+        </template>
         <div class="secondary-title">
           <span>{{campaign.role}}</span>
         </div>
@@ -157,7 +159,11 @@
           },
           key: String,
           path: String,
-          user: Object
+          user: Object,
+          disabled: {
+            type: Boolean,
+            value: false
+          }
         };
       }
 
