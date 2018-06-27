@@ -19,14 +19,15 @@
       }
       p {
         margin-bottom: 20px;
+        word-wrap: break-word;
       }
 
     </style>
 
-    <firebase-storage-ref 
+    <firebase-storage-ref
       metadata="{{metadata}}"
-      storage-uri="{{gsUri}}" 
-      download-url="{{downloadUrl}}" 
+      storage-uri="{{gsUri}}"
+      download-url="{{downloadUrl}}"
       id="storage">
     </firebase-storage-ref>
     <template is="dom-if" if="{{downloadUrl}}">
@@ -34,7 +35,9 @@
     </template>
     <div class="content">
       <h1>{{proposal.content.title}}</h1>
-      <p>{{proposal.content.description}}</p>
+      <div class="">
+        <p id="description"></p>
+      </div>
     </div>
   </template>
   <script>
@@ -54,10 +57,21 @@
         if(this.proposal && this.proposal.content.image) {
           this.$.storage.path = `proposals/${this.data.key}/${this.proposal.content.image}`;
         }
+        this._setDescription();
       }
 
       _dismiss(e) {
         this.dispatchEvent(new CustomEvent('close-dialog'));
+      }
+
+      _setDescription() {
+        const url = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gim;
+        const scriptTags = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gim;
+        let withLinks = this.proposal.content.description.replace(url, '<a href="$&" target="_blank">$&</a>');
+        let description = withLinks.replace(scriptTags, '').replace(/\n/g, "<br />");
+        setTimeout(function() {
+          this.shadowRoot.querySelector('#description').innerHTML = description;
+        }.bind(this), 10);
       }
 
     }
