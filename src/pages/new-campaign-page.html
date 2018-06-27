@@ -352,7 +352,7 @@
                 </paper-listbox>
               </paper-dropdown-menu>
               <paper-input label="Cidade" placeholder="Digite o nome da cidade" value="{{campaign.city}}" required auto-validate error-message="Digite uma cidade para a campanha!"></paper-input>
-              <paper-input label="Título de eleitor" placeholder="XXXXXX-XXX" value="{{campaign.voter}}"></paper-input>
+              <paper-input id="voterInput" label="Título de eleitor" placeholder="123456781234" required  error-message="Este título de eleitor não está autorizado a criar campanhas" value="{{campaign.voter}}"></paper-input>
               <paper-dropdown-menu label="Escolha o partido" value="{{campaign.party}}">
                 <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
                   <paper-item>Rede</paper-item>
@@ -499,6 +499,10 @@
             type: Array,
             value: ["Todos", "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"]
           },
+          validVoter: {
+            type: Array,
+            value: ["000000000000", "111111111111"]
+          },
           userTutorial: {
             type: Object,
             observer: 'showTutorial'
@@ -620,6 +624,14 @@
           }
           if(!this.campaign.city) {
             valid = false;
+          }
+          if(!this.validVoter.includes(this.campaign.voter)) {
+            valid = false;
+            if(this.campaign.voter && this.campaign.voter.length >= 12 && !valid) {
+              this.$.voterInput.invalid = true;
+            } else {
+              this.$.voterInput.invalid = false;
+            }
           }
         }
         //validation of second step
