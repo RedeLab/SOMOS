@@ -241,6 +241,9 @@
       paper-menu-button {
         padding: 0;
       }
+      #description {
+        word-wrap: break-word;
+      }
     </style>
 
     <app-route
@@ -357,7 +360,7 @@
         </div>
         <hr>
         <div class="description">
-          <p>{{campaign.content.description}}</p>
+          <p id="description"></p>
         </div>
         <hr>
       </div>
@@ -538,6 +541,7 @@
         this._setAdmin(campaign);
         //set toggle if user is following the campaign
         this._checkToggle();
+        this._setDescription();
         this._setStatistics();
       }
 
@@ -674,6 +678,16 @@
 
       closeProposalDialog() {
         this.$.detail.close();
+      }
+
+      _setDescription() {
+        const url = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gim;
+        const scriptTags = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gim;
+        let withLinks = this.campaign.content.description.replace(url, '<a href="$&" target="_blank">$&</a>');
+        let description = withLinks.replace(scriptTags, '').replace(/\n/g, "<br />");
+        setTimeout(function() {
+          this.shadowRoot.querySelector('#description').innerHTML = description;
+        }.bind(this), 10);
       }
     }
 
