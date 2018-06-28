@@ -118,6 +118,10 @@
           sharedMission: {
             type: String,
           value: ""
+          },
+          state: {
+            type: String,
+            observer: '_stateChanged'
           }
         };
       }
@@ -210,20 +214,24 @@
         this.requestGeocoder();
         if(!user.displayName && this.signUpData && this.signUpData.displayName)
           user.updateProfile({ displayName: this.signUpData.displayName });
-        const name = user.displayName || this.signUpData.displayName;
+      }
+
+      _stateChanged(state) {
+        if(!state) return;
+        const name = this.user.displayName || this.signUpData.displayName;
         this.userData = {
           displayName: name,
-          photoURL: user.photoURL,
+          photoURL: this.user.photoURL,
           tutorial: {
             home: false,
             createCampaign: false,
             findCampaign: false
           },
-          state: this.state || 'Distrito Federal'
         };
-        this.$.document.db.ref(`/users/${user.uid}/content`).once("value").then(function(result) {
-          if(result.val() === null) {
-            this.$.document.path = `/users/${user.uid}/content`;
+        this.$.document.db.ref(`/users/${this.user.uid}/content`).once("value").then(function(result) {
+          if(result.val()) this.userData.state = result.val().state || this.state;
+          if(!result.val().tutorial) {
+            this.$.document.path = `/users/${this.user.uid}/content`;
             this.$.document.ref.update(this.userData);
           }
         }.bind(this));
@@ -235,6 +243,7 @@
           this._fireError();
           return;
         }
+        console.log('requesting geocoder...');
         const geocoder = new google.maps.Geocoder;
         const latlng = { lat: this.latitude, lng: this.longitude };
         geocoder.geocode({'location': latlng}, (results, status) => {
@@ -244,24 +253,31 @@
               let state = results[0].address_components.filter((c) => c.types.includes('administrative_area_level_1'));
               if (state.length > 0 && states.includes(state[0].short_name)) this.state = state[0].long_name;
             } else {
-              this.dispatchEvent(new CustomEvent('show-notify',{ detail: {
-                status: 400,
-                text: `Encontramos dificuldades em identificar sua localidade. Se você não está no Distrito Federal, acesse o seu perfil para corrir a localização.`
-              }, bubbles: true, composed: true}));
+              this.state = 'Distrito Federal';
+              this._fireWarning();
             }
           } else {
             this._fireError();
           }
         });
       }
+
       _fireError() {
         setTimeout(function () {
-          if(this.state) return;
+          if(this.state || this.userData && this.userData.state) return;
+          this.state = 'indefinido';
           this.dispatchEvent(new CustomEvent('show-notify', { detail: {
             status: 500,
             text: 'Não foi possível encontrar sua localização. Acesse o seu perfil para informar a localidade correta.'
           }, bubbles: true, composed: true}));
         }.bind(this), 10000);
+      }
+
+      _fireWarning() {
+        this.dispatchEvent(new CustomEvent('show-notify',{ detail: {
+          status: 400,
+          text: `Encontramos dificuldades em identificar sua localidade. Se você não está no Distrito Federal, acesse o seu perfil para corrir a localização.`
+        }, bubbles: true, composed: true}));
       }
     }
     window.customElements.define(LoginModal.is, LoginModal);

@@ -134,12 +134,6 @@
     </app-route>
 
     <firebase-document
-      id="userToken"
-      path="/users/{{user.uid}}/content/token"
-      data="[[token]]">
-    </firebase-document>
-
-    <firebase-document
       id="userPath">
     </firebase-document>
 
@@ -293,21 +287,33 @@
       }
 
       _setUserToken(token, user) {
-        if(token || !user) return;
-        this.$.messaging.requestPermission().then(() => {
+        if(!user) return;
+
+        this.$.messaging.messaging.getToken().then(function(currentToken) {
+          if (currentToken) {
+            return Promise.resolve(currentToken);
+          } else {
+            // Need to request permissions to show notifications.
+            return this.$.messaging.requestPermission()         
+          }
+        }.bind(this)).then(function(currentToken) {
+          let saveToken = currentToken || token;
           this.$.userPath.path = `/users/${this.user.uid}/content`;
-          this.$.userPath.ref.update({notifications: true});
-          this.dispatchEvent(new CustomEvent('show-notify'), { detail: {
+          this.$.userPath.ref.update({
+            notifications: true,
+            token: saveToken
+          });
+          this.dispatchEvent(new CustomEvent('show-notify', { detail: {
             status: 100,
             text: 'Notificações habilitadas com sucesso.'
-          }});
-        }).catch((err) => {
+          }}));
+        }.bind(this)).catch((err) => {
           this.$.userPath.path = `/users/${this.user.uid}/content`;
           this.$.userPath.ref.update({notifications: false});
-          this.dispatchEvent(new CustomEvent('show-notify'), { detail: {
+          this.dispatchEvent(new CustomEvent('show-notify', { detail: {
             status: 500,
             text: 'Não foi possível configurar as notificações.'
-          }});
+          }}));
         });
       }
       handleMessage() {
