@@ -224,7 +224,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           .then(function(snapshot) {
             if(!snapshot.val()) return;
             const campaigns = Object.values(snapshot.val());
-            campaigns.forEach(function(campaign) {
+            campaigns.every(function(campaign) {
               if(!this.user) return;
               if(!campaign.content.admins.includes(this.user.uid)) {
                 this.$.actionsContainer.style.display = 'none';
@@ -232,6 +232,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               } else {
                 this.$.actionsContainer.style.display = 'block';
                 this.$.statsBtn.style.display = 'block';
+                return false;
               }
             }.bind(this));
           }.bind(this));
