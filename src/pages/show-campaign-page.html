@@ -120,12 +120,14 @@
       .row {
         display: flex;
         margin: 20px 0;
+        flex-wrap: wrap;
       }
       .row .col {
         flex: 1;
         text-align: center;
         line-height: 1;
         margin-right: 5px;
+        margin-top: 5px;
       }
       .col span:first-child {
         font-size: 28px;
@@ -412,6 +414,16 @@
                   <paper-icon-button icon="app:language"></paper-icon-button>
                 </a>
                 <span>website</span>
+              </div>
+            </template>
+          </dom-if>
+          <dom-if if="{{campaign.content.tse}}">
+            <template>
+              <div class="col">
+                <a href="{{campaign.content.tse}}" tabindex="-1" target="_blank">
+                  <paper-icon-button icon="app:account-balance"></paper-icon-button>
+                </a>
+                <span>TSE</span>
               </div>
             </template>
           </dom-if>
