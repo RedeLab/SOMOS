@@ -64,30 +64,30 @@
     </firebase-document>
 
 
-        <div class="content">
-          <div id="modal-header">
-            <h2><span> {{rcptData.userName}} </span></h2>
-            <span> Enviou evidências de que concluiu essa missão </span>
-          </div>
+    <div class="content">
+      <div id="modal-header">
+        <h2><span> {{rcptData.userName}} </span></h2>
+        <span> Enviou evidências de que concluiu essa missão </span>
+      </div>
 
-          <hr>
+      <hr>
 
-          <div class="receipts">
+      <div class="receipts">
 
-            <div class="receipt-text">
-              <span> {{rcptData.description}} </span>
-            </div>
-
-            <a href="{{downloadUrl}}" target="_blank">Comprovante</a>
-
-          <hr>
-
-          <div class="actions">
-            <paper-button id="reject" on-tap="_rejectMission">rejeitar</paper-button>
-            <paper-button id="accept" on-tap="_acceptMission">aceitar</paper-button>
-          </div>
-          </div>
+        <div class="receipt-text">
+          <span> {{rcptData.description}} </span>
         </div>
+
+        <a href="{{downloadUrl}}" target="_blank">Comprovante</a>
+
+      <hr>
+
+      <div class="actions">
+        <paper-button id="reject" on-tap="_rejectMission">rejeitar</paper-button>
+        <paper-button id="accept" on-tap="_acceptMission">aceitar</paper-button>
+      </div>
+      </div>
+    </div>
   </template>
   <script>
     class MissionReceipt extends Polymer.Element {

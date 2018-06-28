@@ -34,10 +34,19 @@
 
       #icon-bg div {
         margin: 4px 4px 4px 5px;
+        position: relative;
       }
 
       paper-icon-button {
         color: white;
+      }
+      #input {
+        opacity: 0;
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        min-width: 300px;
+        min-height: 50px;
       }
 
       .icon-bg paper-icon-button { margin-top: 3px; }
@@ -121,7 +130,8 @@
         <div class="input-file-container">
           <div id="icon-bg">
             <div>
-              <paper-icon-button class="accent block" slot="suffix" icon="app:cloud-upload" on-tap="_openInput"><paper-input id="input" type="file"></paper-input></paper-icon-button>
+              <paper-icon-button class="accent block" slot="suffix" icon="app:cloud-upload" on-tap="_openInput"></paper-icon-button>
+              <input id="input" type="file" value="{{inputFile::change}}"/>
             </div>
           </div>
           <div class="btn-text">
@@ -149,6 +159,10 @@
           input: {
             type: Object
           },
+          inputFile: {
+            type: String,
+            observer: '_setFileName'
+          },
           fileName: {
             type: String,
             value: 'Nenhum arquivo selecionado'
@@ -171,18 +185,12 @@
         }
       }
 
-      _openInput() {
-        this.input = this.$.input.inputElement.inputElement;
-        this.input.addEventListener('change', this._setFileName.bind(this));
-        this.input.click();
-      }
-
       _setFileName() {
-        if(this.input.files.length === 0)
+        if(this.$.input.files.length === 0)
           this.set('fileName',  'Nenhum arquivo selecionado');
         else {
-          this.set('fileName',  this.input.files[0].name);
-          this.set('file',  this.input.files[0]);
+          this.set('fileName',  this.$.input.files[0].name);
+          this.set('file',  this.$.input.files[0]);
         }
       }
 
@@ -196,11 +204,15 @@
           "status": "pending",
           "description": this.description};
 
-        if(this.input && this.input.files.length > 0) {
+        if(this.$.input && this.$.input.files.length > 0) {
           receipt["receiptFileName"] = this.fileName;
           this.fileArray.push(this.file);
           this.$.storage.upload();
           this.set('file', undefined);
+          this.$.input.value = '';
+          this.$.input.files = [];
+          this.set('description', undefined);
+          this.set('fileName', 'Nenhum arquivo selecionado');
         }
         this.push("missionReceipts", receipt);
         this.$.finishConfirmation.present();
