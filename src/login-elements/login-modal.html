@@ -207,6 +207,7 @@
 
       userChanged(user) {
         if(!user) return;
+        this.requestGeocoder();
         if(!user.displayName && this.signUpData && this.signUpData.displayName)
           user.updateProfile({ displayName: this.signUpData.displayName });
         const name = user.displayName || this.signUpData.displayName;
@@ -229,6 +230,7 @@
       }
 
       requestGeocoder(e) {
+        if(!this.user) return;
         if(!window.google || !this.latitude) {
           this._fireError();
           return;

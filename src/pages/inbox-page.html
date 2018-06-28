@@ -222,6 +222,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if(!this.user) return;
         this.$.campaigns.db.ref('/campaigns').orderByChild('content/uid').once('value')
           .then(function(snapshot) {
+            if(!snapshot.val()) return;
             const campaigns = Object.values(snapshot.val());
             campaigns.forEach(function(campaign) {
               if(!this.user) return;
