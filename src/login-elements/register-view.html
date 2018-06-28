@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 
@@ -63,6 +64,8 @@
         background: var(--accent-color);
       }
     </style>
+    <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
+                    on-keys-pressed="submitCredentials"></iron-a11y-keys>
     <div class="fill">
       <div class="image">
         <iron-image sizing="contain" src="/images/logo.png"></iron-image>
@@ -78,7 +81,7 @@
       <paper-button class="plain" on-tap="submitCredentials">Registrar</paper-button>
     </div>
     <div class="social">
-      <div class="social-text">Você também pode usar</div> 
+      <div class="social-text">Você também pode usar</div>
       <div class="social-text">suas redes sociais.</div>
       <paper-icon-button class="facebook" icon="app:facebook" on-tap="signUpWithFacebook"></paper-icon-button>
       <paper-icon-button class="facebook" icon="app:google" on-tap="signUpWithGoogle"></paper-icon-button>
