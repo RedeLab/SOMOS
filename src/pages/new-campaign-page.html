@@ -632,7 +632,7 @@
           }
           if(!this.validVoter.includes(this.campaign.voter)) {
             valid = false;
-            if(this.campaign.voter && this.campaign.voter.length >= 12 && !valid) {
+            if(this.campaign.voter && this.campaign.voter.length <= 12 && !valid) {
               this.$.voterInput.invalid = true;
             } else {
               this.$.voterInput.invalid = false;
