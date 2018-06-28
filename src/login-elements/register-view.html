@@ -77,6 +77,8 @@
           error-message="Informe um email válido."></paper-input>
         <paper-input label="senha" type="password" minlength="8" value="{{password}}"
           auto-validate error-message="A senha deve ter no mínimo 8 caracteres."></paper-input>
+        <paper-input label="confirmação de senha" type="password" minlength="8" pattern="{{password}}"
+          auto-validate error-message="A confirmação deve ser igual a senha"></paper-input>
       </div>
       <paper-button class="plain" on-tap="submitCredentials">Registrar</paper-button>
     </div>

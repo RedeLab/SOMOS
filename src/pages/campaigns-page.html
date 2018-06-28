@@ -4,6 +4,7 @@
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
@@ -48,7 +49,7 @@
       }
       .collapse-content {
         display: flex;
-        padding: 10px 10px 10px 15px;
+        padding: 0 20px;
       }
       .collapse-flex {
         flex: 1;
@@ -78,7 +79,7 @@
         font-size: 22px;
       }
       paper-dropdown-menu {
-        width: calc(33% - 10px);
+        width: calc(33.33% - 10px);
         font-size: 0.9rem;
       }
       paper-dropdown-menu:not(:last-of-type) {
@@ -130,8 +131,20 @@
           <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
           <h1 main-title>Encontrar Campanha</h1>
           <paper-icon-button icon="app:filter" on-tap="_openFilter"></paper-icon-button>
+          <paper-icon-button icon="app:search" on-tap="_openSearch"></paper-icon-button>
         </app-toolbar>
       </app-header>
+      <iron-collapse id="search">
+        <div class="collapse-content">
+          <div class="collapse-flex">
+            <paper-input id="searchField" label="Pesquise pelo nome do candidato">
+              <div slot="suffix">
+                <paper-icon-button icon="app:search" on-tap="filterByText"></paper-icon-button>
+              </div>
+            </paper-input>
+          </div>
+        </div>
+      </iron-collapse>
       <iron-collapse id="collapse">
         <div class="collapse-content">
           <div class="collapse-flex">
@@ -283,7 +296,10 @@
 
         _openFilter() {
           this.$.collapse.toggle();
+        }
 
+        _openSearch() {
+          this.$.search.toggle();
         }
 
         _openCampaignForm() {
@@ -330,7 +346,25 @@
             });
             this.filteredCampaigns = filtered;
           }.bind(this));
-          this.$.filter.close();
+        }
+
+        filterByText(e) {
+          let text = this.$.searchField.value.trim();
+          let filter = this.$.query.ref.orderByChild('content/candidateName').startAt(text).endAt(`${text}\uf8ff`).once('value').then(function(filter) {
+            if (!filter.val()) {
+              this.filteredCampaigns = [];
+              return;
+            }
+            let campaigns = Object.values(filter.val());
+            let filtered = [];
+            campaigns.forEach((campaign, index) => {
+              let obj = {};
+              obj.$key = Object.keys(filter.val())[index];
+              Object.assign(obj, campaign);
+              filtered.push(obj);
+            });
+            this.filteredCampaigns = filtered;
+          }.bind(this));
         }
 
         _hideCampaigns(filteredCampaigns) {

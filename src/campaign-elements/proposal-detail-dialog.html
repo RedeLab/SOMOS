@@ -65,13 +65,15 @@
       }
 
       _setDescription() {
-        const url = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gim;
-        const scriptTags = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gim;
-        let withLinks = this.proposal.content.description.replace(url, '<a href="$&" target="_blank">$&</a>');
-        let description = withLinks.replace(scriptTags, '').replace(/\n/g, "<br />");
-        setTimeout(function() {
-          this.shadowRoot.querySelector('#description').innerHTML = description;
-        }.bind(this), 10);
+        if(this.proposal) {
+          const url = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gim;
+          const scriptTags = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gim;
+          let withLinks = this.proposal.content.description.replace(url, '<a href="$&" target="_blank">$&</a>');
+          let description = withLinks.replace(scriptTags, '').replace(/\n/g, "<br />");
+          setTimeout(function() {
+            this.shadowRoot.querySelector('#description').innerHTML = description;
+          }.bind(this), 10);
+        }
       }
 
     }
