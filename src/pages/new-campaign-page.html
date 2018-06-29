@@ -550,6 +550,7 @@
 
       _showViceInput(campaignPath) {
         const campaign = this.campaign;
+        if(!campaign) return;
         if(campaign.role === 'Presidente') {
           this.$.viceCandidate.style.display = 'block';
         } else {

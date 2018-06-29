@@ -192,8 +192,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             value: []
           },
           appUser: {
-            type: Object,
-            observer: 'showTutorial'
+            type: Object
           },
           userCampaigns: {
             type: Array
@@ -215,12 +214,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       static get observers() {
-        return ['checkCloseModal(userCampaigns.*)'];
+        return ['checkCloseModal(userCampaigns.*)', 'showTutorial(appUser.*)'];
       }
 
       _selectedChanged(selected) {
         if(!selected) return;
-        this.showTutorial(this.appUser);
+        this.showTutorial();
       }
 
       _hideFabBtn() {
@@ -353,7 +352,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.set('route.path', '/statistics');
       }
 
-      showTutorial(user) {
+      showTutorial(appUser) {
+        const user = this.appUser;
         if(!user || !this.selected) return;
         if(user.tutorial && !user.tutorial.home) {
           this.$.tutorial.present();
