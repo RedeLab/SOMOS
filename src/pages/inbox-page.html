@@ -224,7 +224,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _hideFabBtn() {
         if(!this.user) return;
-        this.canSee = this.canSee || false;
         this.$.campaigns.db.ref('/campaigns').orderByChild('content/uid').once('value')
           .then(function(snapshot) {
             if(!snapshot.val()) return;

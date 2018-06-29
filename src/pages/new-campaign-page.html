@@ -632,11 +632,11 @@
           }
           if(!this.validVoter.includes(this.campaign.voter)) {
             valid = false;
-            if(this.campaign.voter && this.campaign.voter.length <= 12 && !valid) {
-              this.$.voterInput.invalid = true;
-            } else {
-              this.$.voterInput.invalid = false;
-            }
+          }
+          if(this.campaign.voter && !valid) {
+            this.$.voterInput.invalid = true;
+          } else {
+            this.$.voterInput.invalid = false;
           }
         }
         //validation of second step
