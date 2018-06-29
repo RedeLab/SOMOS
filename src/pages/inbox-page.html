@@ -205,6 +205,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           openedModal: {
             type: Boolean,
             observer: '_observeTutorial'
+          },
+          canSee: {
+            type: Boolean,
+            value: false
           }
         }
       }
@@ -220,22 +224,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _hideFabBtn() {
         if(!this.user) return;
+        this.canSee = this.canSee || false;
         this.$.campaigns.db.ref('/campaigns').orderByChild('content/uid').once('value')
           .then(function(snapshot) {
             if(!snapshot.val()) return;
             const campaigns = Object.values(snapshot.val());
-            campaigns.every(function(campaign) {
+            campaigns.forEach(function(campaign) {
               if(!this.user) return;
-              if(!campaign.content.admins.includes(this.user.uid)) {
-                this.$.actionsContainer.style.display = 'none';
-                this.$.statsBtn.style.display = 'none';
-              } else {
-                this.$.actionsContainer.style.display = 'block';
-                this.$.statsBtn.style.display = 'block';
-                return false;
+              if(campaign.content.admins.includes(this.user.uid)) {
+                this.canSee = true;
               }
             }.bind(this));
           }.bind(this));
+          if(this.canSee) {
+            this.$.actionsContainer.style.display = 'block';
+            this.$.statsBtn.style.display = 'block';
+          } else {
+            this.$.actionsContainer.style.display = 'none';
+            this.$.statsBtn.style.display = 'none';
+          }
       }
 
       openDrawer() {
