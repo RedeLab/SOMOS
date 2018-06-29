@@ -314,7 +314,6 @@
       <app-form-header slot="header" shadow>
         <paper-icon-button slot="arrow-back" icon="app:back" on-tap="_returnToInbox"></paper-icon-button>
         <span slot="main-title">Criar Campanha</span>
-        <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
       <div class="fill">
         <iron-pages selected="[[selection]]">
@@ -352,7 +351,7 @@
                 </paper-listbox>
               </paper-dropdown-menu>
               <paper-input label="Cidade" placeholder="Digite o nome da cidade" value="{{campaign.city}}" required auto-validate error-message="Digite uma cidade para a campanha!"></paper-input>
-              <paper-input id="voterInput" label="Título de eleitor" placeholder="123456781234" required  error-message="Este título de eleitor não está autorizado a criar campanhas" value="{{campaign.voter}}"></paper-input>
+              <paper-input id="voterInput" label="Título de eleitor" placeholder="XXXXXXXXXXXX" required  error-message="Este título de eleitor não está autorizado a criar campanhas" value="{{campaign.voter}}"></paper-input>
               <paper-dropdown-menu label="Escolha o partido" value="{{campaign.party}}">
                 <paper-listbox slot="dropdown-content" class="dropdown-content" selected="0">
                   <paper-item>Rede</paper-item>
@@ -518,7 +517,10 @@
       static get observers() { return ['_validateCampaign(campaign.*, proposalData.*)', '_setEditCampaign(data.key)', '_showViceInput(campaign.*)']; }
 
       _selectedChanged(selected) {
-        if (!selected) return;
+        if (!selected)  {
+          this.fileArray = [];
+          this.campaign = undefined;
+        }
       }
 
       _returnToInbox() {
@@ -706,7 +708,6 @@
           this.$.storage.upload();
           this.$.candidatePhoto.value = '';
           this.$.coverPhoto.value = '';
-          this.fileArray = [];
         }
       }
 

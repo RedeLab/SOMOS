@@ -513,6 +513,7 @@
 
       _selectedChanged(selected) {
         this._checkToggle();
+        this._setCampaign();
          if (!selected) {
           this.$.player.stop();
           this.updateStyles({ '--layer-image': 'linear-gradient(to top, grey, grey)' });
