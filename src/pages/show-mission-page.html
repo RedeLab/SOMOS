@@ -591,7 +591,7 @@
       _openMissionReceipts() {
         if (this.mission.content.usersPending &&
           this.mission.content.usersPending.length > 0 &&
-          this.mission.content.uid == this.user.uid) {
+          this.campaign.content.admins.includes(this.user.uid)) {
           this.set('route.path', `/mission-receipts/${this.data.key}`);
         }
       }

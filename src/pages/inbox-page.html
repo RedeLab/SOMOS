@@ -220,6 +220,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _selectedChanged(selected) {
         if(!selected) return;
         this.showTutorial();
+        this.canSee = false;
       }
 
       _hideFabBtn() {
