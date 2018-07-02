@@ -280,7 +280,7 @@
         this.set("userCampaigns", []);
         if (Object.keys(this.campaigns).length == 0) return;
         this.campaigns.forEach(function(campaign, index) {
-          if (!(campaign.content.usersFollow == undefined) && campaign.content.uid == this.user.uid){
+          if (!(campaign.content.usersFollow == undefined) && campaign.content.admins.includes(this.user.uid)){
             let _campaign = {};
             _campaign["key"] = campaign.$key;
             _campaign["name"] = campaign.content.name;
