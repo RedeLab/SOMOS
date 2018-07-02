@@ -33,7 +33,7 @@
       }
       p {
         text-align: left;
-        font-size: 16px;
+        font-size: 14px;
       }
       paper-button {
         display: block;
@@ -42,12 +42,21 @@
       }
       .image {
         height: 16vh;
-        margin: 6vh 10px 0;
+        margin: 4vh 10px 0;
       }
       .image iron-image {
         width: 100%;
         height: 100%;
         max-width: 250px;
+      }
+      .image-footer {
+        height: 10vh;
+        margin: 6vh 10px 0;
+      }
+      .image-footer iron-image {
+        width: 100%;
+        height: 100%;
+        max-width: 200px;
       }
     </style>
 
@@ -69,15 +78,17 @@
         </p>
         <p>
           <strong>SOMOS</strong> é uma plataforma de colaboração
-          Entre eleitores e candidatos.
+          entre eleitores e candidatos.
         </p>
         <p>
           Aqui você pode encontrar campanhas que mereçam seu apoio
           e realizar missões para que elas aconteçam e transformem
           a sociedade.
         </p>
-        <paper-button class="accent" on-tap="openLogin">Começar</paper-button>
-        <a class="bottom" href="#">créditos</a>
+        <paper-button class="accent" on-tap="openRegister">Começar</paper-button>
+        <div class="image-footer">
+          <iron-image sizing="contain" src="/images/logos-rede.png"></iron-image>
+        </div>
       </div>
     </div>
 

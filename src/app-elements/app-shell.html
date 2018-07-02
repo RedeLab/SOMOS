@@ -100,6 +100,22 @@
         color: black;
         font-weight: bold;
       }
+      iron-selector {
+        position: relative;
+      }
+      .image-footer {
+        height: 6vh;
+        width: 200px;
+        margin: 0 10px 10px;
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+      }
+      .image-footer iron-image {
+        width: 100%;
+        height: 100%;
+        max-width: 200px;
+      }
       @media screen and (min-width: 961px) {
         app-drawer {
           top: -70px;
@@ -164,6 +180,9 @@
           <a name="campaign" href="[[rootPath]]campaigns">Campanhas</a>
           <hr>
           <a name="login" href="[[rootPath]]login" on-tap="signOut">Sair</a>
+          <div class="image-footer">
+            <iron-image sizing="contain" src="/images/logos-rede.png"></iron-image>
+          </div>
         </iron-selector>
       </app-drawer>
 
@@ -294,7 +313,7 @@
             return Promise.resolve(currentToken);
           } else {
             // Need to request permissions to show notifications.
-            return this.$.messaging.requestPermission()         
+            return this.$.messaging.requestPermission()
           }
         }.bind(this)).then(function(currentToken) {
           let saveToken = currentToken || token;
