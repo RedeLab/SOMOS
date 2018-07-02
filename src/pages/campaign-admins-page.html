@@ -129,7 +129,7 @@
           <template is="dom-repeat" items="{{adminUsers}}" as="user">
             <div class="receipt-item">
               <div class="supporter-img">
-                <iron-image src="{{user.photoURL}}" sizing="cover"></iron-image>
+                <iron-image src="{{setPhoto(user)}}" sizing="cover"></iron-image>
               </div>
               <div class="supporter-name">
                 <span>{{user.displayName}}</span>
@@ -148,7 +148,7 @@
           <template is="dom-repeat" items="{{users}}" as="user">
             <div class="receipt-item">
               <div class="supporter-img">
-                <iron-image src="{{user.photoURL}}" sizing="cover"></iron-image>
+                <iron-image src="{{setPhoto(user)}}" sizing="cover"></iron-image>
               </div>
               <div class="supporter-name">
                 <span>{{user.displayName}}</span>
@@ -259,6 +259,10 @@
           this._fetchUser(this.followers, this.admins);
           this._fetchAdmins(this.admins);
         }.bind(this));
+      }
+
+      setPhoto(user) {
+        return user.photoURL || '/images/user-placeholder.png';
       }
 
     }

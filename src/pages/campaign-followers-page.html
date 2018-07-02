@@ -116,7 +116,7 @@
           <template is="dom-repeat" items="{{users}}" as="user">
             <div class="receipt-item">
               <div class="supporter-img">
-                <iron-image src="{{user.photoURL}}" sizing="cover"></iron-image>
+                <iron-image src="{{setPhoto(user)}}" sizing="cover"></iron-image>
               </div>
               <div class="supporter-name">
                 <span>{{user.displayName}}</span>
@@ -169,6 +169,10 @@
         }.bind(this));
         Promise.all(promises).then(result => this.users = result);
         return true;
+      }
+
+      setPhoto(user) {
+        return user.photoURL || '/images/user-placeholder.png';
       }
 
     }

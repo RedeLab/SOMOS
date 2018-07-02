@@ -98,14 +98,12 @@
     <firebase-document
       id="document"
       path="/missions/{{routeData.key}}"
-      data="{{mission}}"
-      log="true">
+      data="{{mission}}">
     </firebase-document>
 
     <firebase-document
       id="photoDoc"
-      data="{{appUser}}"
-      log="true">
+      data="{{appUser}}">
     </firebase-document>
 
         <div id="inboxLoading">
@@ -116,7 +114,6 @@
         <app-form-header shadow slot="header" fixed condenses effects="waterfall resize-title blend-background parallax-background">
             <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
             <span slot="main-title">{{mission.content.usersAccepted.length}} pessoas aceitaram</span>
-            <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
         </app-form-header>
 
         <div class="content">
@@ -188,7 +185,11 @@
       setUserPhoto(_item) {
         setTimeout(function() {
           this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
-            this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", res.photoURL);
+            if(res.photoURL) {
+              this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", res.photoURL);
+            } else {
+              this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", "/images/user-placeholder.png");
+            }
           }.bind(this));
         }.bind(this), 10);
         return true;

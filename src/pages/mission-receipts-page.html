@@ -121,7 +121,6 @@
       <app-form-header shadow slot="header">
         <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
         <span slot="main-title">{{mission.content.receipts.length}} pessoas concluiram</span>
-        <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
 
       <template is="dom-if" if="{{missionLoaded}}" restamp>
@@ -219,7 +218,11 @@
       setUserPhoto(_item) {
         setTimeout(function() {
           this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
-            this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+            if(res.photoURL) {
+              this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+            } else {
+              this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", "/images/user-placeholder.png");
+            }
           }.bind(this));
         }.bind(this), 10);
         return true;

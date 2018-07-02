@@ -82,6 +82,10 @@
         height: 60px;
         border-radius: 50%;
       }
+      .content {
+        width: 90%;
+        margin: auto;
+      }
 
     </style>
 
@@ -112,21 +116,22 @@
       <app-form-header shadow slot="header">
         <paper-icon-button slot="arrow-back" icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
         <span slot="main-title">{{mission.content.usersFinished.length}} pessoas concluiram</span>
-        <paper-icon-button slot="more-vert" icon="app:more-vert"></paper-icon-button>
       </app-form-header>
 
-      <template is="dom-if" if="{{missionLoaded}}" restamp>
-        <div class="receipts">
-          <template is="dom-repeat" items="{{mission.content.usersFinished}}" filter="setUserPhoto">
-            <div class="receipt-item">
-              <div class="supporter-img">
-                <iron-image  id="{{item.uid}}" sizing="cover"></iron-image>
+      <div class="content">
+        <template is="dom-if" if="{{missionLoaded}}" restamp>
+          <div class="receipts">
+            <template is="dom-repeat" items="{{mission.content.usersFinished}}" filter="setUserPhoto">
+              <div class="receipt-item">
+                <div class="supporter-img">
+                  <iron-image  id="{{item.uid}}" sizing="cover"></iron-image>
+                </div>
+                <div class="supporter-name"> <span>{{item.userName}}</span> </div>
               </div>
-              <div class="supporter-name"> <span>{{item.userName}}</span> </div>
-            </div>
-          </template>
-        </div>
-      </template>
+            </template>
+          </div>
+        </template>
+      </div>
     </app-header-layout>
   </template>
   <script>
@@ -166,7 +171,11 @@
       setUserPhoto(_item) {
         setTimeout(function() {
           this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
-            this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+            if(res.photoURL) {
+              this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+            } else {
+              this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", "/images/user-placeholder.png");
+            }
           }.bind(this));
         }.bind(this), 10);
         return true;
