@@ -231,6 +231,11 @@
         }.bind(this), false) : false);
         if(this.hasMessage) {
           this.set('message', 'Obrigado por colaborar conosco nessa missão! Com sua ajuda, somos mais fortes!');
+        } else {
+          this.set('hasMessage', mission.receipts ? mission.receipts.reduce(function (t, r) {
+            return t || (r.uid === this.uid && r.status === 'rejected');
+          }.bind(this), false) : false);
+          this.set('message', 'Infelizmente a comprovação desta missão foi rejeitada pelo administrador da campanha.');
         }
       }
 
