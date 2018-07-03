@@ -104,8 +104,9 @@
       #upload {
         display: block;
         position: absolute;
-        width: 150px;
-        bottom: 10px;
+        bottom: 0;
+        width: 130px;
+        padding: 10px;
         opacity: 0;
       }
       paper-dropdown-menu {
@@ -223,9 +224,9 @@
           reader.readAsDataURL(photo);
           this.$.photoRef.path = `/users/${this.user.uid}/photo`;
           this.$.photoRef.put(photo).then(function(res) {
+            this.$.photoRef.path += `/${photo.name}`;
             this.$.saveBtn.disabled = false;
           }.bind(this));
-          this.$.photoRef.path += `/${photo.name}`;
         }
       }
 
@@ -255,14 +256,14 @@
         const data = this.data;
 
         if (this._validateInputs(data)) {
-          this.user.updateProfile(data).then(setTimeout(function() {
+          this.user.updateProfile(data).then(function() {
             this.notifyPath('user.displayName');
             this.notifyPath('user.photoURL');
             this.set('appUser.photoURL', data.photoURL);
             this.set('appUser.displayName', data.displayName);
             this.set('appUser.state', data.state);
             this.set('appUser.notifications', data.notifications);
-          }.bind(this), 1000));
+          }.bind(this));
           if(data.password !== 'samplepass' && this.passProvider) {
             this.$.dialog.present();
           }
