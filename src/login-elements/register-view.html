@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 
@@ -63,6 +64,12 @@
         color: white;
         background: var(--accent-color);
       }
+      .fields .checkbox-block {
+        text-align: center;
+      }
+      .fields paper-input:last-of-type {
+        margin-bottom: 20px;
+      }
     </style>
     <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
                     on-keys-pressed="submitCredentials"></iron-a11y-keys>
@@ -79,6 +86,9 @@
           auto-validate error-message="A senha deve ter no mínimo 8 caracteres."></paper-input>
         <paper-input label="confirmação de senha" type="password" minlength="8" pattern="{{password}}"
           auto-validate error-message="A confirmação deve ser igual a senha"></paper-input>
+        <div class="checkbox-block">
+          <paper-checkbox id="checkbox">Li e aceito os <a href="/terms.html" target="_blank">termos de uso</a></paper-checkbox>
+        </div>
       </div>
       <paper-button class="plain" on-tap="submitCredentials">Registrar</paper-button>
     </div>
@@ -110,7 +120,8 @@
         const inputs = Array.from(this.shadowRoot.querySelectorAll('paper-input'));
         let invalid = inputs.reduce((invalid, input) => invalid || input.invalid, false);
         let isblank = inputs.reduce((isblank, input) => isblank || !input.value, false);
-        if(invalid || isblank) return; //TODO: use app-notify to display error message.
+        let terms = this.$.checkbox.checked;
+        if(invalid || isblank || !terms) return; //TODO: use app-notify to display error message.
         else this.credentials = {
           displayName: this.name,
           email: this.email,
