@@ -68,6 +68,9 @@
       .image paper-spinner {
         margin: -50px 60px 35px;
       }
+      .image {
+        position: relative;
+      }
       .username,
       .notify,
       .email {
@@ -96,8 +99,10 @@
       }
       #upload {
         display: block;
-        height: 0;
-        width: 0;
+        position: absolute;
+        width: 150px;
+        bottom: 10px;
+        opacity: 0;
       }
       paper-dropdown-menu {
         width: 100%;
@@ -128,13 +133,13 @@
           <h1 main-title>{{user.displayName}}</h1>
         </app-toolbar>
       </app-header>
-      <input type="file" id="upload" on-change="getPhoto" accept=".jpg, .jpeg, .png"/>
       <div class="fill">
         <div class="cover">
           <div class="image">
             <iron-image id="profile" src="{{user.photoURL}}" sizing="cover">
             </iron-image>
             <paper-icon-button icon="app:create" on-tap="uploadImage"></paper-icon-button>
+            <input type="file" id="upload" on-change="getPhoto" accept=".jpg, .jpeg, .png"/>
             <dom-if if="{{!user}}">
               <template>
                 <paper-spinner active></paper-spinner>
