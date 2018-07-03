@@ -276,7 +276,7 @@
       _fireError() {
         setTimeout(function () {
           if(this.state || this.userData && this.userData.state) return;
-          this.state = 'indefinido';
+          this.state = 'Distrito Federal';
           this.dispatchEvent(new CustomEvent('show-notify', { detail: {
             status: 500,
             text: 'Não foi possível encontrar sua localização. Acesse o seu perfil para informar a localidade correta.'

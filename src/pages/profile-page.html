@@ -97,6 +97,10 @@
         text-align: center;
         border-radius: 20px;
       }
+      paper-button[disabled] {
+        background: #ccc;
+        box-shadow: none;
+      }
       #upload {
         display: block;
         position: absolute;
@@ -173,7 +177,7 @@
         <div class="notify">
           <paper-toggle-button checked="{{data.notifications}}"><span>Receber notificações</span></paper-toggle-button>
         </div>
-        <paper-button class="accent" on-tap="saveUserData">Salvar</paper-button>
+        <paper-button class="accent" id="saveBtn" on-tap="saveUserData">Salvar</paper-button>
       </div>
     </app-header-layout>
   </template>
@@ -210,6 +214,7 @@
       getPhoto(e) {
         let photo = e.target.files[0];
         if(photo) {
+          this.$.saveBtn.disabled = true;
           let reader = new FileReader();
           const img = this.$.profile;
           reader.onload = function (e) {
@@ -218,8 +223,9 @@
           reader.readAsDataURL(photo);
           this.$.photoRef.path = `/users/${this.user.uid}/photo`;
           this.$.photoRef.put(photo).then(function(res) {
-            this.$.photoRef.path += `/${photo.name}`;
+            this.$.saveBtn.disabled = false;
           }.bind(this));
+          this.$.photoRef.path += `/${photo.name}`;
         }
       }
 
@@ -266,14 +272,14 @@
       _updatePassword(e) {
         const password = e.detail.password;
         this.$.auth.signInWithEmailAndPassword(this.user.email, password)
-          .then(function(res) {
-            // use app-notify to display success message
-            this.user.updatePassword(this.data.password);
-            this.$.dialog.dismiss();
-          }.bind(this))
-          .catch(function(err) {
-            this.$.passDialog.passInvalid = true;
-          }.bind(this));
+        .then(function(res) {
+          // use app-notify to display success message
+          this.user.updatePassword(this.data.password);
+          this.$.dialog.dismiss();
+        }.bind(this))
+        .catch(function(err) {
+          this.$.passDialog.passInvalid = true;
+        }.bind(this));
       }
       _validateInputs(data) {
         let valid = true;
