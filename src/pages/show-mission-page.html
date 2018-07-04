@@ -221,6 +221,42 @@
         margin-bottom: 20px;
       }
       .comments h2 { margin: 0; }
+
+      @media screen and (max-width: 600px) {
+        app-header {
+          --app-header-background-front-layer: {
+            background-image: var(--layer-image);
+            background-position: center;
+            background-size: 150%;
+            background-color: grey;
+            filter: contrast(.7) brightness(.6);
+          };
+        }
+      }
+
+      @media screen and (max-width: 400px) {
+        app-header {
+          --app-header-background-front-layer: {
+            background-image: var(--layer-image);
+            background-position: center;
+            background-size: 170%;
+            background-color: grey;
+            filter: contrast(.7) brightness(.6);
+          };
+        }
+      }
+
+      @media screen and (max-width: 359px) {
+        app-header {
+          --app-header-background-front-layer: {
+            background-image: var(--layer-image);
+            background-position: center;
+            background-size: 190%;
+            background-color: grey;
+            filter: contrast(.7) brightness(.6);
+          };
+        }
+      }
     </style>
 
     <app-route route="{{route}}"

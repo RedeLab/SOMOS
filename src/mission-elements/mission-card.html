@@ -140,6 +140,9 @@
         <a href="/show-campaign/{{mission.cid}}">
           <iron-image sizing="cover" class="campaign" src="{{candidatePhoto}}"></iron-image>
           <span>{{campaign.content.name}}</span>
+          <template is="dom-if" if="{{isAdmin}}">
+            <span>ADMINISTRADOR</span>
+          </template>
           <p class="timing"> <iron-icon icon="app:watch-later"></iron-icon> {{remainingTime}} </p>
         </a>
         <paper-icon-button class="go" on-tap= "_goToMission" icon="app:arrow-forward"></paper-icon-button>
@@ -209,7 +212,9 @@
             type: Object,
             observer: "_onCampaignChanged"
           },
-          candidatePhoto: String
+          candidatePhoto: String,
+          uid: String,
+          isAdmin: Boolean
         }
       }
 
@@ -240,7 +245,9 @@
       }
 
       _onCampaignChanged() {
-        if (Object.keys(this.campaign).length == 0 || !this.campaign.content.candidateImage) return;
+        if (Object.keys(this.campaign).length == 0) return;
+        this.isAdmin = this.campaign.content.admins.includes(this.uid);
+        if (!this.campaign.content.candidateImage) return;
         this.$.campaignRef.getDownloadURL(`/campaigns/${this.mission.cid}/${this.campaign.content.candidateImage}`).then(function(photo) {
           this.set("candidatePhoto", photo);
         }.bind(this));

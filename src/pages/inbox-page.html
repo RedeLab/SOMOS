@@ -209,7 +209,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: Boolean,
             value: false,
             observer: '_hideFabBtn'
-          }
+          },
+          adminMissions: Array
         }
       }
 
@@ -259,7 +260,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _filterMissions() {
-        const keys = this.acceptedMissions.map((m) => m.$key);
+        const keys = [].concat.apply([], [this.acceptedMissions.map((m) => m.$key), this.adminMissions]);
         this.inboxMissions = this.userMissions.filter((m) => !keys.includes(m.$key)).reverse();
         this.userAcceptedMissions = this.userMissions.filter((m) => keys.includes(m.$key)).reverse();
         this.hideLoading();
@@ -292,6 +293,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         let user = this.user;
         let appuser = this.appUser;
         let missionPromises = [];
+        let adminMissions = [];
         this.$.campaigns.db.ref('/campaigns').once('value', function(snapshot) {
           if(!snapshot.val()) return;
 
@@ -323,6 +325,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               return  missionContents.filter(function(content, index) {
                 // remove missions by state filter
                 const campaign = campaigns[i];
+                if(campaign.content.admins.includes(user.uid)) {
+                  adminMissions.push(missionKeys[index]);
+                }
                 // if campaign is not for all states, all missions can be shown
                 const valid = (campaign.content.state !== 'Todos' ||
                   // if campaign is for all states, filter only missions to user state
@@ -336,6 +341,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             // expand the [[m1, m2], [m3, m4]] to [m1, m2, m3, m4];
             this.userMissions = [].concat(...nestedMissions);
           }.bind(this)).then(function() {
+            this.adminMissions = adminMissions;
             this._filterMissions();
           }.bind(this));
         }.bind(this));
