@@ -3,8 +3,10 @@
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../app-elements/app-dialog.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="./recover-email-dialog.html">
 
 <dom-module id="login-view">
   <template>
@@ -67,6 +69,11 @@
         background: var(--accent-color);
       }
     </style>
+
+    <app-dialog id="recover">
+      <recover-email-dialog on-close-recover="closeRecoverDialog"></recover-email-dialog>
+    </app-dialog>
+
     <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
                     on-keys-pressed="submitCredentials"></iron-a11y-keys>
     <div class="fill">
@@ -86,8 +93,8 @@
       <div class="social-text">suas redes sociais.</div>
       <paper-icon-button class="facebook" icon="app:facebook" on-tap="signInWithFacebook"></paper-icon-button>
       <paper-icon-button class="facebook" icon="app:google" on-tap="signInWithGoogle"></paper-icon-button>
-      <div class="social-text" on-tap="openRegister">
-        <span>Esqueci minha senha</span> | <span> Não tenho cadastro</span>
+      <div class="social-text">
+        <span on-tap="recoverPassword">Esqueci minha senha</span> | <span on-tap="openRegister">Não tenho cadastro</span>
       </div>
     </div>
   </template>
@@ -131,6 +138,14 @@
 
       setInvalid(e) {
         e.target.invalid = false;
+      }
+
+      recoverPassword() {
+        this.$.recover.present();
+      }
+
+      closeRecoverDialog() {
+        this.$.recover.close();
       }
 
     }

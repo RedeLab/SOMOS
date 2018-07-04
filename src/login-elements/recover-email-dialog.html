@@ -1,0 +1,57 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="recover-email-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        @apply --default-font;
+        font-size: 1rem;
+      }
+      .right {
+        text-align: right;
+        margin-top: 10px;
+      }
+      .right paper-button {
+        border-radius: unset;
+        color: var(--accent-color);
+      }
+
+    </style>
+
+    <firebase-auth id="auth" user="{{user}}" on-error="handleError" status-known="{{statusKnown}}">
+    </firebase-auth>
+
+    <div>
+      <h4>Recuperação de senha</h4>
+      <paper-input id="mail" label="Digite o email" type="email" auto-validate
+        error-message="Informe um email válido."></paper-input>
+      </div>
+      <div class="right">
+        <paper-button on-tap="_sendEmail">Enviar</paper-button>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    class RecoverEmailDialog extends Polymer.Element {
+      static get is() { return 'recover-email-dialog'; }
+      static get properties() {
+        return {};
+      }
+
+      _sendEmail() {
+        const mail = this.$.mail.value;
+        this.$.auth.sendPasswordResetEmail(mail);
+        this.dispatchEvent(new CustomEvent('close-recover', {}));
+      }
+
+    }
+    window.customElements.define(RecoverEmailDialog.is, RecoverEmailDialog);
+  </script>
+</dom-module>
