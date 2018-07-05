@@ -25,6 +25,7 @@
         --app-form-header-color: #000;
         background: var(--secondary-background-color);
         height: 100vh;
+        @apply --default-font;
       }
 
       .receipt-item {
@@ -163,7 +164,7 @@
       _fetchUser(followers) {
         if(!followers) return;
         const promises  = followers.map(function(item) {
-          return this.$.user.ref.child(item.$val).once("value").then(function(result) {
+          return this.$.user.ref.child(item.id).once("value").then(function(result) {
             return result.val().content;
           }.bind(this));
         }.bind(this));

@@ -626,7 +626,8 @@
           toggle.disabled = true;
           return;
         }
-        if(this.campaign.content.usersFollow && this.campaign.content.usersFollow.includes(this.user.uid)) {
+        const followers = this.campaign.content.usersFollow.map(u => u.id);
+        if(this.campaign.content.usersFollow && followers.includes(this.user.uid)) {
           toggle.checked = true;
         } else {
           toggle.checked = false;
@@ -644,10 +645,17 @@
           const campaign = JSON.parse(JSON.stringify(this.campaign));
           delete campaign.content.usersFollow;
           this.$.follow.ref.set(campaign);
-          const usersFollow = new Set(this.campaign.content.usersFollow);
-          usersFollow.add(this.user.uid);
-          this.campaign.content.usersFollow = Array.from(usersFollow);
-          this.$.document.ref.set(this.campaign);
+          const usersFollow = this.campaign.content.usersFollow;
+          if(usersFollow.map(u => u.id).includes(this.user.uid)) return;
+          const user = this.user.uid;
+          const date = Date.now();
+          const newFollower = {
+            id: user,
+            date: date
+          }
+          usersFollow.push(newFollower);
+          this.campaign.content.usersFollow = usersFollow;
+          this.$.document.ref.update(this.campaign);
         } else {
           this._unfollowCampaign();
         }
@@ -655,10 +663,10 @@
 
       _unfollowCampaign(e) {
         this.$.follow.ref.remove();
-        const usersFollow = new Set(this.campaign.content.usersFollow);
-        usersFollow.delete(this.user.uid);
-        this.campaign.content.usersFollow = Array.from(usersFollow);
-        this.$.document.ref.set(this.campaign);
+        const usersFollow = this.campaign.content.usersFollow;
+        const removed = usersFollow.filter(u => u.id !== this.user.uid);
+        this.campaign.content.usersFollow = removed;
+        this.$.document.ref.update(this.campaign);
       }
 
       _setLayerImage(campaignImage) {

@@ -206,12 +206,12 @@
       _fetchUser(followers, admins) {
         if(!followers || !admins) return;
         const adminKeys = admins.map(a => a.$val);
-        const promises  = followers.filter(function(item){
-          return !adminKeys.includes(item.$val);
+        const promises  = followers.map(u => u.id).filter(function(item){
+          return !adminKeys.includes(item);
         }).map(function(item) {
-          return this.$.user.ref.child(item.$val).once("value").then(function(result) {
+          return this.$.user.ref.child(item).once("value").then(function(result) {
             let content = result.val().content;
-            content.key = item.$val;
+            content.key = item;
             return content;
           }.bind(this));
         }.bind(this));

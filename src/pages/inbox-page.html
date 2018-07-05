@@ -301,7 +301,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           const campaigns = Object.values(snapshot.val());
           const campaignKeys = Object.keys(snapshot.val()).filter((key, i) => {
             const campaign = campaigns[i].content;
-            return !!campaign.usersFollow && campaign.usersFollow.includes(user.uid);
+            return !!campaign.usersFollow && campaign.usersFollow.map(u => u.id).includes(user.uid);
           });
 
           // map each campaign key into a request to its missions

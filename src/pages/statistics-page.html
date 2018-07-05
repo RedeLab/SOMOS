@@ -284,7 +284,7 @@
             let _campaign = {};
             _campaign["key"] = campaign.$key;
             _campaign["name"] = campaign.content.name;
-            _campaign["followers"] = campaign.content.usersFollow;
+            _campaign["followers"] = campaign.content.usersFollow.map(u => u.id);
             this.push("userCampaigns", _campaign);
             this.$.campaignsList.selected = "0";
           }
@@ -394,7 +394,11 @@
       setUserPhoto(_item) {
         setTimeout(function() {
           this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
-            this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", res.photoURL);
+            if(res.photoURL) {
+              this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", res.photoURL);
+            } else {
+              this.shadowRoot.querySelector(`#ID-${_item.uid}`).setAttribute("src", "/images/user-placeholder.png");
+            }
           }.bind(this));
         }.bind(this), 10);
         return true;

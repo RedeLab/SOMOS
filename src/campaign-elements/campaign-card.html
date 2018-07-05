@@ -145,7 +145,7 @@
 
   </template>
   <script>
-    class CampaigCard extends Polymer.Element {
+    class CampaignCard extends Polymer.Element {
       static get is() { return 'campaign-card'; }
       static get properties() {
         return {
@@ -177,12 +177,12 @@
 
       _checkToggle() {
         const toggle = this.shadowRoot.querySelector('paper-toggle-button');
-        if(!this.campaign) return;
         if(!this.user) {
           toggle.disabled = true;
-          return;
         }
-        if(this.campaign.usersFollow && this.campaign.usersFollow.includes(this.user.uid)) {
+        if(!this.campaign) return;
+        const followers = this.campaign.usersFollow.map(u => u.id);
+        if(this.campaign.usersFollow && followers.includes(this.user.uid)) {
           toggle.checked = true;
         } else {
           toggle.checked = false;
@@ -195,11 +195,18 @@
         if(follow) {
           const campaign = JSON.parse(JSON.stringify(this.campaign));
           delete campaign.usersFollow;
-          this.$.follow.ref.set({content: campaign});
-          const usersFollow = new Set(this.campaign.usersFollow);
-          usersFollow.add(this.user.uid);
-          this.campaign.usersFollow = Array.from(usersFollow);
-          this.$.document.ref.set({content: this.campaign});
+          this.$.follow.ref.update({content: campaign});
+          const usersFollow = this.campaign.usersFollow;
+          if(usersFollow.map(u => u.id).includes(this.user.uid)) return;
+          const user = this.user.uid;
+          const date = Date.now();
+          const newFollower = {
+            id: user,
+            date: date
+          }
+          usersFollow.push(newFollower);
+          this.campaign.usersFollow = usersFollow;
+          this.$.document.ref.update({content: this.campaign});
         } else {
           this._unfollowCampaign();
         }
@@ -207,10 +214,10 @@
 
       _unfollowCampaign(e) {
         this.$.follow.ref.remove();
-        const usersFollow = new Set(this.campaign.usersFollow);
-        usersFollow.delete(this.user.uid);
-        this.campaign.usersFollow = Array.from(usersFollow);
-        this.$.document.ref.set({content: this.campaign});
+        const usersFollow = this.campaign.usersFollow;
+        const removed = usersFollow.filter(u => u.id !== this.user.uid);
+        this.campaign.usersFollow = removed;
+        this.$.document.ref.update({content: this.campaign});
       }
 
       _goToCampaign() {
@@ -219,6 +226,6 @@
 
     }
 
-    window.customElements.define(CampaigCard.is, CampaigCard);
+    window.customElements.define(CampaignCard.is, CampaignCard);
   </script>
 </dom-module>

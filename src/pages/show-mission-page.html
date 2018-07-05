@@ -586,8 +586,14 @@
           return;
         }
 
-        if (!(this.campaign.content.usersFollow.includes(this.user.uid))) {
-          this.campaign.content.usersFollow.push(this.user.uid);
+        if (!(this.campaign.content.usersFollow.map(u => u.id).includes(this.user.uid))) {
+          const user = this.user.uid;
+          const date = Date.now();
+          const newFollower = {
+            id: user,
+            date: date
+          }
+          this.campaign.content.usersFollow.push(newFollower);
           this.$.campaign.data = this.campaign.content;
           this.$.campaign.saveValue(`/campaigns/${this.mission.content.cid}/`, "content");
         }
