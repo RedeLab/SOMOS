@@ -341,7 +341,7 @@
             <span>total de apoiadores</span>
           </div>
           <div class="col">
-            <span>{{campaign.content.usersFollow.length}}</span>
+            <span>{{newFollowers.length}}</span>
             <span>novos membros</span>
           </div>
           <div class="col">
@@ -504,6 +504,9 @@
           },
           activeMembers: {
             type: Number
+          },
+          newFollowers: {
+            type: Number
           }
         };
       }
@@ -615,8 +618,19 @@
           } else {
             this.set('activeMembers', 0);
           }
-
         }.bind(this));
+        //statistic of new followers
+        let newFollowers = [];
+        if(!this.campaign) return;
+        const followers = this.campaign.content.usersFollow;
+        const date = Date.now();
+        followers.forEach(function(follower) {
+          const days = Math.abs(date - follower.date);
+          if(days < (7*24*60*60*1000)) {
+            newFollowers.push(follower);
+          }
+        });
+        this.set('newFollowers', newFollowers);
       }
 
       _checkToggle() {
