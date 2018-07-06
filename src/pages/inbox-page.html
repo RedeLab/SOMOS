@@ -290,13 +290,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         let appuser = this.appUser;
         let missionPromises = [];
         let adminMissions = [];
-        this.$.campaigns.db.ref('/campaigns').once('value', function(snapshot) {
-          if(!snapshot.val()) return;
+        let campaigns = [];
+        this.$.campaigns.db.ref('/campaigns').once('value', function(campSnapshot) {
+          if(!campSnapshot.val()) return;
 
           // get the keys of the folllowed campaigs
-          const campaigns = Object.values(snapshot.val());
-          const campaignKeys = Object.keys(snapshot.val()).filter((key, i) => {
-            const campaign = campaigns[i].content;
+          campaigns = campSnapshot.val();
+          const campaignKeys = Object.keys(campSnapshot.val()).filter((key, i) => {
+            const campaign = campaigns[key].content;
             return !!campaign.usersFollow && campaign.usersFollow.map(u => u.id).includes(user.uid);
           });
 
@@ -311,7 +312,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
             let nestedMissions = snapshots.filter((snapshot, i) => {
               // filter removing empty missions list
-              if(!snapshot.val()) campaigns.splice(i, 1);
               return !!snapshot.val();
             }).map((snapshot, i) => {
               // iterate through valid results and concatenate nested array
@@ -320,7 +320,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               const missionContents = Object.values(snapshot.val());
               return  missionContents.filter(function(content, index) {
                 // remove missions by state filter
-                const campaign = campaigns[i];
+                const campaign = campaigns[content.content.cid];
                 if(campaign.content.admins.includes(user.uid)) {
                   adminMissions.push(missionKeys[index]);
                 }
