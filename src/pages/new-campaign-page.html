@@ -615,13 +615,12 @@
       }
 
       _setEditCampaign(key) {
-        if(key) {
-          this.$.document.db.ref(`/campaigns/${key}`).once("value").then(function(result) {
-            const campaign = JSON.parse(JSON.stringify(result.val().content));
-            this.campaign = campaign;
-            this.campaignId = key;
-          }.bind(this));
-        }
+        if(!key) return;
+        this.$.document.db.ref(`/campaigns/${key}`).once("value").then(function(result) {
+          const campaign = JSON.parse(JSON.stringify(result.val().content));
+          this.campaign = campaign;
+          this.campaignId = key;
+        }.bind(this));
       }
 
       _setCampaignDate() {
