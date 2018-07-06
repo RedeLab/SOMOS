@@ -249,7 +249,7 @@
         if(!state) return;
         this.userData.state = this.userData.state || this.state;
         this.$.document.path = `/users/${this.user.uid}/content`;
-        this.$.document.ref.update(this.userData);
+        this.$.document.ref.update({ state: this.userData.state });
       }
 
       requestGeocoder(e) {
