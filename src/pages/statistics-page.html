@@ -186,7 +186,7 @@
               <span>total de apoiadores</span>
             </div>
             <div class="col">
-              <span>{{campaignFollowers.length}}</span>
+              <span>{{newFollowers.length}}</span>
               <span>novos membros</span>
             </div>
             <div class="col">
@@ -209,7 +209,6 @@
       <app-header>
         <app-toolbar>
           <h4 condensed-title id="ranking-title">Ranking</h4>
-          <paper-icon-button icon="app:more-vert"></paper-icon-button>
         </app-toolbar>
       </app-header>
           <div class="card-content">
@@ -265,6 +264,14 @@
             },
             percentageOfMissions: {
               type: Number
+            },
+            newFollowers: {
+              type: Array
+            },
+            selectedCampaign: String,
+            campaignForCalc: {
+              type: Object,
+              value: {}
             }
           }
         }
@@ -347,6 +354,7 @@
         this.set("campaignMissions", []);
         if (e.detail.value) {
           const selectedCampaign = this._getCampaignByName(e.detail.value);
+          this.set('selectedCampaign', selectedCampaign);
           Promise.all(this._setCampaignFollwers(selectedCampaign)).then(function(res){
             const followers = this.campaignFollowers;
             this._setCampaignMissions(selectedCampaign).then(function(res){
@@ -461,8 +469,21 @@
         } else {
           this.set('activeMembers', 0);
         }
-
-        
+        //calc new followers statistic
+        if(!this.selectedCampaign) return;
+        this.$.firebase.db.ref(`/campaigns/${this.selectedCampaign.key}`).once('value').then(function(campaign) {
+          this.set('campaignForCalc', campaign.val().content);
+          let newFollowers = [];
+          const followers = this.campaignForCalc.usersFollow;
+          const date = Date.now();
+          followers.forEach(function(follower) {
+            const days = Math.abs(date - follower.date);
+            if(days < (7*24*60*60*1000)) {
+              newFollowers.push(follower);
+            }
+          });
+          this.set('newFollowers', newFollowers);
+        }.bind(this));
 
       }
 

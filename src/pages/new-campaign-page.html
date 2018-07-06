@@ -521,9 +521,11 @@
       static get observers() { return ['_validateCampaign(campaign.*, proposalData.*)', '_setEditCampaign(data.key)', '_showViceInput(campaign.*)']; }
 
       _selectedChanged(selected) {
-        if (!selected)  {
+        if(!selected)  {
           this.fileArray = [];
-          this.campaign = undefined;
+          this.campaign = {};
+          this.$.document.path = undefined;
+          this.campaignData = {};
         }
       }
 
@@ -681,13 +683,16 @@
           this.campaignData = { content: this.campaign };
         } else {
           this._setCampaignDate();
-          this.campaignData = { content: this.campaign };
+          this.campaign.state = this.campaign.state || "Acre";
+          this.campaign.role = this.campaign.role || "Governador";
+          this.campaign.party = this.campaign.party || "Rede";
           const date = Date.now();
-          this.campaignData.content["usersFollow"] = [{
+          this.campaign["usersFollow"] = [{
             id: this.user.uid,
             date: date
           }];
-          this.campaignData.content["admins"] = [this.user.uid];
+          this.campaign["admins"] = [this.user.uid];
+          this.campaignData = { content: this.campaign };
           this.$.document.saveValue('/campaigns').then(function() {
             this.campaignId = this.$.document.path.match(/\/.*\/(.*)/)[1];
           }.bind(this));
@@ -769,6 +774,8 @@
           this._returnToInbox();
           this.selection = 0;
           this.campaign = {};
+          this.$.document.path = undefined;
+          this.campaignData = {};
           this.campaignId = undefined;
           this.fileArray = [];
           this.attachmentsArray = [];
@@ -785,6 +792,8 @@
           this._returnToInbox();
           this.selection = 0;
           this.campaign = {};
+          this.$.document.path = undefined;
+          this.campaignData = {};
           this.campaignId = undefined;
           this.fileArray = [];
           this.attachmentsArray = [];
