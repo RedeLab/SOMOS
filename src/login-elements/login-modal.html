@@ -225,10 +225,6 @@
         this.requestGeocoder();
         if(!user.displayName && this.signUpData && this.signUpData.displayName)
           user.updateProfile({ displayName: this.signUpData.displayName });
-      }
-
-      _stateChanged(state) {
-        if(!state) return;
         const name = this.user.displayName || this.signUpData.displayName;
         this.userData = {
           displayName: name,
@@ -240,12 +236,20 @@
           },
         };
         this.$.document.db.ref(`/users/${this.user.uid}/content`).once("value").then(function(result) {
-          if(result.val()) this.userData.state = result.val().state || this.state;
           if(!result.val().tutorial) {
             this.$.document.path = `/users/${this.user.uid}/content`;
             this.$.document.ref.update(this.userData);
+          } else {
+            this.userData = result.val();
           }
         }.bind(this));
+      }
+
+      _stateChanged(state) {
+        if(!state) return;
+        this.userData.state = this.userData.state || this.state;
+        this.$.document.path = `/users/${this.user.uid}/content`;
+        this.$.document.ref.update(this.userData);
       }
 
       requestGeocoder(e) {
@@ -281,7 +285,7 @@
             status: 500,
             text: 'Não foi possível encontrar sua localização. Acesse o seu perfil para informar a localidade correta.'
           }, bubbles: true, composed: true}));
-        }.bind(this), 10000);
+        }.bind(this), 12000);
       }
 
       _fireWarning() {

@@ -65,7 +65,6 @@
       static get observers() { return []; }
 
       _goToCampaign(e) {
-        console.log('entrou');
         let key = e.detail.campaignKey;
         console.log(key);
         this.set('route.path', `/show-campaign/${key}`);

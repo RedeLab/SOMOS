@@ -208,7 +208,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           canSee: {
             type: Boolean,
             value: false,
-            observer: '_hideFabBtn'
           },
           adminMissions: Array
         }
@@ -225,25 +224,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _hideFabBtn() {
-        if(!this.user) return;
-        this.$.campaigns.db.ref('/campaigns').orderByChild('content/uid').once('value')
+        if(!this.user) {
+          this.canSee = false;
+        } else {
+          this.$.campaigns.db.ref('/campaigns').orderByChild('content/uid').once('value')
           .then(function(snapshot) {
-            if(!snapshot.val()) return;
+            if(!snapshot.val() || !this.user) return;
             const campaigns = Object.values(snapshot.val());
             campaigns.forEach(function(campaign) {
-              if(!this.user) return;
               if(campaign.content.admins.includes(this.user.uid)) {
-                this.canSee = true;
+                this.$.actionsContainer.style.display = 'block';
+                this.$.statsBtn.style.display = 'block';
               }
             }.bind(this));
           }.bind(this));
-          if(this.canSee) {
-            this.$.actionsContainer.style.display = 'block';
-            this.$.statsBtn.style.display = 'block';
-          } else {
-            this.$.actionsContainer.style.display = 'none';
-            this.$.statsBtn.style.display = 'none';
-          }
+        }
+        this.$.actionsContainer.style.display = 'none';
+        this.$.statsBtn.style.display = 'none';
       }
 
       openDrawer() {
@@ -288,7 +285,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           status: 400,
           text: 'Sua localização está indefinida. Acesse seu perfil e informe seu estado.'
         }}));
-        this._hideFabBtn();
         this.showLoading();
         let user = this.user;
         let appuser = this.appUser;
@@ -353,6 +349,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onUserChanged() {
         this._getMissionsByCampaigns();
+        this._hideFabBtn();
       }
 
       _openStatatisticsPage() {
@@ -366,6 +363,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           this.$.tutorial.present();
         }
         this._getMissionsByCampaigns();
+        console.log(user);
       }
 
       _closeTutorial() {
