@@ -258,7 +258,6 @@
           this._fireError();
           return;
         }
-        console.log('requesting geocoder...');
         const geocoder = new google.maps.Geocoder;
         const latlng = { lat: this.latitude, lng: this.longitude };
         geocoder.geocode({'location': latlng}, (results, status) => {
