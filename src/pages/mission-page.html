@@ -274,7 +274,7 @@
           },
           vidRegex: {
             type: Object,
-            value() { return /https.*youtu.?be\/?(.*)/; }
+            value() { return /(?:[?&]v=|\/embed\/|\/1\/|\/v\/|https:\/\/(?:www\.)?youtu\.be\/)([^&\n?#]+)/; }
           },
           fileName: {
             type: String,
@@ -504,12 +504,7 @@
         if (this._validMission()) {
           this.mission.uid = this.user.uid;
           let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
-          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-          if (vid) {
-            this.mission.video = vid;
-          } else {
-            this.mission.video = '';
-          }
+          this.mission.video = vid;
           this.mission.cid = this.missionCampaign;
           this.mission.state = this.shadowRoot.querySelector("paper-dropdown-menu.state").value;
           this.$.query.ref.push({ content: this.mission });
@@ -526,8 +521,7 @@
       _editMission() {
         if (this._validMission()) {
           let vid = (this.mission.video) ? this.mission.video.match(this.vidRegex)[1] : '';
-          if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
-          if (vid) this.mission.video = vid;
+          this.mission.video = vid;
           this.mission.cid = this.missionCampaign;
           this.$.document.data = this.mission;
           this.$.document.saveValue(`/missions/${this.route.data.missionID}/`, "content");

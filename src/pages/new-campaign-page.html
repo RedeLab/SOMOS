@@ -498,7 +498,7 @@
           },
           vidRegex: {
             type: Object,
-            value() { return /https.*youtu.?be\/?(.*)/; }
+            value() { return /(?:[?&]v=|\/embed\/|\/1\/|\/v\/|https:\/\/(?:www\.)?youtu\.be\/)([^&\n?#]+)/; }
           },
           states: {
             type: Array,
@@ -673,8 +673,7 @@
 
       _saveCampaign(e) {
         this.campaign.uid = this.user.uid;
-        let vid = (this.campaign.video && this.campaign.video.includes('http')) ? this.campaign.video.match(this.vidRegex)[1] : '';
-        if (vid && vid.includes('v=')) vid = vid.match(/.*v=(.*)&?/)[1];
+        let vid = (this.campaign.video && this.campaign.video.includes('youtu')) ? this.campaign.video.match(this.vidRegex)[1] : '';
         if (vid) this.campaign.video = vid;
         //save campaign
         if(this.campaignId) {
