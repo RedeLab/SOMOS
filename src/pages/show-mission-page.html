@@ -390,7 +390,7 @@
             <h3>Compartilhar missão</h3>
             <div id="share-btn">
               <paper-icon-button on-tap="_shareMission" icon="app:share"></paper-icon-button>
-              <share-menu id="shareMenu" dialog-title="Compartilhe esta missão!" title="{{missionTitle}}" text="{{mission.content.description}}" url="{{address}}/{{data.key}}?shared=true" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard", "twitter", "instagram"]'></share-menu>
+              <share-menu id="shareMenu" dialog-title="Compartilhe esta missão!" title="{{mission.content.title}}" text="{{mission.content.description}}" url="{{missionUrl}}" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard", "twitter", "instagram"]'></share-menu>
             </div>
           </div>
         </div>
@@ -512,7 +512,7 @@
             type: Boolean,
             value: false
           },
-          missionTitle: String
+          missionUrl: String
         };
       }
 
@@ -763,7 +763,7 @@
         this._setActionBtn();
         this._setDescription();
         //set missions title
-        this.missionTitle = `${this.mission.content.title} - Acesse o link desta missão ☝🏼☝🏼☝🏼☝🏼`;
+        this.missionUrl = `Participe já! 👉🏼👉🏼 ${this.address}/${this.data.key}?shared=true`;
       }
 
       _campaignChanged() {
