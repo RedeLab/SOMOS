@@ -182,7 +182,7 @@
         }
         if(!this.campaign) return;
         const followers = this.campaign.usersFollow.map(u => u.id);
-        if(this.campaign.usersFollow && followers.includes(this.user.uid)) {
+        if(this.user && this.campaign.usersFollow && followers.includes(this.user.uid)) {
           toggle.checked = true;
         } else {
           toggle.checked = false;

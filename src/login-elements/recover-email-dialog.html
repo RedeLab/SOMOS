@@ -47,8 +47,25 @@
 
       _sendEmail() {
         const mail = this.$.mail.value;
-        this.$.auth.sendPasswordResetEmail(mail);
-        this.dispatchEvent(new CustomEvent('close-recover', {}));
+        this.$.auth.sendPasswordResetEmail(mail).then(function(res) {
+          this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+            status: 100,
+            text: 'Você receberá um e-mail com instruções para mudança de senha.'
+          }, bubbles: true, composed: true }));
+          this.dispatchEvent(new CustomEvent('close-recover', {}));
+        }.bind(this)).catch((err) => {
+          if(err.code === 'auth/user-not-found') {
+            this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+              status: 500,
+              text: 'Não foi encontrado um usuário associado ao e-mail.'
+            }, bubbles: true, composed: true }));
+          } else if(err.code === 'auth/invalid-email') {
+            this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+              status: 500,
+              text: 'Endereço de e-mail mal formatado.'
+            }, bubbles: true, composed: true }));
+          }
+        });
       }
 
     }
