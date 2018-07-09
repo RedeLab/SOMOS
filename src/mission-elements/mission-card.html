@@ -123,6 +123,10 @@
         height: 6em;
         margin-top: 20px;
       }
+      .contact p {
+        margin: 0;
+        color: var(--accent-color);
+      }
     </style>
 
     <firebase-storage-ref
@@ -166,6 +170,16 @@
           <div class="message">
             {{message}}
           </div>
+          <dom-if if="{{contact}}">
+            <template>
+              <div class="contact">
+                <p>Você pode entrar em contato com o administrador desta campanha pelos canais:</p>
+                <p>Telefone: {{campaign.content.phone}}</p>
+                <p>E-mail: {{campaign.content.email}}</p>
+              </div>
+              </div>
+            </template>
+          </dom-if>
         </div>
         </template>
       </dom-if>
@@ -217,7 +231,11 @@
           },
           candidatePhoto: String,
           uid: String,
-          isAdmin: Boolean
+          isAdmin: Boolean,
+          contact: {
+            type: Boolean,
+            value: false
+          }
         }
       }
 
@@ -244,6 +262,7 @@
             return t || (r.uid === this.uid && r.status === 'rejected');
           }.bind(this), false) : false);
           this.set('message', 'Infelizmente a comprovação desta missão foi rejeitada pelo administrador da campanha.');
+          this.set('contact', true);
         }
       }
 

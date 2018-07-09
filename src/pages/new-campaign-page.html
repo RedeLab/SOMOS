@@ -362,6 +362,8 @@
               <paper-input label="Número de filiação do partido" placeholder="XXXXXX-XXX" value="{{campaign.membership}}"></paper-input>
               <paper-input id="viceCandidate" label="Nome do Vice" placeholder="Nome do vice candidato" value="{{campaign.vice}}"></paper-input>
               <paper-input label="Video de apresentação" placeholder="Link do vídeo de apresentação" value="{{campaign.video}}"></paper-input>
+              <paper-input label="Email público" type="email" auto-validate error-message="Informe um email válido." placeholder="Digite um email" value="{{campaign.email}}"></paper-input>
+              <paper-input label="Telefone público" placeholder="(XX)XXXXX-XXXX" value="{{campaign.phone}}"></paper-input>
             </div>
           </div>
           <div class="step" id="step2">
@@ -617,6 +619,7 @@
       _setEditCampaign(key) {
         if(!key) return;
         this.$.document.db.ref(`/campaigns/${key}`).once("value").then(function(result) {
+          if(!result) return;
           const campaign = JSON.parse(JSON.stringify(result.val().content));
           this.campaign = campaign;
           this.campaignId = key;

@@ -128,7 +128,7 @@
           <template is="dom-repeat" items="{{mission.content.receipts}}" filter="setUserPhoto">
             <div class="receipt-item">
               <div class="supporter-img">
-                <iron-image  id="{{item.uid}}" sizing="cover"></iron-image>
+                <iron-image id="{{item.uid}}" sizing="cover"></iron-image>
               </div>
               <div class="supporter-name">
                 <a on-tap="_openUserReceipt"><span>{{item.userName}}</span></a>
@@ -219,9 +219,9 @@
         setTimeout(function() {
           this.$.photoDoc.getStoredValue(`/users/${_item.uid}/content`).then(function(res) {
             if(res.photoURL) {
-              this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", res.photoURL);
+              this.shadowRoot.getElementById(`${_item.uid}`).setAttribute("src", res.photoURL);
             } else {
-              this.shadowRoot.querySelector(`#${_item.uid}`).setAttribute("src", "/images/user-placeholder.png");
+              this.shadowRoot.getElementById(`${_item.uid}`).setAttribute("src", "/images/user-placeholder.png");
             }
           }.bind(this));
         }.bind(this), 10);
