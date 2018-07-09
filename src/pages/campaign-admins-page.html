@@ -188,7 +188,7 @@
       }
 
       static get observers() {
-        return ['_fetchUser(followers, admins)', '_fetchAdmins(admins, followers)'];
+        return ['_fetchAdmins(admins, followers)'];
       }
 
       constructor() {
@@ -196,7 +196,7 @@
       }
 
        _selectedChanged(selected) {
-         if (!selected) {}
+         if(!selected) {}
       }
 
       _returnToInbox() {
@@ -206,22 +206,24 @@
       _fetchUser(followers, admins) {
         if(!followers || !admins) return;
         const adminKeys = admins.map(a => a.$val);
-        const promises  = followers.map(u => u.id).filter(function(item){
-          return !adminKeys.includes(item);
-        }).map(function(item) {
-          return this.$.user.ref.child(item).once("value").then(function(result) {
-            let content = result.val().content;
-            content.key = item;
-            return content;
+        if(adminKeys.length >= 1) {
+          const promises  = followers.map(u => u.id).filter(function(item) {
+            return !adminKeys.includes(item);
+          }).map(function(item) {
+            return this.$.user.ref.child(item).once("value").then(function(result) {
+              let content = result.val().content;
+              content.key = item;
+              return content;
+            }.bind(this));
           }.bind(this));
-        }.bind(this));
-        Promise.all(promises).then(result => this.users = result);
-        return true;
+          Promise.all(promises).then(result => this.users = result);
+          return true;
+        }
       }
 
       _fetchAdmins(admins, followers) {
         if(!admins) return;
-        const promises  = admins.map(function(item) {
+        const promises = admins.map(function(item) {
           return this.$.user.ref.child(item.$val).once("value").then(function(result) {
             let content = result.val().content;
             content.key = item.$val;
@@ -229,6 +231,7 @@
           }.bind(this));
         }.bind(this));
         Promise.all(promises).then(result => this.adminUsers = result);
+        this._fetchUser(this.followers, this.admins);
         return true;
       }
 
