@@ -653,6 +653,10 @@
       }
 
       _followCampaign(e) {
+        if(!this.user) {
+          this.set('route.path', `/`);
+          return;
+        }
         // get toogle state
         const follow = e.target.checked;
         if(follow) {
@@ -676,6 +680,10 @@
       }
 
       _unfollowCampaign(e) {
+        if(!this.user) {
+          this.set('route.path', `/`);
+          return;
+        }
         this.$.follow.ref.remove();
         const usersFollow = this.campaign.content.usersFollow;
         const removed = usersFollow.filter(u => u.id !== this.user.uid);
