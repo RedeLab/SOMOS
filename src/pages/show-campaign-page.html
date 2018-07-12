@@ -427,6 +427,16 @@
               </div>
             </template>
           </dom-if>
+          <dom-if if="{{campaign.content.donate}}">
+            <template>
+              <div class="col">
+                <a href="{{campaign.content.donate}}" tabindex="-1" target="_blank">
+                  <paper-icon-button icon="app:attach-money"></paper-icon-button>
+                </a>
+                <span>Doação</span>
+              </div>
+            </template>
+          </dom-if>
         </div>
       </div>
       <template is="dom-if" if="{{campaign.content.attachments}}">
