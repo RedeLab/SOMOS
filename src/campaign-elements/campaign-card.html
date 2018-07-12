@@ -186,8 +186,8 @@
           toggle.disabled = false;
         }
         if(!this.campaign) return;
-        const followers = this.campaign.usersFollow.map(u => u.id);
-        if(this.user && this.campaign.usersFollow && followers.includes(this.user.uid)) {
+        const followers = this.campaign.usersFollow ? this.campaign.usersFollow.map(u => u.id) : [];
+        if(this.user && followers.includes(this.user.uid)) {
           toggle.checked = true;
         } else {
           toggle.checked = false;
@@ -205,7 +205,7 @@
           const campaign = JSON.parse(JSON.stringify(this.campaign));
           delete campaign.usersFollow;
           this.$.follow.ref.update({content: campaign});
-          const usersFollow = this.campaign.usersFollow;
+          const usersFollow = this.campaign.usersFollow || [];
           if(usersFollow.map(u => u.id).includes(this.user.uid)) return;
           const user = this.user.uid;
           const date = Date.now();
@@ -227,7 +227,7 @@
           return;
         }
         this.$.follow.ref.remove();
-        const usersFollow = this.campaign.usersFollow;
+        const usersFollow = this.campaign.usersFollow || [];
         const removed = usersFollow.filter(u => u.id !== this.user.uid);
         this.campaign.usersFollow = removed;
         this.$.document.ref.update({content: this.campaign});

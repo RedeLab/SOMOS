@@ -164,8 +164,11 @@
 
       _fetchUser(followers) {
         if(!followers) return;
+        console.log('aaaaaa');
         const promises  = followers.map(function(item) {
+          console.log(item);
           return this.$.user.ref.child(item.id).once("value").then(function(result) {
+            console.log(result.val());
             return result.val().content;
           }.bind(this));
         }.bind(this));

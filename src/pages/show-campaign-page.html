@@ -632,7 +632,7 @@
         //statistic of new followers
         let newFollowers = [];
         if(!this.campaign) return;
-        const followers = this.campaign.content.usersFollow;
+        const followers = this.campaign.content.usersFollow ? this.campaign.content.usersFollow : [];
         const date = Date.now();
         followers.forEach(function(follower) {
           const days = Math.abs(date - follower.date);
@@ -650,8 +650,8 @@
           toggle.disabled = true;
           return;
         }
-        const followers = this.campaign.content.usersFollow.map(u => u.id);
-        if(this.campaign.content.usersFollow && followers.includes(this.user.uid)) {
+        const followers = this.campaign.content.usersFollow ? this.campaign.content.usersFollow.map(u => u.id) : [];
+        if(followers.includes(this.user.uid)) {
           toggle.checked = true;
         } else {
           toggle.checked = false;
@@ -673,7 +673,7 @@
           const campaign = JSON.parse(JSON.stringify(this.campaign));
           delete campaign.content.usersFollow;
           this.$.follow.ref.set(campaign);
-          const usersFollow = this.campaign.content.usersFollow;
+          const usersFollow = this.campaign.content.usersFollow ? this.campaign.content.usersFollow : [];
           if(usersFollow.map(u => u.id).includes(this.user.uid)) return;
           const user = this.user.uid;
           const date = Date.now();
