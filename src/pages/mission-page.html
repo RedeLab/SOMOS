@@ -372,29 +372,31 @@
 
 
         if (!(this.input === undefined) && this.input.files.length > 0) {
-          const imgFormats = ["png", "jpg"]
-          const audioFormats = ["mp3", "wav", "ogg"]
+          const imgFormats = ["png", "jpg", "jpeg", "tiff", "gif", "bmp"];
+          const audioFormats = ["mp3", "wav", "ogg"];
           const fileName = this.input.files[0].name;
           const fileFormat = fileName.split('.').pop();
           /* is a image */
           if (imgFormats.includes(fileFormat)) {
             this.mission.imageTitle = fileName;
           }
-
           else if (audioFormats.includes(fileFormat)) {
             this.mission.audioTitle = fileName;
             this.$.genericInput.invalid = false;
           } else {
             this.$.genericInput.invalid = true;
+            this.$.genericInput.errorMessage = `formato .${fileFormat} não suportado. Formatos: \
+            ${imgFormats.map(i => ' ' + i )} ou ${audioFormats.map(i => ' ' + i)}.`;
             valid = false;
           }
         } else {
           this.mission.video = this.genericInputValue;
           if (!this._validVideo(this.mission.video)) {
             this.$.genericInput.invalid = true;
+            this.$.genericInput.errorMessage = 'Url inválida. Informe um video do youtube.';
             valid = false;
           } else {
-            this.$.genericInput.invalid = true;
+            this.$.genericInput.invalid = false;
           }
         }
 
