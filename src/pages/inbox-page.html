@@ -261,6 +261,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.inboxMissions = this.userMissions.filter((m) => !keys.includes(m.$key)).reverse();
         this.userAcceptedMissions = this.userMissions.filter((m) => keys.includes(m.$key)).reverse();
         this.hideLoading();
+        this._hideFabBtn();
       }
 
       showLoading() {
@@ -349,7 +350,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _onUserChanged() {
         this._getMissionsByCampaigns();
-        this._hideFabBtn();
       }
 
       _openStatatisticsPage() {
