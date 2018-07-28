@@ -66,19 +66,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       window.Polymer = {rootPath: '/', passiveTouchGestures : true };
       // Register the base URL
       const baseUrl = document.querySelector('base').href;
-      // Show a toast with a service-worker-related update.
-      window.showToast = function(message) {
-        var toast = document.getElementById('sw-toast');
-        if (!toast) {
-          toast = document.createElement('paper-toast');
-          toast.addEventListener('click', () => { window.location.reload()})
-          toast.id = 'sw-toast';
-          toast.duration = '60000';
-          document.body.appendChild(toast);
-        }
-        toast.textContent = message;
-        toast.show();
-      };
 
       // Register service worker, if supported
       // after the load event (to deprioritize it after lazy imports).
@@ -105,7 +92,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (navigator.serviceWorker.controller) {
             navigator.serviceWorker.controller.onstatechange = function(event) {
               if (event.target.state === 'redundant') {
-                window.showToast('Atualização pendente. Toque para receber novas atualizações.');
+                window.location.reload();
               }
             };
           }
@@ -118,7 +105,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <!-- Load your application shell -->
     <link rel="import" href="src/app-elements/app-shell.html">
-    <link rel="import" href="bower_components/paper-toast/paper-toast.html">
 
     <!-- Add any global styles for body, document, etc. -->
     <style>
