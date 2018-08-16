@@ -2,6 +2,8 @@
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 
@@ -10,32 +12,71 @@
     <style include="shared-styles">
       :host {
         display: flex;
-        background: var(--primary-background-color);
+        background-size: cover;
+        background-position: center;
         flex-direction: column;
         min-height: 100vh;
       }
       .fill {
         flex: 1;
-        padding: 40px;
-      }
-      .space {
-        height: 8.5vh;
+        padding: 20px 60px;
       }
       paper-button {
         display: block;
         text-align: center;
-        margin: 20px 0;
+        margin: 20px auto 10px;
+        background: var(--default-primary-color);
+      }
+      paper-input {
+        --paper-input-container-color: var(--accent-color);
+        --paper-input-container-focus-color: var(--accent-color);
+        --paper-input-container-invalid-color: var(--accent-color);
+        --paper-input-container-input-color: var(--accent-color);
       }
       .facebook {
-        background: #1A467B;
+        color: #1A467B;
         border: none;
+        background: white;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 10px;
+      }
+      .image {
+        height: 13vh;
+        margin: 2vh 10px 0;
+      }
+      .image iron-image {
+        width: 100%;
+        height: 100%;
+        max-width: 250px;
+        margin: auto;
+        display: block;
+      }
+      .social {
+        text-align: center;
+        margin: 0 30px 80px;
+      }
+      .social-text {
+        font-weight: bold;
+        color: #99391f;
+      }
+      paper-button.plain {
         color: white;
+        background: var(--accent-color);
+      }
+      .fields .checkbox-block {
+        text-align: center;
+      }
+      .fields paper-input:last-of-type {
+        margin-bottom: 20px;
       }
     </style>
-
+    <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
+                    on-keys-pressed="submitCredentials"></iron-a11y-keys>
     <div class="fill">
-      <h1>Registro</h1>
-      <div class="space"></div>
+      <div class="image">
+        <iron-image sizing="contain" src="/images/logo.png"></iron-image>
+      </div>
       <div class="fields">
         <paper-input label="nome" value="{{name}}" minlength="5" auto-validate
           error-message="O nome deve ter no mínimo 5 caracteres."></paper-input>
@@ -43,10 +84,20 @@
           error-message="Informe um email válido."></paper-input>
         <paper-input label="senha" type="password" minlength="8" value="{{password}}"
           auto-validate error-message="A senha deve ter no mínimo 8 caracteres."></paper-input>
+        <paper-input label="confirmação de senha" type="password" minlength="8" pattern="{{password}}"
+          auto-validate error-message="A confirmação deve ser igual a senha"></paper-input>
+        <div class="checkbox-block">
+          <paper-checkbox id="checkbox">Li e aceito os <a href="/terms.html" target="_blank">termos de uso</a></paper-checkbox>
+        </div>
       </div>
-      <paper-button class="accent" on-tap="submitCredentials">Registrar</paper-button>
-      <paper-button class="facebook">Registrar com Facebook</paper-button>
-      <span class="bottom center">Já possui uma conta? <a href="" on-tap="openLogin">Entrar</a></span>
+      <paper-button class="plain" on-tap="submitCredentials">Registrar</paper-button>
+    </div>
+    <div class="social">
+      <div class="social-text">Você também pode usar</div>
+      <div class="social-text">suas redes sociais.</div>
+      <paper-icon-button class="facebook" icon="app:facebook" on-tap="signUpWithFacebook"></paper-icon-button>
+      <paper-icon-button class="facebook" icon="app:google" on-tap="signUpWithGoogle"></paper-icon-button>
+      <div class="social-text" on-tap="openLogin">Já possuo cadastro</div>
     </div>
   </template>
 
@@ -62,18 +113,28 @@
           name: String,
           email: String,
           password: String,
+          sharedMission: String
         };
       }
       submitCredentials(e) {
         const inputs = Array.from(this.shadowRoot.querySelectorAll('paper-input'));
         let invalid = inputs.reduce((invalid, input) => invalid || input.invalid, false);
         let isblank = inputs.reduce((isblank, input) => isblank || !input.value, false);
-        if(invalid || isblank) return; //TODO: use app-notify to display error message.
+        let terms = this.$.checkbox.checked;
+        if(invalid || isblank || !terms) return; //TODO: use app-notify to display error message.
         else this.credentials = {
           displayName: this.name,
           email: this.email,
           password: this.password,
         };
+      }
+
+      signUpWithFacebook(e) {
+        this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'facebook' } }));
+      }
+
+      signUpWithGoogle(e) {
+        this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'google' } }));
       }
 
       openLogin(e) {

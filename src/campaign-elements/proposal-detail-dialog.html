@@ -1,0 +1,82 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+
+<dom-module id="proposal-detail-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        height: 100vh;
+      }
+      iron-image{
+        width: calc(100% + 48px);
+        height: 200px;
+        margin: 0 -24px;
+      }
+      p {
+        margin-bottom: 20px;
+        word-wrap: break-word;
+      }
+
+    </style>
+
+    <firebase-storage-ref
+      metadata="{{metadata}}"
+      storage-uri="{{gsUri}}"
+      download-url="{{downloadUrl}}"
+      id="storage">
+    </firebase-storage-ref>
+    <template is="dom-if" if="{{downloadUrl}}">
+      <iron-image sizing="cover" preload fade src="{{downloadUrl}}"></iron-image>
+    </template>
+    <div class="content">
+      <h1>{{proposal.content.title}}</h1>
+      <div class="">
+        <p id="description"></p>
+      </div>
+    </div>
+  </template>
+  <script>
+    class ProposalDetailDialog extends Polymer.Element {
+      static get is() { return 'proposal-detail-dialog'; }
+      static get properties() {
+        return {
+          proposal: {
+            type: Object,
+            observer: '_setProposal'
+          },
+          data: Object
+        };
+      }
+
+      _setProposal() {
+        if(this.proposal && this.proposal.content.image) {
+          this.$.storage.path = `proposals/${this.data.key}/${this.proposal.content.image}`;
+        }
+        this._setDescription();
+      }
+
+      _dismiss(e) {
+        this.dispatchEvent(new CustomEvent('close-dialog'));
+      }
+
+      _setDescription() {
+        if(this.proposal) {
+          const url = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gim;
+          const scriptTags = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gim;
+          let withLinks = this.proposal.content.description.replace(url, '<a href="$&" target="_blank">$&</a>');
+          let description = withLinks.replace(scriptTags, '').replace(/\n/g, "<br />");
+          setTimeout(function() {
+            this.shadowRoot.querySelector('#description').innerHTML = description;
+          }.bind(this), 10);
+        }
+      }
+
+    }
+    window.customElements.define(ProposalDetailDialog.is, ProposalDetailDialog);
+  </script>
+</dom-module>

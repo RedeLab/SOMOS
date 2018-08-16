@@ -1,0 +1,94 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../../bower_components/share-menu/share-menu.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/app-dialog.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-confirmation-icon.html">
+
+<dom-module id="mission-modal">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .confirmation-icon, .confirmation-text {
+        margin: auto;
+        text-align: center;
+      }
+
+      .confirmation-icon { width: 50%; }
+
+      .confirmation-text { width: 80%; }
+
+      .modal-header { width: 100%; }
+
+
+    iron-icon {
+        --iron-icon-width: 50%;
+        --iron-icon-height: 50%;
+    }
+
+    </style>
+      <div class="modal-header">
+      <app-confirmation-icon>Missão criada com sucesso</app-confirmation-icon>
+      <div class="confirmation-text">
+        <p>Quanto mais pessoas souberem da sua missão maiores são as chances de alcançarmos nosso objetivo por isso não perca tempo e compartilhe em suas redes sociais </p>
+      <div class="buttons">
+        <paper-button class="accent block" on-tap="_shareMision">Compartilhar</paper-button>
+        <share-menu id="shareMenu" dialog-title="Compartilhe esta missão!" title="{{mission.content.title}}" text="{{mission.content.description}}" url="{{missionUrl}}" enabled-services='["telegram", "facebook", "whatsapp", "email", "clipboard"]' ></share-menu>
+      </div>
+      </div>
+      </div>
+  </template>
+  <script>
+    class MissionModal extends Polymer.Element {
+      static get is() { return 'mission-modal'; }
+
+      static get properties() {
+        return {
+          mission: {
+            type: Object,
+            value: function() {}
+          },
+          address: {
+            type: String,
+            value: function() {return window.location.origin.concat('/show-mission')}
+          },
+          modalTitle: {
+            type: String,
+            value: "Missão criada com sucesso"
+          },
+          modalDescription: {
+            type: String,
+            value: "Quanto mais pessoas souberem da sua missão maiores são as chances de alcançarmos nosso objetivo por isso não perca tempo e compartilhe em suas redes sociais"
+          },
+          missionUrl: String
+        }
+      }
+
+      _shareMision(e) {
+        this.missionUrl = `Participe já! \u2192 \u2192 ${this.address}/${this.mission.$key}?shared=true`;
+        document.body.appendChild(this.$.shareMenu);
+        this.$.shareMenu.share();
+      }
+
+      constructor() {
+        super();
+      }
+
+      ready() {
+        super.ready();
+        this.$.shareMenu.addEventListener('iron-overlay-closed', function() {
+          this.dispatchEvent(new CustomEvent('finished', {}));
+        });
+      }
+    }
+customElements.define(MissionModal.is, MissionModal);
+</script>
+</dom-module>

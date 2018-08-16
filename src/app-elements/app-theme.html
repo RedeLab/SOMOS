@@ -12,22 +12,22 @@
      * Based on Polymer: http://www.polymer-project.org/
      * Compatible with Polymer 1.0
      */
-     @font-face {
-        font-family: "Calibre";
-        src: url("/fonts/Calibre-Light.ttf") format("truetype"),
-             url("/fonts/Calibre-Medium.ttf") format("truetype"),
-             url("/fonts/Calibre-Regular.otf") format("opentype");
-      }
+    @font-face {
+      font-family: "Calibre";
+      src: url("/fonts/Calibre-Light.ttf") format("truetype"),
+           url("/fonts/Calibre-Medium.ttf") format("truetype"),
+           url("/fonts/Calibre-Regular.otf") format("opentype");
+    }
 
     :root { 
       --default-primary-color: #FFFFFF;
-      --dark-primary-color: #1A2C3C;
+      --dark-primary-color: #646A74;
       --accent-color: #E15E36;
       --light-accent-color: #FF9100;
       --primary-background-color: #ffffff;
-      --secondary-background-color: #eeeeee;
+      --secondary-background-color: #f8f8f8;
       --primary-text-color: #2d2d2d;
-      --secondary-text-color: #818181;
+      --secondary-text-color: #8B949C;
       --light-text-color: #ffffff;
       --disabled-text-color: #666666;
       --divider-color: #e0e0e0;
@@ -91,6 +91,9 @@
       --info-color: #FFCC00;
       --success-color:  #74BF30;
 
+      --app-form-header-background: #fff;
+      --app-form-header-color: #000;
+
       --accent-gradient: {
         color: white;
         background: linear-gradient(to left, var(--light-accent-color), var(--accent-color));
@@ -99,19 +102,32 @@
       };
 
       --simple-button: {
-        border: 1px solid var(--secondary-text-color);
         color: var(--secondary-text-color);
         height: 35px;
         line-height: 1;
+        border-radius: 17px;
+        max-width: 210px;
+        margin: auto;
       };
+
+      --plain-button: {
+        border: none;
+        color: var(--accent-color);
+      }
 
       --default-title-font: {
         font-family: 'Calibre';
         font-weight:  600;
       };
+
       --default-font: {
         font-family: 'Calibre';
         font-weight:  400;
+      };
+
+      --default-font-medium: {
+        font-family: 'Calibre';
+        font-weight:  600;
       };
     }
 

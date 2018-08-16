@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+
+<dom-module id="new-campaign-tutorial-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        @apply --default-font;
+        font-size: 1rem;
+      }
+      div p:first-of-type {
+        margin: 0;
+      }
+      div p:not(:first-of-type) {
+        margin-bottom: 0;
+      }
+      h1 {
+        margin-top: 0;
+        color: var(--accent-color);
+      }
+      .right {
+        text-align: right;
+        margin-top: 10px;
+      }
+      .right paper-button {
+        border-radius: unset;
+        color: var(--accent-color);
+      }
+
+    </style>
+
+    <firebase-document
+      id="user">
+    </firebase-document>
+
+    <div>
+      <h4>Como funciona?</h4>
+      <div>
+        <h1>Gerenciar Campanha</h1>
+        <p>
+          Aqui você vai inserir as informações que aparecerão para os seus apoiadores.
+        </p>
+        <p>
+          Lembre-se: você precisa convencer seus apoiadores da importância e relevância da sua campanha.
+        </p>
+      </div>
+      <div class="right">
+        <paper-button on-tap="_setTutorial">Criar campanha</paper-button>
+      </div>
+    </div>
+
+  </template>
+  <script>
+    class NewCampaignTutorialDialog extends Polymer.Element {
+      static get is() { return 'new-campaign-tutorial-dialog'; }
+      static get properties() {
+        return {
+          user: Object,
+          userKey: String
+        };
+      }
+
+      _setTutorial() {
+        this.user.tutorial.createCampaign = true;
+        this.$.user.db.ref(`/users/${this.userKey}/content`).set(this.user);
+        this.dispatchEvent(new CustomEvent('close-tutorial', {}));
+      }
+
+    }
+    window.customElements.define(NewCampaignTutorialDialog.is, NewCampaignTutorialDialog);
+  </script>
+</dom-module>

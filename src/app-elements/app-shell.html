@@ -13,14 +13,28 @@
 <link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-messaging.html">
 
 <link rel="import" href="../pages/login-page.html">
 
 <link rel="lazy-import" href="../pages/inbox-page.html">
-<link rel="lazy-import" href="../pages/campaign-page.html">
+<link rel="lazy-import" href="../pages/campaigns-page.html">
+<link rel="lazy-import" href="../pages/profile-page.html">
+<link rel="lazy-import" href="../pages/new-campaign-page.html">
+<link rel="lazy-import" href="../pages/show-campaign-page.html">
+<link rel="lazy-import" href="../pages/proposals-page.html">
+<link rel="lazy-import" href="../pages/campaign-followers-page.html">
+<link rel="lazy-import" href="../pages/campaign-admins-page.html">
+<link rel="lazy-import" href="../pages/campaign-share-page.html">
+<link rel="lazy-import" href="../pages/mission-page.html">
+<link rel="lazy-import" href="../pages/show-mission-page.html">
+<link rel="lazy-import" href="../pages/mission-receipts-page.html">
+<link rel="lazy-import" href="../pages/statistics-page.html">
 <link rel="lazy-import" href="../pages/not-found-page.html">
 
 <link rel="import" href="app-icons.html">
+<link rel="import" href="app-notify.html">
 <link rel="import" href="app-theme.html">
 
 <dom-module id="app-shell">
@@ -30,12 +44,50 @@
         display: block;
       }
 
-      app-drawer-layout:not([narrow]) [drawer-toggle] {
-        display: none;
+      app-drawer-layout:-webkit-full-screen-ancestor app-header,
+      app-header-layout:-webkit-full-screen-ancestor app-header,
+      app-drawer-layout:-webkit-full-screen-ancestor app-drawer {
+        z-index: -1 !important;
+      }
+
+      app-toolbar.tall {
+        background: var(--accent-color);
+        height: 148px;
+      }
+
+      .tall iron-image {
+        height: 60px;
+        width: 60px;
+        border-radius: 50%;
+        background: var(--secondary-text-color);
+      }
+
+      .tall .username,
+      .tall .email {
+        color: var(--light-text-color);
+        font-size: 0.6em;
+        line-height: 1;
+        font-weight: 100;
+      }
+      .tall .username {
+        font-size: 0.8em;
+        font-weight: 400;
+      }
+      .tall [bottom-item] {
+        padding: 10px;
+      }
+      .tall [bottom-item] paper-icon-button {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+        color: var(--light-text-color);
       }
 
       .drawer-list {
-        margin: 0 20px;
+        padding: 20px 0;
+        display: block;
+        height: calc(100% - 185px);
+        background: white;
       }
       .drawer-list a {
         display: block;
@@ -48,15 +100,41 @@
         color: black;
         font-weight: bold;
       }
+      iron-selector {
+        position: relative;
+      }
+      .image-footer {
+        height: 6vh;
+        width: 200px;
+        margin: 0 10px 10px;
+        position: absolute;
+        bottom: 20px;
+        left: 0;
+      }
+      .image-footer iron-image {
+        width: 100%;
+        height: 100%;
+        max-width: 200px;
+      }
+      @media screen and (min-width: 961px) {
+        app-drawer {
+          top: -70px;
+          left: unset;
+          --app-drawer-content-container: {
+            background: transparent;
+          };
+        }
+      }
     </style>
 
     <firebase-app
-      auth-domain="calm-analog-135822.firebaseapp.com"
-      database-url="https://calm-analog-135822.firebaseio.com"
-      api-key="AIzaSyAApVBGftv-tt1X_rNf2qCwOFGZ0W2KoZc"
-      storage-bucket="calm-analog-135822.appspot.com"
-      project-id="calm-analog-135822"
-      messaging-sender-id="965550853299">
+      auth-domain="double-time-136323.firebaseapp.com"
+      database-url="https://double-time-136323.firebaseio.com"
+      storage-bucket="gs://double-time-136323.appspot.com"
+      api-key="AIzaSyB7lA_X-kxqTJ8hyW0zlxvtP9m_WxvVYDo"
+      storage-bucket="double-time-136323.appspot.com"
+      project-id="double-time-136323"
+      messaging-sender-id="837884325154">
     </firebase-app>
 
     <app-location
@@ -71,15 +149,40 @@
         tail="{{subroute}}">
     </app-route>
 
+    <firebase-document
+      id="userPath">
+    </firebase-document>
+
+    <firebase-messaging
+      id="messaging"
+      token="{{token}}"
+      on-message="handleMessage">
+    </firebase-messaging>
+
     <app-drawer-layout fullbleed narrow="{{narrow}}">
       <!-- Drawer content -->
       <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-        <app-toolbar>Menu</app-toolbar>
+        <app-toolbar class="tall">
+          <div bottom-item on-tap="gotoProfile">
+            <iron-image src="{{user.photoURL}}" sizing="cover">
+            </iron-image>
+            <div class="username">
+              {{user.displayName}}
+            </div>
+            <div class="email">
+              {{user.email}}
+            </div>
+            <paper-icon-button icon="app:expand-more"></paper-icon-button>
+          </div>
+        </app-toolbar>
         <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
           <a name="inbox" href="[[rootPath]]inbox">Caixa de Entrada</a>
-          <a name="login" href="[[rootPath]]login">Login</a>
-          <a name="campaign" href="[[rootPath]]new-campaign">Campanhas</a>
+          <a name="campaign" href="[[rootPath]]campaigns">Campanhas</a>
+          <hr>
           <a name="login" href="[[rootPath]]login" on-tap="signOut">Sair</a>
+          <div class="image-footer">
+            <iron-image sizing="contain" src="/images/logos-rede.png"></iron-image>
+          </div>
         </iron-selector>
       </app-drawer>
 
@@ -91,15 +194,28 @@
           fallback-selection="not-found"
           on-selected-item-changed="_selectedPageChanged"
           role="main">
-        <inbox-page name="inbox" on-open-drawer="_openDrawer"></inbox-page>
-        <campaign-page name="campaign"></campaign-page>
-        <new-campaign-page name="new-campaign"></new-campaign-page>
-        <not-found-page name="not-found"></not-found-page>
-        <login-page name="login" id="login"
-          user="{{user}}" route="{{route}}">
+          <profile-page name="profile" route="{{route}}" user="{{user}}"></profile-page>
+          <inbox-page name="inbox" route="{{route}}" user="{{user}}" on-open-drawer="_openDrawer"></inbox-page>
+          <campaigns-page name="campaigns" route="{{route}}" user="[[user]]" on-open-drawer="_openDrawer"></campaigns-page>
+          <show-campaign-page name="show-campaign" user="[[user]]" route="{{route}}"></show-campaign-page>
+          <proposals-page name="proposals" user="[[user]]" route="{{route}}"></proposals-page>
+          <new-campaign-page route="{{route}}" user="[[user]]" name="new-campaign"></new-campaign-page>
+          <campaign-followers-page route="{{route}}" user="[[user]]" name="campaign-followers"></campaign-followers-page>
+          <campaign-admins-page route="{{route}}" user="[[user]]" name="campaign-admins"></campaign-admins-page>
+          <campaign-share-page route="{{route}}" user="[[user]]" name="campaign-share"></campaign-share-page>
+          <mission-page name="mission" user="{{user}}" route="{{route}}"></mission-page>
+          <show-mission-page name="show-mission" user="[[user]]" route-data="{{routeData}}" route="{{route}}" ></show-mission-page>
+          <mission-receipts-page name="mission-receipts" route-data="{{routeData}}" route="{{route}}"></mission-receipts-page>
+          <mission-accepted-page name="mission-accepted" route-data="{{routeData}}" route="{{route}}"></mission-accepted-page>
+          <mission-finished-page name="mission-finished" route-data="{{routeData}}" route="{{route}}"></mission-finished-page>
+          <statistics-page user="{{user}}" name="statistics" route-data="{{routeData}}" route="{{route}}"></statistics-page>
+          <not-found-page name="not-found"></not-found-page>
+          <login-page name="login" id="login"
+            user="{{user}}" route="{{route}}">
         </login-page>
       </iron-pages>
     </app-drawer-layout>
+    <app-notify id="notify"></app-notify>
   </template>
 
   <script>
@@ -119,36 +235,35 @@
           },
           routeData: Object,
           subroute: Object,
+          route: Object,
           // This shouldn't be neccessary, but the Analyzer isn't picking up
           // Polymer.Element#rootPath
           rootPath: String,
-          user: {
-            observer: '_openLoginPage'
+          user: Object,
+          token: {
+            type: String,
           },
-          publicRoutes: {
-            type: Array,
-            value() {
-              return [
-                'campaign',
-                'mission',
-                'not-found'
-              ];
-            }
-          }
+          notifications: Boolean
         };
       }
 
       static get observers() {
         return [
           '_routePageChanged(routeData.page)',
+          '_setUserToken(token, user)'
         ];
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        document.addEventListener('show-notify', this.showMessage.bind(this));
       }
 
       _routePageChanged(page) {
         // If no page was found in the route data, page will be an empty string.
         // Default to 'inbox' in that case.
+        if (page === 'c') page = 'show-campaign';
         this.page = page || 'inbox';
-
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
@@ -178,14 +293,50 @@
         this.$.drawer.open();
       }
 
-      _openLoginPage(user) {
-        if(user) return;
-        if(this.publicRoutes.include(this.page)) return;
-        this.$.login.open();
-      }
-
       signOut(e) {
         this.$.login.signOut();
+      }
+
+      gotoProfile(e) {
+        this.set('route.path', '/profile');
+      }
+
+      showMessage(e) {
+        this.$.notify.showMessage(e.detail);
+      }
+
+      _setUserToken(token, user) {
+        if(!user) return;
+
+        this.$.messaging.messaging.getToken().then(function(currentToken) {
+          if (currentToken) {
+            return Promise.resolve(currentToken);
+          } else {
+            // Need to request permissions to show notifications.
+            return this.$.messaging.requestPermission()
+          }
+        }.bind(this)).then(function(currentToken) {
+          let saveToken = currentToken || token;
+          this.$.userPath.path = `/users/${this.user.uid}/content`;
+          this.$.userPath.ref.update({
+            notifications: true,
+            token: saveToken
+          });
+          this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+            status: 100,
+            text: 'Notificações habilitadas com sucesso.'
+          }}));
+        }.bind(this)).catch((err) => {
+          this.$.userPath.path = `/users/${this.user.uid}/content`;
+          this.$.userPath.ref.update({notifications: false});
+          this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+            status: 500,
+            text: 'Não foi possível configurar as notificações.'
+          }}));
+        });
+      }
+      handleMessage() {
+        console.info('message:', arguments);
       }
     }
 

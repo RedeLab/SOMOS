@@ -1,7 +1,10 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../../bower_components/geo-location/geo-location.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/google-apis/google-maps-api.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="./register-view.html">
@@ -12,7 +15,11 @@
     <style include="shared-styles">
       :host {
         display: block;
-        background: var(--primary-background-color);
+        background-color: var(--secondary-background-color);
+        background-image: url(/images/frame-bg.svg);
+        background-repeat: no-repeat;
+        background-position: top center;
+        background-size: 110%;
       }
       #content {
         display: flex;
@@ -25,43 +32,74 @@
         padding: 40px;
       }
       p {
-        min-height: 18vh;
+        text-align: left;
+        font-size: 14px;
       }
       paper-button {
         display: block;
         text-align: center;
-        margin: 20px;
+        margin: 20px auto;
       }
       .image {
-        min-height: 24vh;
-        margin: 6vh 10px 0;
+        height: 16vh;
+        margin: 4vh 10px 0;
       }
       .image iron-image {
         width: 100%;
+        height: 100%;
         max-width: 250px;
       }
+      .image-footer {
+        height: 10vh;
+        margin: 6vh 10px 0;
+      }
+      .image-footer iron-image {
+        width: 100%;
+        height: 100%;
+        max-width: 200px;
+      }
     </style>
+
+    <geo-location latitude="{{latitude}}" longitude="{{longitude}}"
+      on-geo-response="requestGeocoder"></geo-location>
+    <google-maps-api api-key="AIzaSyAUEldVyZu-1NXZj6V6ieYBCbc-GkADIBY"
+      on-api-load="requestGeocoder" id="maps">
+    </google-maps-api>
+
     <div id="content">
       <div class="fill center">
         <div class="image">
-          <iron-image src="/images/splash.svg"></iron-image>
+          <iron-image sizing="contain" src="/images/logo.png"></iron-image>
         </div>
-        <p>#tamojunto é uma plataforma para engajar eleitores e candidatos 
-          a desempenharem suas melhores versões pela renovação da política.
+        <p><strong>Olá!</strong></p>
+        <p>
+           Se você chegou até aqui é porque compartilha da nossa vontade de ocupar, hackear, inovar e renovar a política.
+        </p>
+        <p>
+          <strong>SOMOS</strong> é uma plataforma de colaboração
+           entre campanhas e apoiadores.
+        </p>
+        <p>
+          Aqui você poderá encontrar campanhas que mereçam seu apoio e realizar missões para que elas aconteçam e transforme a sociedade.
         </p>
         <paper-button class="accent" on-tap="openRegister">Começar</paper-button>
-        <paper-button on-tap="openLogin">Já tenho uma conta</paper-button>
-        <a class="bottom" href="#">créditos</a>
+        <div class="image-footer">
+          <div>créditos</div>
+          <iron-image sizing="contain" src="/images/logos-rede.png"></iron-image>
+        </div>
       </div>
     </div>
 
-    <firebase-auth id="auth" user="{{user}}" on-error="handleError">
+    <firebase-auth id="auth" user="{{user}}" on-error="handleError" status-known="{{statusKnown}}">
     </firebase-auth>
 
-    <register-view id="register" user="[[user]]" credentials="{{signUpData}}"
-      on-show-login="showLogin"></register-view>
-    <login-view id="login" user="[[user]]" credentials="{{signInData}}"
-      on-show-register="showRegister"></login-view>
+    <firebase-document id="document">
+    </firebase-document>
+
+    <register-view id="register" shared-mission="{{sharedMission}}" user="[[user]]" credentials="{{signUpData}}"
+      on-open-login="openLogin" on-provider-auth="authWithProvider"></register-view>
+    <login-view id="login" shared-mission="{{sharedMission}}" user="[[user]]" credentials="{{signInData}}"
+      on-open-register="openRegister" on-provider-auth="authWithProvider"></login-view>
   </template>
 
   <script>
@@ -79,24 +117,38 @@
           },
           signInData: {
             observer: 'sendSignInCredentials'
+          },
+          statusKnown: {
+            notify: true
+          },
+          newUser: {
+            type: Object
+          },
+          sharedMission: {
+            type: String,
+          value: ""
+          },
+          state: {
+            type: String,
+            observer: '_stateChanged'
           }
         };
       }
 
       openRegister() {
         this.$.content.style.display = 'none';
-        this.$.register.style.display = 'block';
+        this.$.register.style.display = 'flex';
         this.$.login.style.display = 'none';
       }
 
       openLogin() {
         this.$.content.style.display = 'none';
         this.$.register.style.display = 'none';
-        this.$.login.style.display = 'block';
+        this.$.login.style.display = 'flex';
       }
 
       openSplash() {
-        this.$.content.style.display = 'block';
+        this.$.content.style.display = 'flex';
         this.$.register.style.display = 'none';
         this.$.login.style.display = 'none';
       }
@@ -104,25 +156,142 @@
       sendSignUpCredentials(credentials) {
         this.$.auth.createUserWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
-            // use app-notify to display success message
+            if (this.sharedMission) {
+              this.dispatchEvent(new CustomEvent('returnToMission', {detail: { mission: this.sharedMission }}));
+            }
           }.bind(this))
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            if(err.code === "auth/email-already-in-use") {
+              let input = this.$.login.shadowRoot.querySelector('paper-input');
+              input.invalid = true;
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: 'Usuário já cadastrado. Informe um email válido.'
+              }, bubbles: true, composed: true }));
+            } else {
+            }
+          });
       }
 
       sendSignInCredentials(credentials) {
         this.$.auth.signInWithEmailAndPassword(credentials.email, credentials.password)
           .then(function(res) {
-            // use app-notify to display success message
+            if (this.sharedMission) {
+              this.dispatchEvent(new CustomEvent('returnToMission', {detail: { mission: this.sharedMission }}));
+            }
           }.bind(this))
-          .catch((err) => console.error(err));
+          .catch((err) => {
+            if(err.code === "auth/wrong-password") {
+              let input = this.$.login.shadowRoot.querySelector('paper-input[type="password"]');
+              input.invalid = true;
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: 'Senha inválida. Verifique a senha digitada ou o serviço utilizado, caso tenha se cadastrado com Facebook ou Google.'
+              }, bubbles: true, composed: true }));
+            } else if (err.code === 'auth/account-exists-with-different-credential') {
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: `Login efetado com outro serviço. Tente utilizar o Facebook ou Google.`
+              }, bubbles: true, composed: true }));
+            } else {
+              let input = this.$.login.shadowRoot.querySelector('paper-input');
+              input.invalid = true;
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: 'Usuário não existe. Faça um cadastro ou informe uma conta válida.'
+              }, bubbles: true, composed: true }));
+            }
+          });
+      }
+
+      authWithProvider(e) {
+        this.$.auth.signInWithPopup(e.detail.provider)
+          .then(function(res) {
+          }.bind(this))
+          .catch((err) => {
+            if (err.code === 'auth/account-exists-with-different-credential') {
+              this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+                status: 500,
+                text: `Login efetado com outro serviço. Tente utilizar o Facebook ou Google.`
+              }, bubbles: true, composed: true }));
+            }
+          });
       }
 
       userChanged(user) {
-        if(user && !user.displayName && this.signUpData && this.signUpData.displayName)
+        if(!user) return;
+        this.requestGeocoder();
+        if(!user.displayName && this.signUpData && this.signUpData.displayName)
           user.updateProfile({ displayName: this.signUpData.displayName });
+        const name = this.user.displayName || this.signUpData.displayName;
+        this.userData = {
+          displayName: name,
+          photoURL: this.user.photoURL,
+          tutorial: {
+            home: false,
+            createCampaign: false,
+            findCampaign: false
+          },
+        };
+        this.$.document.db.ref(`/users/${this.user.uid}/content`).once("value").then(function(result) {
+          if(!result.val().tutorial) {
+            this.$.document.path = `/users/${this.user.uid}/content`;
+            this.$.document.ref.update(this.userData);
+          } else {
+            this.userData = result.val();
+          }
+        }.bind(this));
+      }
+
+      _stateChanged(state) {
+        if(!state) return;
+        this.userData.state = this.userData.state || this.state;
+        this.$.document.path = `/users/${this.user.uid}/content`;
+        this.$.document.ref.update({ state: this.userData.state });
+      }
+
+      requestGeocoder(e) {
+        if(!this.user) return;
+        if(!window.google || !this.latitude) {
+          this._fireError();
+          return;
+        }
+        const geocoder = new google.maps.Geocoder;
+        const latlng = { lat: this.latitude, lng: this.longitude };
+        geocoder.geocode({'location': latlng}, (results, status) => {
+          if (status === 'OK') {
+            if (results[0]) {
+              let states = ["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"];
+              let state = results[0].address_components.filter((c) => c.types.includes('administrative_area_level_1'));
+              if (state.length > 0 && states.includes(state[0].short_name)) this.state = state[0].long_name;
+            } else {
+              this.state = 'Distrito Federal';
+              this._fireWarning();
+            }
+          } else {
+            this._fireError();
+          }
+        });
+      }
+
+      _fireError() {
+        setTimeout(function () {
+          if(this.state || this.userData && this.userData.state) return;
+          this.state = 'Distrito Federal';
+          this.dispatchEvent(new CustomEvent('show-notify', { detail: {
+            status: 500,
+            text: 'Não foi possível encontrar sua localização. Acesse o seu perfil para informar a localidade correta.'
+          }, bubbles: true, composed: true}));
+        }.bind(this), 12000);
+      }
+
+      _fireWarning() {
+        this.dispatchEvent(new CustomEvent('show-notify',{ detail: {
+          status: 400,
+          text: `Encontramos dificuldades em identificar sua localidade. Se você não está no Distrito Federal, acesse o seu perfil para corrir a localização.`
+        }, bubbles: true, composed: true}));
       }
     }
-
     window.customElements.define(LoginModal.is, LoginModal);
   </script>
 </dom-module>

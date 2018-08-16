@@ -1,0 +1,58 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-confirmation-icon.html">
+
+
+<dom-module id="edit-campaign-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      confirmation-icon,
+      .confirmation-text {
+        margin: auto;
+        text-align: center;
+      }
+
+      .confirmation-icon {
+        width: 100%;
+        text-align: center;
+      }
+
+      .confirmation-text {
+        width: 80%;
+      }
+
+      .modal-header {
+        width: 100%;
+      }
+
+
+      iron-icon {
+        --iron-icon-width: 50%;
+        --iron-icon-height: 50%;
+      }
+    </style>
+
+    <div class="modal-header">
+      <app-confirmation-icon>Campanha editada com sucesso!</app-confirmation-icon>
+      <div class="confirmation-text">
+        <p>Você pode conferir as informações atualizadas na página de campanha</p>
+      </div>
+    </div>
+  </template>
+  <script>
+    class EditCampaignDialog extends Polymer.Element {
+      static get is() { return 'edit-campaign-dialog'; }
+      static get properties() {
+        return {};
+      }
+
+    }
+    window.customElements.define(EditCampaignDialog.is, EditCampaignDialog);
+  </script>
+</dom-module>

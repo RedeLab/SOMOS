@@ -16,31 +16,39 @@
         max-width: 100%;
       }
       .dismiss {
-        float: right;
+        margin: -5px calc(50% - 20px);
+      }
+      paper-toast {
+        max-width: 400px !important;
+        min-width: 200px !important;
+        width: calc(100% - 100px);
       }
       #status5 {
-        --paper-toast-background-color: var(--error-color);
-        --paper-toast-color: var(--text-primary-color);
+        --paper-toast-background-color: var(--primary-background-color);
+        --paper-toast-color: #d30000;
+        border-top: 5px solid #d30000;
       }
       #status4 {
-        --paper-toast-background-color: var(--warning-color);
-        --paper-toast-color: var(--primary-text-color);
+        --paper-toast-background-color: var(--primary-background-color);
+        --paper-toast-color: #e45f00;
+        border-top: 5px solid #e45f00;
       }
       #status1 {
-        --paper-toast-background-color: var(--info-color);
-        --paper-toast-color: var(--primary-text-color);
+        --paper-toast-background-color: var(--primary-background-color);
+        --paper-toast-color: #309300;
+        border-top: 5px solid #309300;
       }
     </style>
-    <paper-toast id="status5" duration="9000"
-      text="{{message}}" class="fit-bottom">
+    <paper-toast id="status5" duration="-1000"
+      text="{{message}}">
       <paper-icon-button class="dismiss" icon="app:close" on-tap="close"></paper-icon-button>
     </paper-toast>
-    <paper-toast id="status4" duration="6000"
-      text="{{message}}" class="fit-bottom">
+    <paper-toast id="status4" duration="-1000"
+      text="{{message}}">
       <paper-icon-button class="dismiss" icon="app:close" on-tap="close"></paper-icon-button>
     </paper-toast>
-    <paper-toast id="status1" duration="3000"
-      text="{{message}}" class="fit-bottom">
+    <paper-toast id="status1" duration="-1000"
+      text="{{message}}">
       <paper-icon-button class="dismiss" icon="app:close" on-tap="close"></paper-icon-button>
     </paper-toast>
   </template>
@@ -65,23 +73,13 @@
         };
       }
 
-      showMessage(error) {
-        if(error && error.status) {
-          var code =  Number(error.status) ?
-            Math.round(error.status/100) : 1;
+      showMessage(message) {
+        if(message && message.status) {
+          var code =  Number(message.status) ?
+            Math.round(message.status/100) : 1;
           this.status = "status"+code;
-          if(this.$[this.status])
-            this.$[this.status].show();
-          switch(code) {
-            case 4:
-              this.message = 'Credenciais inválidas';
-              break;
-            case 5:
-              this.message = 'Erro no Servidor. Tente novamente mais tarde.';
-              break;
-            default:
-              this.message = error.statusText;
-          }
+          if(this.$[this.status]) this.$[this.status].show();
+          this.message = message.text;
         }
       }
 

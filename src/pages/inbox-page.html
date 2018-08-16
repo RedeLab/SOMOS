@@ -1,4 +1,4 @@
-<!--
+e!--
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -10,68 +10,140 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
 
 <link rel="import" href="../app-elements/app-actions.html">
 <link rel="import" href="../app-elements/app-icons.html">
-<link rel="import" href="../feed-elements/mission-form.html">
 <link rel="import" href="../app-elements/shared-styles.html">
-<link rel="import" href="../../bower_components/app-route/app-location.html">
-<link rel="import" href="../../bower_components/app-route/app-route.html">
+<link rel="import" href="../mission-elements/mission-card.html">
+<link rel="import" href="../tutorial-elements/home-tutorial-dialog.html">
+<link rel="import" href="../tutorial-elements/first-campaign-dialog.html">
+<link rel="import" href="../app-elements/app-dialog.html">
+<link rel="import" href="../app-elements/app-form-header.html">
+<link rel="import" href="../app-elements/app-scrollable-dialog.html">
 
 <dom-module id="inbox-page">
   <template>
     <style include="shared-styles">
+    </style>
+    <style>
       :host {
         display: block;
         height: 100vh;
       }
 
+      [main-title] {
+        color: var(--accent-color);
+        margin-left: 10px;
+      }
+
+      .inbox {
+        padding-bottom: 80px;
+      }
+
+      #inboxLoading {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
+      }
+
+      paper-spinner {
+        width: 40px;
+        height: 40px;
+        padding: 5px;
+        background-color: var(--default-primary-color);
+        border-radius: 50%;
+      }
+
+      #actionsContainer { display: none; }
+      app-form-header {
+        color: var(--default-primary-color);
+        background: var(--accent-color);
+        --app-form-header-background: var(--accent-color);
+        --app-form-header-color: var(--default-primary-color);
+        @apply --default-font-medium;
+      }
     </style>
+
+    <firebase-document
+      id="campaigns">
+    </firebase-document>
+
+    <firebase-document
+      id="appUser"
+      path="/users/{{user.uid}}/content"
+      data="{{appUser}}">
+    </firebase-document>
+
+    <firebase-query
+      id="accepted"
+      path="/users/{{user.uid}}/accepted"
+      data="{{acceptedMissions}}">
+    </firebase-query>
+
+    <firebase-query
+      id="accepted"
+      path="/users/{{user.uid}}/campaigns"
+      data="{{userCampaigns}}">
+    </firebase-query>
+
+    <app-dialog id="tutorial" opened="{{openedModal}}">
+      <home-tutorial-dialog user="{{appUser}}" user-key="{{user.uid}}" on-close-tutorial="_closeTutorial"></home-tutorial-dialog>
+    </app-dialog>
+
+    <app-scrollable-dialog id="dialog" modal>
+      <app-form-header slot="header" shadow>
+        <span slot="main-title">Apoie uma campanha!</span>
+        <paper-button id="finishModal" style="font-size: 0.8rem;" slot="more-vert" on-tap="closeFirstCampaignModal">Concluir</paper-button>
+      </app-form-header>
+      <first-campaign-dialog user={{user}}></first-campaign-dialog>
+    </app-scrollable-dialog>
 
     <app-header-layout has-scrolling-region>
 
-      <app-header slot="header" condenses fixed effects="waterfall">
+      <app-header slot="header" condenses reveals fixed effects="waterfall">
         <app-toolbar>
-          <paper-icon-button icon="app:menu" on-tap="openDrawer"></paper-icon-button>
-          <div main-title>Tamo Junto</div>
-          <paper-icon-button icon="app:search"></paper-icon-button>
-          <paper-icon-button icon="app:more-vert"></paper-icon-button>
+          <paper-icon-button icon="app:menu" drawer-toggle on-tap="openDrawer"></paper-icon-button>
+          <div main-title>{{pageTitle}}</div>
+          <paper-icon-button id="statsBtn" style="display: none" on-tap="_openStatatisticsPage" icon="app:timeline"></paper-icon-button>
         </app-toolbar>
         <app-toolbar sticky>
-          <paper-tabs selected="{{inboxtab}}" fallback-selection="0">
+          <paper-tabs selected="{{inboxTab}}" fallback-selection="0">
             <paper-tab>CAIXA DE ENTRADA</paper-tab>
             <paper-tab>MINHAS MISSÕES</paper-tab>
           </paper-tabs>
         </app-toolbar>
       </app-header>
-      <iron-pages selected="{{inboxtab}}">
-        <div>
-          <div class="card">
-            <div class="circle">1</div>
-            <h1>View One</h1>
-            <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-            <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-          </div>
-
-          <div class="card">
-            <div class="circle">1</div>
-            <h1>View One</h1>
-            <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-            <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-          </div>
+      <iron-pages selected="{{inboxTab}}" fallback-selection="0">
+        <div class="inbox">
+          <template id="missionsList" is="dom-repeat" items="{{inboxMissions}}" as="mission"
+            notify-dom-change="true" on-dom-change="hideLoading">
+            <mission-card mission="{{mission.content}}" key="{{mission.$key}}"
+              on-show-mission="_goToMission"></mission-card>
+          </template>
         </div>
-        <div>
+        <div class="inbox">
+          <template is="dom-repeat" items="{{userAcceptedMissions}}" as="acceptedMissions">
+            <mission-card mission="{{acceptedMissions.content}}" key="{{acceptedMissions.$key}}"
+              on-show-mission="_goToMission" uid="{{user.uid}}">
+            </mission-card>
+          </template>
         </div>
       </iron-pages>
-        <app-actions id="actions" collapsed$="[[collapsed]]" selected="{{inboxAction}}" icon="app:add">
-          <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="openMissionForm" name="edit"></paper-fab>
-          <paper-tooltip slot="actions" for="newMission">Sugerir Missão</paper-tooltip>
-          <paper-fab slot="actions" mini icon="app:assessment" id="survey" name="edit"></paper-fab>
-          <paper-tooltip slot="actions" for="survey">Enquete</paper-tooltip>
-          <paper-fab slot="actions" mini icon="app:create" id="post" name="edit"></paper-fab>
-          <paper-tooltip slot="actions" for="post">Postagem</paper-tooltip>
+      <div id="inboxLoading">
+        <paper-spinner active></paper-spinner>
+      </div>
+      <div id="actionsContainer">
+        <app-actions id="actions" selected="{{selectedAction}}" icon="app:add">
+          <paper-fab slot="actions" mini icon="app:add" id="newMission" on-tap="_openMissionForm" name="edit"></paper-fab>
+          <paper-tooltip slot="actions" for="newMission">Criar Missão</paper-tooltip>
         </app-actions>
+      </div>
     </app-header-layout>
 
   </template>
@@ -79,20 +151,244 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <script>
     class InboxPage extends Polymer.Element {
       static get is() { return 'inbox-page'; }
-      openDrawer() {
-        this.dispatchEvent(new CustomEvent('open-drawer'));
-      }
-
       static get properties() {
         return {
           inboxAction: {
             type: String,
             value: ''
-          }
+          },
+          route: {
+            type: Object,
+            notify: true
+          },
+          selected: {
+            observer: '_selectedChanged'
+          },
+          pageTitle: {
+            type: String,
+            value: 'Painel inicial'
+          },
+          acceptedMissions: {
+            type: Array,
+            value: []
+          },
+          inboxMissions: {
+            type: Array
+          },
+          domChangeEventCount: {
+            type: Number,
+            value: 0
+          },
+          user: {
+            type: Object,
+            observer: '_onUserChanged'
+          },
+          userMissions: {
+            type: Array,
+            value: []
+          },
+          userAcceptedMissions: {
+            type: Array,
+            value: []
+          },
+          appUser: {
+            type: Object
+          },
+          userCampaigns: {
+            type: Array
+          },
+          inboxTab: {
+            type: Number,
+            value: 0
+          },
+          openedModal: {
+            type: Boolean,
+            observer: '_observeTutorial'
+          },
+          canSee: {
+            type: Boolean,
+            value: false,
+          },
+          adminMissions: Array
         }
       }
-    }
 
+      static get observers() {
+        return ['checkCloseModal(userCampaigns.*)', 'showTutorial(appUser.*)'];
+      }
+
+      _selectedChanged(selected) {
+        if(!selected) return;
+        this.showTutorial();
+        this.canSee = false;
+      }
+
+      _hideFabBtn() {
+        if(!this.user) {
+          this.canSee = false;
+        } else {
+          this.$.campaigns.db.ref('/campaigns').orderByChild('content/uid').once('value')
+          .then(function(snapshot) {
+            if(!snapshot.val() || !this.user) return;
+            const campaigns = Object.values(snapshot.val());
+            campaigns.forEach(function(campaign) {
+              if(campaign.content.admins.includes(this.user.uid)) {
+                this.$.actionsContainer.style.display = 'block';
+                this.$.statsBtn.style.display = 'block';
+              }
+            }.bind(this));
+          }.bind(this));
+        }
+        this.$.actionsContainer.style.display = 'none';
+        this.$.statsBtn.style.display = 'none';
+      }
+
+      openDrawer() {
+        this.dispatchEvent(new CustomEvent('open-drawer'));
+      }
+
+      _openMissionForm() {
+        this.set('route.path', '/mission');
+      }
+
+      _goToMission(e) {
+        let mission = e.detail.mission;
+        this.set('route.path', `/show-mission/${mission}`);
+      }
+
+      _filterMissions() {
+        const keys = [].concat.apply([], [this.acceptedMissions.map((m) => m.$key), this.adminMissions]);
+        this.inboxMissions = this.userMissions.filter((m) => !keys.includes(m.$key)).reverse();
+        this.userAcceptedMissions = this.userMissions.filter((m) => keys.includes(m.$key)).reverse();
+        this.hideLoading();
+        this._hideFabBtn();
+      }
+
+      showLoading() {
+        const loading = this.shadowRoot.querySelector('#inboxLoading');
+        loading.style.display = 'block';
+        this.domChangeEventCount = 0;
+        this.inboxTab = -1;
+      }
+
+      hideLoading(e) {
+        // if method is called directlly without event, then hide loading;
+        const loading = this.shadowRoot.querySelector('#inboxLoading');
+        if(!e) return loading.style.display = 'none';
+
+        if (this.domChangeEventCount === 1) loading.style.display = 'none';
+        this.domChangeEventCount += 1;
+      }
+
+      _getMissionsByCampaigns() {
+        if (!this.user || !this.appUser) return;
+        if (!this.appUser.state) this.dispatchEvent(new CustomEvent({detail: {
+          status: 400,
+          text: 'Sua localização está indefinida. Acesse seu perfil e informe seu estado.'
+        }}));
+        this.showLoading();
+        let user = this.user;
+        let appuser = this.appUser;
+        let missionPromises = [];
+        let adminMissions = [];
+        let campaigns = [];
+        this.$.campaigns.db.ref('/campaigns').once('value', function(campSnapshot) {
+          if(!campSnapshot.val()) return;
+
+          // get the keys of the folllowed campaigs
+          campaigns = campSnapshot.val();
+          const campaignKeys = Object.keys(campSnapshot.val()).filter((key, i) => {
+            const campaign = campaigns[key].content;
+            return !!campaign.usersFollow && campaign.usersFollow.map(u => u.id).includes(user.uid);
+          });
+
+          // map each campaign key into a request to its missions
+          missionPromises = campaignKeys.map(function(key) {
+            return this.$.campaigns.db.ref('/missions')
+              .orderByChild('content/cid').equalTo(key).once('value');
+          }.bind(this));
+
+          // wait until all requests are finished
+          Promise.all(missionPromises).then(function(snapshots) {
+
+            let nestedMissions = snapshots.filter((snapshot, i) => {
+              // filter removing empty missions list
+              return !!snapshot.val();
+            }).map((snapshot, i) => {
+              // iterate through valid results and concatenate nested array
+              // of missions, in the format [[m1, m2], [m3, m4]];
+              const missionKeys = Object.keys(snapshot.val());
+              const missionContents = Object.values(snapshot.val());
+              return  missionContents.filter(function(content, index) {
+                // remove missions by state filter
+                const campaign = campaigns[content.content.cid];
+                if(campaign.content.admins.includes(user.uid)) {
+                  adminMissions.push(missionKeys[index]);
+                }
+                // if campaign is not for all states, all missions can be shown
+                const valid = (campaign.content.state !== 'Todos' ||
+                  // if campaign is for all states, filter only missions to user state
+                  content.content.state === appuser.state ||
+                  // and missions to all states.
+                  content.content.state === 'Todos');
+                if(valid) content['$key'] = missionKeys[index];
+                return valid;
+              }.bind(this));
+            });
+            // expand the [[m1, m2], [m3, m4]] to [m1, m2, m3, m4];
+            this.userMissions = [].concat(...nestedMissions);
+          }.bind(this)).then(function() {
+            this.adminMissions = adminMissions;
+            this._filterMissions();
+          }.bind(this));
+        }.bind(this));
+      }
+
+      _onAllMissionsChanged() {
+        this._getMissionsByCampaigns();
+      }
+
+      _onUserChanged() {
+        this._getMissionsByCampaigns();
+      }
+
+      _openStatatisticsPage() {
+        this.set('route.path', '/statistics');
+      }
+
+      showTutorial(appUser) {
+        const user = this.appUser;
+        if(!user || !this.selected) return;
+        if(user.tutorial && !user.tutorial.home) {
+          this.$.tutorial.present();
+        }
+        this._getMissionsByCampaigns();
+      }
+
+      _closeTutorial() {
+        this.$.tutorial.close();
+      }
+
+      closeFirstCampaignModal() {
+        this._getMissionsByCampaigns()
+        this.$.dialog.close();
+      }
+
+      _observeTutorial() {
+        if(!this.openedModal && this.userCampaigns.length <= 0) {
+          this.$.dialog.present();
+        }
+      }
+
+      checkCloseModal() {
+        if(this.userCampaigns.length <= 0) {
+          this.$.finishModal.disabled = true;
+        } else {
+          this.$.finishModal.disabled = false;
+        }
+      }
+
+    }
     window.customElements.define(InboxPage.is, InboxPage);
   </script>
 </dom-module>

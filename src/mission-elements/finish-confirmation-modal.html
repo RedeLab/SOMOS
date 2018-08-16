@@ -1,0 +1,62 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../app-elements/app-confirmation-icon.html">
+
+
+<dom-module id="finish-confirmation-modal">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        height: 100vh;
+      }
+
+      confirmation-icon,
+      .confirmation-text {
+        margin: auto;
+        text-align: center;
+      }
+
+      .confirmation-icon {
+        width: 100%;
+        text-align: center;
+      }
+
+      .confirmation-text {
+        width: 80%;
+      }
+
+      .modal-header {
+        width: 100%;
+      }
+
+
+    </style>
+
+    <div class="modal-header">
+      <app-confirmation-icon>Enviado</app-confirmation-icon>
+      <div class="confirmation-text">
+        <p>Agora é só aguardar a avaliação.</p>
+        <p>Você receberá um e-mail e uma notificação no painel inicial.</p>
+        <div class="buttons">
+         <paper-button class="accent block" on-tap="_dismiss">fechar</paper-button>
+        </div>
+      </div>
+    </div>
+  </template>
+  <script>
+    class FinishConfirmationModal extends Polymer.Element {
+      static get is() { return 'finish-confirmation-modal'; }
+      static get properties() {
+        return {};
+      }
+
+      _dismiss() {
+        this.dispatchEvent(new CustomEvent('close-modal'));
+      }
+    }
+    window.customElements.define(FinishConfirmationModal.is, FinishConfirmationModal );
+  </script>
+</dom-module>

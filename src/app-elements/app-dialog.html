@@ -20,7 +20,8 @@
             value: true
           },
           opened: {
-            observer: '_resetParent'
+            observer: '_resetParent',
+            notify: true
           }
         };
       }
@@ -44,11 +45,12 @@
         if(!this.opened) return;
         this.dispatchEvent(new CustomEvent('dismiss'));
         this._animateSlotted();
+        this.set('opened', false);
         setTimeout(this.close.bind(this), 100);
       }
 
       _resetParent(opened) {
-        if(!opened) this.__parent.appendChild(this);
+        if(!opened && this.__parent) this.__parent.appendChild(this);
       }
 
       _animateSlotted() {

@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="../campaign-elements/campaign-card.html">
+
+<dom-module id="first-campaign-dialog">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        height: 100vh;
+        @apply --default-font;
+      }
+      .spinner {
+        position: absolute;
+        top: 50%;
+        right: 50%;
+        transform: translate(50%);
+      }
+      .fill {
+        margin-top: 20px;
+      }
+    </style>
+
+    <firebase-query
+      id="query"
+      path="/campaigns"
+      data="{{campaigns}}">
+    </firebase-query>
+
+    <div class="fill">
+      <dom-if if="{{campaigns.length}}">
+        <template>
+            <div class="conditional">
+              <template id="campaignsList" is="dom-repeat" items="{{campaigns}}" as="campaign">
+                <campaign-card disabled campaign="{{campaign.content}}" key="{{campaign.$key}}" user="{{user}}" on-show-campaign="_goToCampaign"></campaign-card>
+              </template>
+            </div>
+        </template>
+      </dom-if>
+    </div>
+
+    <dom-if if="{{!campaigns.length}}">
+      <template>
+        <div class="spinner">
+          <paper-spinner active></paper-spinner>
+        </div>
+      </template>
+    </dom-if>
+
+  </template>
+  <script>
+    class FirstCampaignDialog extends Polymer.Element {
+      static get is() { return 'first-campaign-dialog'; }
+      static get properties() {
+        return {
+          campaigns: {
+            type: Array
+          },
+          user: Object
+        };
+      }
+      static get observers() { return []; }
+
+      _goToCampaign(e) {
+        let key = e.detail.campaignKey;
+        this.set('route.path', `/show-campaign/${key}`);
+      }
+
+
+    }
+    window.customElements.define(FirstCampaignDialog.is, FirstCampaignDialog);
+  </script>
+</dom-module>

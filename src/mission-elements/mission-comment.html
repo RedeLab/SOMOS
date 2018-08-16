@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<dom-module id="mission-comment">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+      }
+
+      .mission-comment {
+        padding: 0px;
+        display: flex;
+      }
+
+      .user-image img {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        overflow: hidden;
+        margin: 10px;
+      }
+      .card-content {
+        flex: 1;
+      }
+      .card-content h3 {
+        margin: 5px 0;
+      }
+      .card-content p {
+        margin-top: 0;
+        font-size: 1em;
+        line-height: 1;
+      }
+    </style>
+    <div class="card mission-comment">
+      <div class="user-image">
+        <img src="{{userPhoto}}">
+      </div>
+      <div class="card-content">
+        <h3> {{comment.username}} </h3>
+        <p> {{comment.text}} </p>
+      </div>
+    </div>
+  </template>
+  <script>
+    class MissionComment extends Polymer.Element {
+      static get is() { return 'mission-comment'; }
+      static get properties() {
+        return {
+          comment: {
+            type: Object,
+            value: function() {}
+          },
+          key: String,
+          userPhoto: String
+        }
+      }
+    }
+customElements.define(MissionComment.is, MissionComment);
+</script>
+</dom-module>

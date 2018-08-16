@@ -2,49 +2,100 @@
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../app-elements/app-dialog.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
+<link rel="import" href="./recover-email-dialog.html">
 
 <dom-module id="login-view">
   <template>
     <style include="shared-styles">
       :host {
         display: flex;
-        background: var(--primary-background-color);
+        background-size: cover;
+        background-position: center;
         flex-direction: column;
         min-height: 100vh;
       }
       .fill {
         flex: 1;
-        padding: 40px;
-      }
-      .space {
-        height: 8.5vh;
+        padding: 20px 60px;
       }
       paper-button {
         display: block;
         text-align: center;
-        margin: 20px 0;
+        margin: 20px auto 10px;
+        background: var(--default-primary-color);
+      }
+      paper-input {
+        --paper-input-container-color: var(--accent-color);
+        --paper-input-container-focus-color: var(--accent-color);
+        --paper-input-container-invalid-color: var(--accent-color);
+        --paper-input-container-input-color: var(--accent-color);
       }
       .facebook {
-        background: #1A467B;
+        color: #1A467B;
         border: none;
+        background: white;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 10px;
+      }
+      .image {
+        height: 13vh;
+        margin: 2vh 10px 0;
+      }
+      .image iron-image {
+        width: 100%;
+        height: 100%;
+        max-width: 250px;
+        margin: auto;
+        display: block;
+      }
+      .social {
+        text-align: center;
+        margin: 0 30px 80px;
+      }
+      .fields {
+        padding-top: 40px;
+      }
+      .social-text {
+        font-weight: bold;
+        color: #99391f;
+      }
+      paper-button.plain {
         color: white;
+        background: var(--accent-color);
       }
     </style>
 
+    <app-dialog id="recover">
+      <recover-email-dialog on-close-recover="closeRecoverDialog"></recover-email-dialog>
+    </app-dialog>
+
+    <iron-a11y-keys id="a11y" target="[[target]]" keys="enter"
+                    on-keys-pressed="submitCredentials"></iron-a11y-keys>
     <div class="fill">
-      <h1>Login</h1>
-      <div class="space"></div>
-      <div class="fields">
-        <paper-input label="email" type="email" value="{{email}}" auto-validate
-          error-message="Informe um email válido."></paper-input>
-        <paper-input label="senha" type="password" minlength="8" value="{{password}}"
-          auto-validate error-message="A senha deve ter no mínimo 8 caracteres."></paper-input>
+      <div class="image">
+        <iron-image sizing="contain" src="/images/logo.png"></iron-image>
       </div>
-      <paper-button class="accent" on-tap="submitCredentials">Entrar</paper-button>
-      <paper-button class="facebook">Entrar com Facebook</paper-button>
-      <span class="bottom center">Esqueceu sua senha? <a href="#">Recuperar</a></span>
+      <div class="fields">
+        <paper-input label="email" type="email" value="{{email}}"
+          error-message="Usuário não existe" on-value-changed="setInvalid"></paper-input>
+        <paper-input label="senha" type="password" minlength="8" value="{{password}}"
+          error-message="Senha incorreta" on-value-changed="setInvalid"></paper-input>
+      </div>
+      <paper-button class="plain" on-tap="submitCredentials">Entrar</paper-button>
+    </div>
+    <div class="social">
+      <div class="social-text">Você também pode usar</div>
+      <div class="social-text">suas redes sociais.</div>
+      <paper-icon-button class="facebook" icon="app:facebook" on-tap="signInWithFacebook"></paper-icon-button>
+      <paper-icon-button class="facebook" icon="app:google" on-tap="signInWithGoogle"></paper-icon-button>
+      <div class="social-text">
+        <span on-tap="recoverPassword">Esqueci minha senha</span> | <span on-tap="openRegister">Não tenho cadastro</span>
+      </div>
     </div>
   </template>
 
@@ -59,18 +110,44 @@
           },
           email: String,
           password: String,
+          sharedMission: String
         };
       }
       submitCredentials(e) {
-        const inputs = Array.from(this.shadowRoot.querySelectorAll('paper-input'));
-        let invalid = inputs.reduce((invalid, input) => invalid || input.invalid, false);
-        let isblank = inputs.reduce((isblank, input) => isblank || !input.value, false);
-        if (invalid || isblank) return; //TODO: use app-notify to display error message.
-        else this.credentials = {
-          email: this.email,
-          password: this.password,
-        };
+       const inputs = Array.from(this.shadowRoot.querySelectorAll('paper-input'));
+       let invalid = inputs.reduce((invalid, input) => invalid || input.invalid, false);
+       let isblank = inputs.reduce((isblank, input) => isblank || !input.value, false);
+       if (invalid || isblank) return; //TODO: use app-notify to display error message.
+       else this.credentials = {
+         email: this.email,
+         password: this.password,
+       };
       }
+
+      signInWithFacebook(e) {
+        this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'facebook' } }));
+      }
+
+      signInWithGoogle(e) {
+        this.dispatchEvent(new CustomEvent('provider-auth', { detail: { provider: 'google' } }));
+      }
+
+      openRegister(e) {
+        this.dispatchEvent(new CustomEvent('open-register'));
+      }
+
+      setInvalid(e) {
+        e.target.invalid = false;
+      }
+
+      recoverPassword() {
+        this.$.recover.present();
+      }
+
+      closeRecoverDialog() {
+        this.$.recover.close();
+      }
+
     }
 
     window.customElements.define(LoginView.is, LoginView);

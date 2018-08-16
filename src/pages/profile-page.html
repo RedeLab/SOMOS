@@ -1,0 +1,296 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner.html">
+<link rel="import" href="../../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../../bower_components/neon-animation/web-animations.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-multiupload.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="../app-elements/app-icons.html">
+<link rel="import" href="../app-elements/app-dialog.html">
+<link rel="import" href="../app-elements/shared-styles.html">
+
+<link rel="import" href="../profile-elements/password-dialog.html">
+
+<dom-module id="profile-page">
+  <template>
+    <style include="shared-styles"></style>
+    <style>
+      :host {
+        display: block;
+        background: var(--secondary-background-color);
+        height: 100vh;
+        @apply --default-font;
+      }
+      app-header {
+        color: var(--default-primary-color);
+        background: var(--accent-color);
+        --app-form-header-background: var(--accent-color);
+        --app-form-header-color: var(--default-primary-color);
+        @apply --default-font-medium;
+      }
+      h1[main-title] {
+        margin-left: 20px;
+      }
+      paper-input paper-button {
+        color: var(--accent-color);
+        border: none;
+      }
+      .fill {
+        flex: 1;
+      }
+      .cover {
+        height: 84px;
+        background: var(--accent-color);
+      }
+      .cover .image,
+      .cover iron-image {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: block;
+        margin: auto;
+        overflow: hidden;
+        background: var(--divider-color);
+      }
+      .cover paper-icon-button {
+        display: block;
+        margin: -40px auto;
+        color: white;
+        background: rgba(0,0,0,0.4);
+        width: 100%;
+      }
+      .image paper-spinner {
+        margin: -50px 60px 35px;
+      }
+      .image {
+        position: relative;
+      }
+      .username,
+      .notify,
+      .email {
+        max-width: 340px;
+        margin: auto;
+        padding: 80px 20px 0;
+      }
+      .email {
+        padding-top: 0;
+      }
+      .notify {
+        display: flex;
+        padding-top: 20px;
+      }
+      .notify span {
+        flex: 1;
+        font-size: 1.2rem;
+        font-weight: bold;
+      }
+      paper-button {
+        max-width: 340px;
+        margin: 40px auto;
+        display: block;
+        text-align: center;
+        border-radius: 20px;
+      }
+      paper-button[disabled] {
+        background: #ccc;
+        box-shadow: none;
+      }
+      #upload {
+        display: block;
+        position: absolute;
+        bottom: 0;
+        width: 130px;
+        padding: 10px;
+        opacity: 0;
+      }
+      paper-dropdown-menu {
+        width: 100%;
+      }
+    </style>
+
+    <app-dialog id="dialog">
+      <password-dialog id="passDialog" on-confirm-password="_updatePassword"></password-dialog>
+    </app-dialog>
+
+    <firebase-auth id="auth" user="{{user}}" on-error="handleError" status-known="{{statusKnown}}">
+    </firebase-auth>
+
+    <firebase-storage-ref id="photoRef"
+      download-url="{{data.photoURL}}">
+    </firebase-storage-ref>
+
+    <firebase-document
+      id="document"
+      path="/users/{{user.uid}}/content"
+      data="{{appUser}}">
+    </firebase-document>
+
+    <app-header-layout has-scrolling-region>
+      <app-header slot="header" fixed condenses effects="waterfall">
+        <app-toolbar>
+          <paper-icon-button icon="app:arrow-back" on-tap="_returnToInbox"></paper-icon-button>
+          <h1 main-title>{{user.displayName}}</h1>
+        </app-toolbar>
+      </app-header>
+      <div class="fill">
+        <div class="cover">
+          <div class="image">
+            <iron-image id="profile" src="{{user.photoURL}}" sizing="cover">
+            </iron-image>
+            <paper-icon-button icon="app:create" on-tap="uploadImage"></paper-icon-button>
+            <input type="file" id="upload" on-change="getPhoto" accept=".jpg, .jpeg, .png"/>
+            <dom-if if="{{!user}}">
+              <template>
+                <paper-spinner active></paper-spinner>
+              </template>
+            </dom-if>
+          </div>
+        </div>
+        <div class="username">
+          <paper-input label="nome" value="{{data.displayName}}" minlength="5" auto-validate
+          error-message="O nome deve ter no mínimo 5 caracteres."></paper-input>
+        </div>
+        <div class="email">
+          <paper-input label="email" type="email" value="{{data.email}}" disabled></paper-input>
+        </div>
+        <div class="email">
+          <paper-input label="senha" type="password" value="{{data.password}}" minlength="8"
+            auto-validate error-message="A senha deve ter no mínimo 8 caracteres." disabled="{{!passProvider}}">
+          </paper-input>
+          <paper-input label="confirmação de senha" type="password"
+            value="{{data.confirmpass}}" disabled="{{!passProvider}}">
+          </paper-input>
+          <paper-dropdown-menu label="Estado" value="{{data.state}}">
+            <paper-listbox slot="dropdown-content" class="dropdown-content" attr-for-selected="name" selected="{{data.state}}">
+              <template id="statesList" is="dom-repeat" items="{{states}}" as="state">
+                <paper-item name="{{state}}">{{state}}</paper-item>
+              </template>
+            </paper-listbox>
+          </paper-dropdown-menu>
+        </div>
+        <hr>
+        <div class="notify">
+          <paper-toggle-button checked="{{data.notifications}}"><span>Receber notificações</span></paper-toggle-button>
+        </div>
+        <paper-button class="accent" id="saveBtn" on-tap="saveUserData">Salvar</paper-button>
+      </div>
+    </app-header-layout>
+  </template>
+  <script>
+    class ProfilePage extends Polymer.Element {
+      static get is() { return 'profile-page'; }
+      static get properties() {
+        return {
+          selected: {
+            observer: '_selectedChanged'
+          },
+          profile: {
+            observer: '_setProfile'
+          },
+          fileArray: {
+            type: Array,
+            value: []
+          },
+          user: {
+            type: Object,
+            notify: true,
+          },
+          states: {
+            type: Array,
+            value: ["Acre", "Alagoas", "Amapá	", "Amazonas", "Bahia", "Ceará", "Distrito Federal", "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul", "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí", "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia", "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins"]
+          },
+          appUser: {
+            type: Object
+          }
+        };
+      }
+      static get observers() { return ['_setFormData(user, appUser)']; }
+
+      getPhoto(e) {
+        let photo = e.target.files[0];
+        if(photo) {
+          this.$.saveBtn.disabled = true;
+          let reader = new FileReader();
+          const img = this.$.profile;
+          reader.onload = function (e) {
+            img.src = e.target.result;
+          }
+          reader.readAsDataURL(photo);
+          this.$.photoRef.path = `/users/${this.user.uid}/photo`;
+          this.$.photoRef.put(photo).then(function(res) {
+            this.$.photoRef.path += `/${photo.name}`;
+            this.$.saveBtn.disabled = false;
+          }.bind(this));
+        }
+      }
+
+      _setFormData(user, appUser) {
+        if (!user || !appUser) return;
+        this.data = {
+          displayName: user.displayName,
+          email: user.email,
+          state: appUser.state,
+          notifications: appUser.notifications,
+          password: 'samplepass',
+          confirmpass: 'samplepass'
+        };
+        this.passProvider = this.user.providerData[0].providerId === 'password';
+      }
+      _selectedChanged(selected) {}
+
+      _returnToInbox() {
+        this.set('route.path', '/');
+      }
+
+      uploadImage(e) {
+        this.$.upload.click();
+      }
+
+      saveUserData(e) {
+        const data = this.data;
+
+        if (this._validateInputs(data)) {
+          this.user.updateProfile(data).then(function() {
+            this.notifyPath('user.displayName');
+            this.notifyPath('user.photoURL');
+            this.set('appUser.photoURL', data.photoURL);
+            this.set('appUser.displayName', data.displayName);
+            this.set('appUser.state', data.state);
+            this.set('appUser.notifications', data.notifications);
+          }.bind(this));
+          if(data.password !== 'samplepass' && this.passProvider) {
+            this.$.dialog.present();
+          }
+        }
+      }
+
+      _updatePassword(e) {
+        const password = e.detail.password;
+        this.$.auth.signInWithEmailAndPassword(this.user.email, password)
+        .then(function(res) {
+          // use app-notify to display success message
+          this.user.updatePassword(this.data.password);
+          this.$.dialog.dismiss();
+        }.bind(this))
+        .catch(function(err) {
+          this.$.passDialog.passInvalid = true;
+        }.bind(this));
+      }
+      _validateInputs(data) {
+        let valid = true;
+        Array.from(this.shadowRoot.querySelectorAll('paper-input')).forEach((input) => {
+          valid = !input.invalid;
+        });
+        valid = (valid && data && data.password === data.confirmpass);
+        return valid;
+      }
+    }
+    window.customElements.define(ProfilePage.is, ProfilePage);
+  </script>
+</dom-module>
