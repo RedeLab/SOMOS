@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-tooltip.html">
 
 <link rel="import" href="../app-elements/shared-styles.html">
 <link rel="import" href="../app-elements/app-icons.html">
@@ -119,6 +120,7 @@
 
       ready() {
         super.ready();
+        this._setHeight();
         this.$.slot.addEventListener('slotchange', this._setHeight.bind(this));
       }
 
@@ -131,7 +133,7 @@
       }
 
       _setHeight() {
-        const tips = this.$.slot.assignedNodes().filter(n => n.nodeName === 'PAPER-TOOLTIP');
+        const tips = this.$.slot.assignedNodes().filter((n) => { return n.nodeName === 'PAPER-TOOLTIP';});
         const visibleTips = tips.filter(n => n.style.display !== 'none');
         tips.forEach((tip) => {
           tip.position = 'left';
