@@ -295,7 +295,11 @@
         }
 
         _setCampaigns() {
-          this.set('campaigns', this.campaigns);
+          this.set('campaigns', this.campaigns.sort((c1, c2) => {
+            if(c1.content.role === 'Presidente') return -1;
+            if(c2.content.role === 'Presidente') return 1;
+            return 0;
+          }));
         }
 
         _returnToInbox() {
